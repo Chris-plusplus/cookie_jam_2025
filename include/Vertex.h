@@ -4,7 +4,6 @@
 
 using namespace arch;
 
-namespace vs {
 
 // type of vertices
 struct Vertex {
@@ -14,4 +13,3 @@ struct Vertex {
 	float2 texCoords;
 };
 
-}

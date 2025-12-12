@@ -1,6 +1,5 @@
 #pragma once
 
-namespace vs {
 
 // Component which stores the max particles of a player, also flags the "Max" text entity
 template<bool IsRight>
@@ -14,4 +13,3 @@ struct CompetitionCurrentTextFlag {
 	static constexpr bool flagComponent = true;
 };
 
-}

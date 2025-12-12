@@ -4,7 +4,6 @@
 
 using namespace arch;
 
-namespace vs {
 
 // behavior for competition mechanism (score handling)
 struct CompetitionSystem {
@@ -12,4 +11,3 @@ struct CompetitionSystem {
 	static void update(Scene& scene);
 };
 
-}

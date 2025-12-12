@@ -1,7 +1,6 @@
 #include <systems/TransformUpdate.h>
 #include <archimedes/physics/components/Moveable.h>
 
-namespace vs {
 
 // updates Transforms with Movables
 void TransformUpdateSystem::update(ecs::Domain& domain) {
@@ -10,4 +9,3 @@ void TransformUpdateSystem::update(ecs::Domain& domain) {
 	}
 }
 
-}

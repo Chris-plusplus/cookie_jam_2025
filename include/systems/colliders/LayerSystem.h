@@ -2,7 +2,7 @@
 
 #include <components/colliders/LayeredAABB.h>
 
-namespace vs::coll {
+namespace coll {
 
 // behavior for layers
 class LayerSystem {

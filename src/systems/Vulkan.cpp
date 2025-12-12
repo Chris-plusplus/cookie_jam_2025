@@ -9,7 +9,6 @@
 #include <archimedes/audio/AudioSourceComponent.h>
 #include <SoundManager.h>
 
-namespace vs {
 
 void setupAudioSource(Entity vulkan, const Vulkan& vulkanComp);
 
@@ -96,4 +95,3 @@ void VulkanSystem::update(Scene& scene) {
 	}
 }
 
-}

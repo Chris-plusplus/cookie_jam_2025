@@ -19,16 +19,30 @@
 #include <archimedes/text/TextComponent.h>
 #include <Defaults.h>
 #include <systems/StaticText.h>
+#include <systems/MultilineText.h>
 
-namespace vs {
+ecs::Entity textEntity;
+decltype(std::chrono::high_resolution_clock::now()) now;
 
 void VulkanVs::init() {
 	// load font
 	font::FontDB::get()["Arial"]->bold()->assure();
+	font::FontDB::get()["Arial"]->regular()->assure();
 
 	// make scene
 	Ref<Scene> scene = createRef<Scene>();
 	scene::SceneManager::get()->changeScene(scene);
+
+	auto textEnt = scene->newEntity();
+	textEntity = textEnt.handle();
+	textEnt.addComponent(
+		scene::components::TransformComponent{
+			.position = {100, 500, -0.3},
+			.rotation = {0, 0, 0, 1},
+			.scale = {100, 100, 0}
+		}
+	);
+	MultilineTextSystem::setup(*scene, textEntity, U"lorem\nipsum\ndupa", *font::FontDB::get()["Arial"]->regular());
 
 	// init physics system
 	_physicsSystem = createUnique<physics::System>(scene->domain());
@@ -65,6 +79,8 @@ void VulkanVs::init() {
 		*font::FontDB::get()["Arial"]->italic(), 100,
 		{windowWidth - 300, vulkan2.getComponent<Vulkan>().particleOrigin.y + 25, -0.2f}
 	);
+
+	now = std::chrono::high_resolution_clock::now();
 }
 
 void VulkanVs::update() {
@@ -96,6 +112,9 @@ void VulkanVs::update() {
 
 	// synchronize audio
 	scene->domain().global<SoundManager>().audioManager->synchronize(scene->domain());
+
+	if (std::chrono::high_resolution_clock::now() - now > std::chrono::seconds(3)) {
+		MultilineTextSystem::remove(*scene, textEntity);
+	}
 }
 
-}

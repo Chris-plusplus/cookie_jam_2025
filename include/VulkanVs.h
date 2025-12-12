@@ -6,7 +6,6 @@
 
 using namespace arch;
 
-namespace vs {
 
 // VulkanVs game
 class VulkanVs: public Application {
@@ -20,4 +19,3 @@ private:
 	Ref<physics::System> _physicsSystem;
 };
 
-}

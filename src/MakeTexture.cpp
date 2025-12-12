@@ -3,7 +3,6 @@
 #include <stb_image.h>
 #include <execution>
 
-namespace vs {
 
 Ref<gfx::Texture> makeTexture(std::string_view filename) {
 	auto renderer = gfx::Renderer::getCurrent();
@@ -39,4 +38,3 @@ Ref<gfx::Texture> makeTexture(std::string_view filename) {
 	return renderer->getTextureManager()->createTexture2D(width, height, textureData.data());
 }
 
-}

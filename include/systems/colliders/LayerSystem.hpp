@@ -10,7 +10,7 @@
 #include <components/colliders/LayerCollisionFlag.h>
 #include <systems/TransformUpdate.h>
 
-namespace vs::coll {
+namespace coll {
 
 namespace detail {
 

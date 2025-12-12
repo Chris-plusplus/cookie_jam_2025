@@ -1,7 +1,6 @@
 #include <systems/StaticText.h>
 #include <Defaults.h>
 
-namespace vs {
 
 void StaticTextSystem::setup(Scene& scene, const std::u32string& text, font::Face& font, f32 fontSize, float3 pos, f32 angle) {
 	auto e = scene.newEntity();
@@ -17,4 +16,3 @@ void StaticTextSystem::setup(Scene& scene, const std::u32string& text, font::Fac
 	);
 }
 
-}

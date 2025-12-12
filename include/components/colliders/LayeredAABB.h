@@ -2,7 +2,7 @@
 
 #include "AABB.h"
 
-namespace vs::coll {
+namespace coll {
 
 // Bounding box assigned to a layer
 template<u32 L>

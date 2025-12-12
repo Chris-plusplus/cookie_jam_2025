@@ -7,7 +7,7 @@
 
 #include <systems/colliders/LayerMatrix.h>
 
-namespace vs::coll {
+namespace coll {
 
 constexpr std::vector<std::vector<u32>> LayerMatrix::get() {
 	return {

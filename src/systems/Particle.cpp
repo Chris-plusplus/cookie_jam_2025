@@ -8,7 +8,6 @@
 #include <Config.h>
 #include <components/Kill.h>
 
-namespace vs {
 
 void ParticleSystem::setup(Scene& scene, Entity particle, Vulkan& vulkan) {
 	static auto rng = std::mt19937(std::random_device{}());
@@ -104,4 +103,3 @@ void particleCollisions(ecs::Domain& domain) {
 }
 
 
-}

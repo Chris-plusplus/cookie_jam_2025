@@ -1,6 +1,5 @@
 #include <SoundManager.h>
 
-namespace vs {
 
 SoundManager::~SoundManager() {
 	audioManager->stop();
@@ -17,4 +16,3 @@ void SoundManager::init(const std::vector<std::string>& soundFiles) {
 	soundBank.loadInitialGroups();
 }
 
-}

@@ -6,7 +6,6 @@
 
 using namespace arch;
 
-namespace vs {
 
 struct AutoExplosionData {
 	bool working;
@@ -55,4 +54,3 @@ void AutoExplosionSystem::update(Scene& scene) {
 	}
 }
 
-}

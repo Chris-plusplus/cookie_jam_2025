@@ -4,7 +4,7 @@
 #include <archimedes/physics/components/Moveable.h>
 #include <LayerMatrixDef.h>
 
-namespace vs::coll {
+namespace coll {
 
 // simple rect collision
 bool AABBSystem::areColliding(const AABB& collider1, const AABB& collider2, const float2 t1Pos, const float2 t2Pos) {

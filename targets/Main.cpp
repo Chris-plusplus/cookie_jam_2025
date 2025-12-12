@@ -5,11 +5,11 @@
 int main() {
 	arch::Logger::init(arch::LogLevel::debug);
 
-	arch::Unique<arch::Application> application = arch::createUnique<vs::VulkanVs>();
+	arch::Unique<arch::Application> application = arch::createUnique<VulkanVs>();
 
 	auto engineConfig = arch::EngineConfig{
-		.windowWidth = (int)vs::windowWidth,
-		.windowHeight = (int)vs::windowHeight,
+		.windowWidth = (int)windowWidth,
+		.windowHeight = (int)windowHeight,
 		.windowTitle = "VulkanVs",
 		.backgroundColor = arch::Color(0, 0, 0, 0),
 		.renderingApi = arch::gfx::RenderingAPI::Nvrhi_VK

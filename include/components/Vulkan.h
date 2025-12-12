@@ -9,7 +9,6 @@
 
 using namespace arch;
 
-namespace vs {
 
 // Volcano component
 struct Vulkan {
@@ -45,4 +44,3 @@ struct Vulkan {
 	bool isRight;
 };
 
-}

@@ -10,7 +10,7 @@
 
 using namespace arch;
 
-namespace vs::coll {
+namespace coll {
 
 // layer collision matrix, simmilar to Unity's, but compile-time
 struct LayerMatrix {

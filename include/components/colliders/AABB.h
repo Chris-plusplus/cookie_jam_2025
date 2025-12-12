@@ -4,7 +4,7 @@
 
 using namespace arch;
 
-namespace vs::coll {
+namespace coll {
 
 // Bounding box
 struct AABB {

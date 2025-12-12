@@ -6,7 +6,6 @@
 
 using namespace arch;
 
-namespace vs {
 
 // particles behavior
 struct ParticleSystem {
@@ -14,4 +13,3 @@ struct ParticleSystem {
 	static void update(ecs::Domain& domain);
 };
 
-}

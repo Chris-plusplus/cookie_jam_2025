@@ -6,7 +6,7 @@
 
 using namespace arch;
 
-namespace vs::coll {
+namespace coll {
 
 // Behavior of AABB colliders
 class AABBSystem {

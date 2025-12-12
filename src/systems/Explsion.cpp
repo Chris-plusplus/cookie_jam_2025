@@ -12,7 +12,6 @@
 #include <archimedes/physics/components/Moveable.h>
 #include <chrono>
 
-namespace vs {
 
 void ExplosionSystem::makeText(Scene& scene) {
 	// settings
@@ -71,4 +70,3 @@ void ExplosionSystem::setupListener(Scene& scene, Entity vulkan1, Entity vulkan2
 	scene.domain().global<SoundManager>().audioManager->setListener(scene.domain(), listenerComp);
 }
 
-}

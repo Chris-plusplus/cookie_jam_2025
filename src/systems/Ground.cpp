@@ -3,7 +3,6 @@
 #include <Defaults.h>
 #include <components/colliders/LayeredAABB.h>
 
-namespace vs {
 
 // creates ground collider
 void GroundSystem::setup(Scene& scene) {
@@ -22,4 +21,3 @@ void GroundSystem::setup(Scene& scene) {
 	);
 }
 
-}

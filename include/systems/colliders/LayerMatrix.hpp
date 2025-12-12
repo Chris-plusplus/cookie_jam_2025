@@ -1,6 +1,6 @@
 #include "LayerMatrix.h"
 
-namespace vs::coll {
+namespace coll {
 
 consteval bool LayerMatrix::collides(u32 l1, u32 l2) {
 	auto matrix = LayerMatrix::get();

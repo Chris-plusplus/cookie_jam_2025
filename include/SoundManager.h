@@ -6,7 +6,6 @@
 
 using namespace arch;
 
-namespace vs {
 
 struct SoundManager {
 	audio::SoundDevice device;
@@ -19,4 +18,3 @@ struct SoundManager {
 	void init(const std::vector<std::string>& soundFiles);
 };
 
-}

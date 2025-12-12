@@ -7,8 +7,6 @@ using namespace arch;
 
 // look for Config.cpp, where values can be set
 
-namespace vs {
-
 extern u32 windowWidth;
 extern u32 windowHeight;
 
@@ -22,4 +20,3 @@ struct Layer {
 
 extern std::string explosionSoundPath;
 
-}

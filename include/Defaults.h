@@ -5,8 +5,6 @@
 
 using namespace arch;
 
-namespace vs {
-
 // returns default uniform buffer, containing orthographic projection matrix
 Ref<gfx::buffer::Buffer> defaultUniformBuffer();
 
@@ -21,6 +19,4 @@ std::vector<u32>& defaultIndices();
 // returns Z axis for rotations
 constexpr float3 zAxis() {
 	return float3{0, 0, 1};
-}
-
 }

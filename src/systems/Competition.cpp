@@ -6,7 +6,6 @@
 #include <archimedes/Text.h>
 #include <archimedes/Font.h>
 
-namespace vs {
 
 void CompetitionSystem::setup(Scene& scene) {
 	auto subSetup = [&scene]<bool IsRight>(std::bool_constant<IsRight>) {
@@ -71,4 +70,3 @@ void CompetitionSystem::update(Scene& scene) {
 	subUpdate(std::false_type{});
 }
 
-}

@@ -1,8 +1,6 @@
 #include <Defaults.h>
 #include <Config.h>
 
-namespace vs {
-
 // default uniform buffer with orthographic projection matrix
 Ref<gfx::buffer::Buffer> defaultUniformBuffer() {
 	struct UBO {
@@ -41,6 +39,4 @@ std::vector<Vertex>& defaultParticleVertices() {
 std::vector<u32>& defaultIndices() {
 	static std::vector<u32> value{0, 1, 2, 2, 1, 3};
 	return value;
-}
-
 }

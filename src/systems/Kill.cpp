@@ -2,7 +2,6 @@
 #include <components/Kill.h>
 #include <ranges>
 
-namespace vs {
 
 void KillSystem::update(Scene& scene) {
 	// killing from behind -> view iterators don't get invalidated
@@ -11,4 +10,3 @@ void KillSystem::update(Scene& scene) {
 	}
 }
 
-}

@@ -2,7 +2,6 @@
 
 #include <archimedes/Mmath.h>
 
-namespace vs {
 
 // Particle component
 template<bool IsRight>
@@ -14,4 +13,3 @@ struct Particle {
 	u32 collisionCounter = 0;
 };
 
-}

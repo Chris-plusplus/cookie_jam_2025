@@ -6,7 +6,6 @@
 
 using namespace arch;
 
-namespace vs {
 
 // behavior for steering auto explosion mechanism
 struct AutoExplosionSystem {
@@ -14,4 +13,3 @@ struct AutoExplosionSystem {
 	static void update(Scene& scene);
 };
 
-}

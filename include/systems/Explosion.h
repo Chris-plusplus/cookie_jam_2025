@@ -4,7 +4,6 @@
 
 using namespace arch;
 
-namespace vs {
 
 // handles explosions
 struct ExplosionSystem {
@@ -15,4 +14,3 @@ struct ExplosionSystem {
 	static void setupListener(Scene& scene, Entity vulkan1, Entity vulkan2);
 };
 
-}
