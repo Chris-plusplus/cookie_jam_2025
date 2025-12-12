@@ -20,6 +20,7 @@
 #include <Defaults.h>
 #include <systems/StaticText.h>
 #include <systems/MultilineText.h>
+#include <systems/SlotMachine.h>
 
 ecs::Entity textEntity;
 decltype(std::chrono::high_resolution_clock::now()) now;
@@ -81,10 +82,14 @@ void VulkanVs::init() {
 	);
 
 	now = std::chrono::high_resolution_clock::now();
+
+	SlotMachineSystem::setup(*scene);
 }
 
 void VulkanVs::update() {
 	Ref<Scene> scene = scene::SceneManager::get()->currentScene();
+
+	SlotMachineSystem::update(*scene);
 
 	// update physics & transforms
 	_physicsSystem->update();
@@ -102,7 +107,7 @@ void VulkanVs::update() {
 	// remove layer collision flags
 	coll::LayerSystem::removeFlags(scene->domain());
 
-	// update volcanos
+	// update volcanos`
 	VulkanSystem::update(*scene);
 	// update scores
 	CompetitionSystem::update(*scene);

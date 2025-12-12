@@ -1,18 +1,20 @@
+
 #pragma once
 #include <random>
 #include <vector>
 
 namespace slots {
 
-    enum class RewardType {
-        cucumber, // killer
-        catnip, // dowolny symbol
-        dry, // 20 pkt
-        sachet, // 50 pkt
-        feather, // 120 pkt
-        sardines, // 200 pkt
-        coin // życie
-    };
+enum class RewardType {
+	cucumber, // killer
+	catnip, // dowolny symbol
+	dry, // 20 pkt
+	sachet, // 50 pkt
+	feather, // 120 pkt
+	sardines, // 200 pkt
+	coin, // życie
+	_count
+};
 
     std::string rewardAsString(RewardType type);
 
