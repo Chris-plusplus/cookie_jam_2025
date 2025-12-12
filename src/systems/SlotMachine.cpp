@@ -43,7 +43,7 @@ void SlotMachineSystem::setup(Scene& scene) {
 		scene::components::TransformComponent{
 			.position = {windowWidth / 2, windowHeight / 2, -0.5},
 			.rotation = {0, 0, 0, 1},
-			.scale = {machineTexture->getWidth(), machineTexture->getHeight(), 0}
+			.scale = float3{machineTexture->getWidth(), machineTexture->getHeight(), 0} *0.9f
 		}
 	);
 	auto mesh = makeMesh(defaultCenterVertices(), defaultIndices());
@@ -98,7 +98,7 @@ void SlotMachineSystem::update(Scene& scene) {
 	if (input::Keyboard::space.pressed()) {
 		for (auto&& [slotObject] : scene.domain().view<SlotObject>().components()) {
 			if (slotObject.jolt == 0) {
-				slotObject.jolt = -1.f;
+				slotObject.jolt = -0.25f;
 			}
 		}
 	}
