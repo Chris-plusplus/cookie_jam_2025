@@ -10,7 +10,7 @@ Ref<gfx::Texture> makeTexture(std::string_view filename) {
 	int ignored;
 	int width;
 	int height;
-	stbi_set_flip_vertically_on_load(true);
+	stbi_set_flip_vertically_on_load(false);
 	// load texture from file
 	u8* loadedTextureData = stbi_load(filename.data(), &width, &height, &ignored, STBI_rgb_alpha);
 
