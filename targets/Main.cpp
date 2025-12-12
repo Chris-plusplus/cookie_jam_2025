@@ -1,6 +1,7 @@
 #include <archimedes/Engine.h>
 #include <VulkanVs.h>
 #include <Config.h>
+#include <slots/SlotsManager.h>
 
 int main() {
 	arch::Logger::init(arch::LogLevel::debug);
@@ -15,6 +16,15 @@ int main() {
 		.renderingApi = arch::gfx::RenderingAPI::Nvrhi_VK
 	};
 
-	auto engine = arch::Engine(engineConfig, application);
-	engine.start();
+	slots::SlotsManager slotsManager;
+	// auto engine = arch::Engine(engineConfig, application);
+	// engine.start();
+	for (int i = 0; i < 10; i++) {
+		Logger::info("{}", slots::rewardAsString(slotsManager.generateReward()));
+	}
+	slotsManager.multiplyProbability(slots::RewardType::cucumber, 1000);
+	Logger::info("Updated probability for cucumber");
+	for (int i = 0; i < 10; i++) {
+		Logger::info("{}", slots::rewardAsString(slotsManager.generateReward()));
+	}
 }
