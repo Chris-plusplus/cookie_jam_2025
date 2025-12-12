@@ -66,7 +66,7 @@ void VulkanSystem::setup(Entity vulkan, input::Key& key, bool isRight) {
 			.eDist = FloatDist(0.25f, 0.4f), // bounciness
 			.texture = vulkanTexture,
 			.particlePipeline = particlePipeline,
-			.particleMesh = makeMesh(std::span(defaultParticleVertices()), std::span(defaultIndices())),
+			.particleMesh = makeMesh(std::span(defaultCenterVertices()), std::span(defaultIndices())),
 			.particleOrigin = transform.position + float3{texWidth * scale / 2.f, 0, 0},
 			.isRight = isRight
 		}
