@@ -27,11 +27,11 @@ int PointsCounter::count(const std::vector<int>& wyniki) {
     //Sumowanie punktów
     sum+=20*ct[2]+50*ct[3]+120*ct[4]+200*ct[5];
     //TODO HP+=ct[6]
-    if (ct[2]>3){sum+=60;}
-    if (ct[3]>3){sum+=150;}
-    if (ct[4]>3){sum+=360;}
-    if (ct[5]>3){sum+=600;}
-    if (ct[6]>3){}//TODO HP+=6
+    if (ct[2]>2){sum+=60;}
+    if (ct[3]>2){sum+=150;}
+    if (ct[4]>2){sum+=360;}
+    if (ct[5]>2){sum+=600;}
+    if (ct[6]>2){}//TODO HP+=6
     score+=sum;
     return sum;
 };
