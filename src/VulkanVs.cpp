@@ -1,18 +1,7 @@
 #include <VulkanVs.h>
 #include <MakeTexture.h>
-#include <LayerMatrixDef.h>
-#include <systems/colliders/LayerSystem.h>
 #include <archimedes/Font.h>
 #include <archimedes/Scene.h>
-#include <systems/Vulkan.h>
-#include <systems/Ground.h>
-#include <systems/Competition.h>
-#include <systems/colliders/AABBSystem.h>
-#include <systems/Particle.h>
-#include <components/Particle.h>
-#include <components/colliders/LayeredAABB.h>
-#include <systems/Explosion.h>
-#include <systems/AutoExplosion.h>
 #include <systems/Kill.h>
 #include <Config.h>
 #include <SoundManager.h>
@@ -57,29 +46,7 @@ void VulkanVs::init() {
 
 	// volcano setup
 	auto vulkan1 = scene->newEntity();
-	VulkanSystem::setup(vulkan1, leftVulkanKey, false);
 	auto vulkan2 = scene->newEntity();
-	VulkanSystem::setup(vulkan2, rightVulkanKey, true);
-
-	AutoExplosionSystem::setup(vulkan1, input::Keyboard::one, {&leftVulkanKey, &rightVulkanKey});
-	AutoExplosionSystem::setup(vulkan2, input::Keyboard::two, {&leftVulkanKey, &rightVulkanKey});
-
-	ExplosionSystem::setupListener(*scene, vulkan1, vulkan2);
-
-	GroundSystem::setup(*scene);
-
-	CompetitionSystem::setup(*scene);
-
-	StaticTextSystem::setup(*scene,
-		U"Lewy shift",
-		*font::FontDB::get()["Arial"]->italic(), 100,
-		{10, vulkan1.getComponent<Vulkan>().particleOrigin.y + 25, -0.2f}
-	);
-	StaticTextSystem::setup(*scene,
-		U"Enter",
-		*font::FontDB::get()["Arial"]->italic(), 100,
-		{windowWidth - 300, vulkan2.getComponent<Vulkan>().particleOrigin.y + 25, -0.2f}
-	);
 
 	now = std::chrono::high_resolution_clock::now();
 
@@ -93,27 +60,19 @@ void VulkanVs::update() {
 
 	// update physics & transforms
 	_physicsSystem->update();
-	TransformUpdateSystem::update(scene->domain());
 
 	// update layer collisions
-	coll::LayerSystem::update(scene->domain());
 
 	// update particles & explosions
-	ParticleSystem::update(scene->domain());
-	ExplosionSystem::updateText(scene->domain());
 
 	// kill flagged entities
 	KillSystem::update(*scene);
 	// remove layer collision flags
-	coll::LayerSystem::removeFlags(scene->domain());
 
 	// update volcanos`
-	VulkanSystem::update(*scene);
 	// update scores
-	CompetitionSystem::update(*scene);
 
 	// update autoexplosion
-	AutoExplosionSystem::update(*scene);
 
 	// synchronize audio
 	scene->domain().global<SoundManager>().audioManager->synchronize(scene->domain());
