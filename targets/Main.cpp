@@ -17,8 +17,8 @@ int main() {
 	};
 
 	slots::RewardGenerator slotsManager;
-	// auto engine = arch::Engine(engineConfig, application);
-	// engine.start();
+	auto engine = arch::Engine(engineConfig, application);
+	engine.start();
 	for (int i = 0; i < 10; i++) {
 		Logger::info("{}", slots::rewardAsString(slotsManager.generateReward()));
 	}
