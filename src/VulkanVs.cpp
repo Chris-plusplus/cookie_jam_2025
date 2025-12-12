@@ -56,7 +56,7 @@ void VulkanVs::init() {
 using namespace std::chrono_literals;
 
 void VulkanVs::update() {
-	static auto prevTime = std::chrono::high_resolution_clock::now();
+	//static auto prevTime = std::chrono::high_resolution_clock::now();
 
 	Ref<Scene> scene = scene::SceneManager::get()->currentScene();
 
@@ -85,7 +85,7 @@ void VulkanVs::update() {
 		MultilineTextSystem::remove(*scene, textEntity);
 	}
 
-	std::this_thread::sleep_for(16.6666ms - (std::chrono::high_resolution_clock::now() - prevTime));
-	prevTime = std::chrono::high_resolution_clock::now();
+	//std::this_thread::sleep_for(16.6666ms - (std::chrono::high_resolution_clock::now() - prevTime));
+	//prevTime = std::chrono::high_resolution_clock::now();
 }
 

@@ -10,6 +10,8 @@
 #include <slots/SlotObject.h>
 #include <archimedes/Input.h>
 
+using namespace std::chrono_literals;
+
 void SlotMachineSystem::setup(Scene& scene) {
 	auto machine = scene.newEntity();
 	auto&& slotMachine = machine.addComponent<SlotMachine>();
@@ -95,30 +97,47 @@ void SlotMachineSystem::setup(Scene& scene) {
 }
 
 void SlotMachineSystem::update(Scene& scene) {
-	if (input::Keyboard::space.pressed()) {
+	auto&& slotMachine = scene.domain().components<SlotMachine>().front();
+	if (input::Keyboard::space.pressed() && !slotMachine.leverAnimation) {
+		slotMachine.leverAnimation = true;
+
 		for (auto&& [slotObject] : scene.domain().view<SlotObject>().components()) {
 			if (slotObject.jolt == 0) {
-				slotObject.jolt = -0.25f;
+				slotObject.jolt = -10000.f;
 			}
 		}
+
+
 	}
 	updateAnimation(scene);
 }
 
 void SlotMachineSystem::updateAnimation(Scene& scene) {
+	static auto prevTime = std::chrono::high_resolution_clock::now();
+	const auto now = std::chrono::high_resolution_clock::now();
+	auto deltaTime = (float)std::chrono::duration_cast<decltype(0.0s)>(now - prevTime).count();
+	prevTime = now;
+
 	auto&& rewardGenerator = scene.domain().global<slots::RewardGenerator>();
 	auto&& slotMachine = scene.domain().components<SlotMachine>().front();
 	for (auto&& [entity, transform, slotObject] : scene.domain().view<scene::components::TransformComponent, SlotObject>().all()) {
+		float adjSpeed = slotObject.speed * deltaTime;
+		float adjAcc = slotObject.acceleration * deltaTime;
+		float adjJolt = slotObject.jolt * deltaTime;
+
 		// update physics
-		transform.position.y += slotObject.speed;
-		slotObject.speed += slotObject.acceleration;
-		slotObject.acceleration += slotObject.jolt;
+		transform.position.y += adjSpeed;
+		slotObject.speed += adjAcc;
+		slotObject.acceleration += adjJolt;
+
+		//Logger::debug("{}", slotObject.speed);
 
 		// STOP if hits min speed
 		if (slotObject.jolt > 0 && slotObject.speed >= slotObject.minSpeed) {
 			slotObject.speed = 0;
 			slotObject.acceleration = 0;
 			slotObject.jolt = 0;
+			slotMachine.leverAnimation = false;
 			Logger::debug("STOP");
 		}
 
@@ -136,5 +155,9 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 
 			scene.domain().getComponent<scene::components::MeshComponent>(entity).pipeline = slotMachine.symbols[(int)rewardGenerator.generateReward()];
 		}
+	}
+
+	if (slotMachine.leverAnimation) {
+
 	}
 }
