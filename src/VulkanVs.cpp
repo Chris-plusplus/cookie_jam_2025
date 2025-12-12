@@ -53,7 +53,11 @@ void VulkanVs::init() {
 	SlotMachineSystem::setup(*scene);
 }
 
+using namespace std::chrono_literals;
+
 void VulkanVs::update() {
+	static auto prevTime = std::chrono::high_resolution_clock::now();
+
 	Ref<Scene> scene = scene::SceneManager::get()->currentScene();
 
 	SlotMachineSystem::update(*scene);
@@ -80,5 +84,8 @@ void VulkanVs::update() {
 	if (std::chrono::high_resolution_clock::now() - now > std::chrono::seconds(3)) {
 		MultilineTextSystem::remove(*scene, textEntity);
 	}
+
+	std::this_thread::sleep_for(16.6666ms - (std::chrono::high_resolution_clock::now() - prevTime));
+	prevTime = std::chrono::high_resolution_clock::now();
 }
 
