@@ -10,6 +10,8 @@
 #include <slots/SlotObject.h>
 #include <archimedes/Input.h>
 
+
+
 void SlotMachineSystem::setup(Scene& scene) {
 	auto machine = scene.newEntity();
 	auto&& slotMachine = machine.addComponent<SlotMachine>();
@@ -103,9 +105,11 @@ void SlotMachineSystem::update(Scene& scene) {
 	updateAnimation(scene);
 }
 
+slots::SlotsManager slotsManager;
+
 void SlotMachineSystem::updateAnimation(Scene& scene) {
 	auto&& slotMachine = scene.domain().components<SlotMachine>().front();
-	for (auto&& [transform, slotObject] : scene.domain().view<scene::components::TransformComponent, SlotObject>().components()) {
+	for (auto&& [entity, transform, slotObject] : scene.domain().view<scene::components::TransformComponent, SlotObject>().all()) {
 		// update physics
 		transform.position.y += slotObject.speed;
 		slotObject.speed += slotObject.acceleration;
@@ -130,6 +134,8 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 			auto diff = transform.position.y - slotMachine.lowerBound;
 			transform.position.y = slotMachine.upperBound + diff;
 			Logger::debug("move slot to {1} {0}", slotMachine.upperBound, transform.position.y);
+
+			scene.domain().getComponent<scene::components::MeshComponent>(entity).pipeline = slotMachine.symbols[(int)slotsManager.generateReward()];
 		}
 	}
 }
