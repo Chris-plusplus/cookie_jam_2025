@@ -22,6 +22,8 @@
 #include <systems/MultilineText.h>
 #include <systems/SlotMachine.h>
 
+#include "lifes/LifeManagerSystem.h"
+
 ecs::Entity textEntity;
 decltype(std::chrono::high_resolution_clock::now()) now;
 
@@ -84,6 +86,8 @@ void VulkanVs::init() {
 	now = std::chrono::high_resolution_clock::now();
 
 	SlotMachineSystem::setup(*scene);
+
+	LifeManagerSystem::setup(*scene);
 }
 
 void VulkanVs::update() {

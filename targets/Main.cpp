@@ -17,14 +17,14 @@ int main() {
 	};
 
 	slots::RewardGenerator slotsManager;
-	// auto engine = arch::Engine(engineConfig, application);
-	// engine.start();
-	for (int i = 0; i < 10; i++) {
-		Logger::info("{}", slots::rewardAsString(slotsManager.generateReward()));
-	}
-	slotsManager.multiplyProbability(slots::RewardType::cucumber, 1000);
-	Logger::info("Updated probability for cucumber");
-	for (int i = 0; i < 10; i++) {
-		Logger::info("{}", slots::rewardAsString(slotsManager.generateReward()));
-	}
+	auto engine = arch::Engine(engineConfig, application);
+	engine.start();
+	// for (int i = 0; i < 10; i++) {
+	// 	Logger::info("{}", slots::rewardAsString(slotsManager.generateReward()));
+	// }
+	// slotsManager.multiplyProbability(slots::RewardType::cucumber, 1000);
+	// Logger::info("Updated probability for cucumber");
+	// for (int i = 0; i < 10; i++) {
+	// 	Logger::info("{}", slots::rewardAsString(slotsManager.generateReward()));
+	// }
 }
