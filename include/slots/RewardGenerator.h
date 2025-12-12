@@ -16,7 +16,7 @@ namespace slots {
 
     std::string rewardAsString(RewardType type);
 
-    class SlotsManager {
+    class RewardGenerator {
         const std::vector<int> _startingWeightsInt {
             1, //cucumber
             10, //catnip
@@ -40,7 +40,7 @@ namespace slots {
     public:
         RewardType generateReward();
 
-        SlotsManager();
+        RewardGenerator();
 
         void multiplyProbability(RewardType type, float probability);
 

@@ -1,4 +1,4 @@
-#include <slots/SlotsManager.h>
+#include <slots/RewardGenerator.h>
 
 namespace slots {
     std::string rewardAsString(RewardType type) {
@@ -21,7 +21,7 @@ namespace slots {
         return "";
     }
 
-    void SlotsManager::_initializeWeights() {
+    void RewardGenerator::_initializeWeights() {
         int sum = 0;
         for (auto& w : _startingWeightsInt) {
             sum += w;
@@ -31,22 +31,22 @@ namespace slots {
         }
     }
 
-    void SlotsManager::_generateDistribution() {
+    void RewardGenerator::_generateDistribution() {
         _distribution = std::make_shared<std::discrete_distribution<>>(_weights.begin(), _weights.end());
     }
 
-    RewardType SlotsManager::generateReward() {
+    RewardType RewardGenerator::generateReward() {
         int index = _distribution->operator()(*_randomGenerator);
         return static_cast<RewardType>(index);
     }
 
-    SlotsManager::SlotsManager() {
+    RewardGenerator::RewardGenerator() {
         _initializeWeights();
         _randomGenerator = std::make_shared<std::mt19937>(_randomDevice());
         _generateDistribution();
     }
 
-    void SlotsManager::multiplyProbability(RewardType type, float probability) {
+    void RewardGenerator::multiplyProbability(RewardType type, float probability) {
         if (probability < 0) {
             throw std::invalid_argument("probability must be non-negative");
         }

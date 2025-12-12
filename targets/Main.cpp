@@ -1,7 +1,7 @@
 #include <archimedes/Engine.h>
 #include <VulkanVs.h>
 #include <Config.h>
-#include <slots/SlotsManager.h>
+#include <slots/RewardGenerator.h>
 
 int main() {
 	arch::Logger::init(arch::LogLevel::debug);
@@ -16,7 +16,7 @@ int main() {
 		.renderingApi = arch::gfx::RenderingAPI::Nvrhi_VK
 	};
 
-	slots::SlotsManager slotsManager;
+	slots::RewardGenerator slotsManager;
 	// auto engine = arch::Engine(engineConfig, application);
 	// engine.start();
 	for (int i = 0; i < 10; i++) {
