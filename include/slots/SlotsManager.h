@@ -1,48 +1,50 @@
+
 #pragma once
 #include <random>
 #include <vector>
 
 namespace slots {
 
-    enum class RewardType {
-        cucumber, // killer
-        catnip, // dowolny symbol
-        dry, // 20 pkt
-        sachet, // 50 pkt
-        feather, // 120 pkt
-        sardines, // 200 pkt
-        coin // życie
-    };
+enum class RewardType {
+	cucumber, // killer
+	catnip, // dowolny symbol
+	dry, // 20 pkt
+	sachet, // 50 pkt
+	feather, // 120 pkt
+	sardines, // 200 pkt
+	coin, // życie
+	_count
+};
 
-    std::string rewardAsString(RewardType type);
+std::string rewardAsString(RewardType type);
 
-    class SlotsManager {
-        const std::vector<int> _startingWeightsInt {
-            1, //cucumber
-            10, //catnip
-            40, //dry
-            20, //sachet
-            10, //feather
-            5, //sardines
-            10, //coin
-        };
+class SlotsManager {
+	const std::vector<int> _startingWeightsInt{
+		1, //cucumber
+		10, //catnip
+		40, //dry
+		20, //sachet
+		10, //feather
+		5, //sardines
+		10, //coin
+	};
 
-        std::vector<float> _weights;
+	std::vector<float> _weights;
 
-        std::random_device _randomDevice;
-        std::shared_ptr<std::mt19937> _randomGenerator;
-        std::shared_ptr<std::discrete_distribution<>> _distribution;
+	std::random_device _randomDevice;
+	std::shared_ptr<std::mt19937> _randomGenerator;
+	std::shared_ptr<std::discrete_distribution<>> _distribution;
 
-        void _initializeWeights();
+	void _initializeWeights();
 
-        void _generateDistribution();
+	void _generateDistribution();
 
-    public:
-        RewardType generateReward();
+public:
+	RewardType generateReward();
 
-        SlotsManager();
+	SlotsManager();
 
-        void multiplyProbability(RewardType type, float probability);
+	void multiplyProbability(RewardType type, float probability);
 
-    };
+};
 }

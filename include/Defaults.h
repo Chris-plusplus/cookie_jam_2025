@@ -11,7 +11,7 @@ Ref<gfx::buffer::Buffer> defaultUniformBuffer();
 // returns default vertices, for displaying sprites
 std::vector<Vertex>& defaultVertices();
 // returns vertices for particles (makes rotations easier)
-std::vector<Vertex>& defaultParticleVertices();
+std::vector<Vertex>& defaultCenterVertices();
 
 // returns default indices, for displaying sprites
 std::vector<u32>& defaultIndices();

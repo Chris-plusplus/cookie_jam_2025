@@ -25,7 +25,7 @@ std::vector<Vertex>& defaultVertices() {
 }
 
 // default vertices for particles (makes rotating easier)
-std::vector<Vertex>& defaultParticleVertices() {
+std::vector<Vertex>& defaultCenterVertices() {
 	static std::vector<Vertex> value{
 		{{0.5f, -0.5f, 0.f}, {0.f, 0.f}},
 		{{-0.5f, -0.5f, 0.f}, {1.f, 0.f}},
