@@ -1,7 +1,7 @@
 #include <components/SlotMachine.h>
 #include <systems/SlotMachine.h>
 #include <Defaults.h>
-#include <slots/SlotsManager.h>
+#include <slots/RewardGenerator.h>
 #include <MakeTexture.h>
 #include <MakeMesh.h>
 #include <Config.h>
@@ -10,12 +10,12 @@
 #include <slots/SlotObject.h>
 #include <archimedes/Input.h>
 
-
-
 void SlotMachineSystem::setup(Scene& scene) {
 	auto machine = scene.newEntity();
 	auto&& slotMachine = machine.addComponent<SlotMachine>();
 	auto&& renderer = *gfx::Renderer::current();
+
+	scene.domain().global<slots::RewardGenerator>();
 
 	float2 slotTexSize{};
 	// init slots' pipelines
@@ -105,9 +105,8 @@ void SlotMachineSystem::update(Scene& scene) {
 	updateAnimation(scene);
 }
 
-slots::SlotsManager slotsManager;
-
 void SlotMachineSystem::updateAnimation(Scene& scene) {
+	auto&& rewardGenerator = scene.domain().global<slots::RewardGenerator>();
 	auto&& slotMachine = scene.domain().components<SlotMachine>().front();
 	for (auto&& [entity, transform, slotObject] : scene.domain().view<scene::components::TransformComponent, SlotObject>().all()) {
 		// update physics
@@ -135,7 +134,7 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 			transform.position.y = slotMachine.upperBound + diff;
 			Logger::debug("move slot to {1} {0}", slotMachine.upperBound, transform.position.y);
 
-			scene.domain().getComponent<scene::components::MeshComponent>(entity).pipeline = slotMachine.symbols[(int)slotsManager.generateReward()];
+			scene.domain().getComponent<scene::components::MeshComponent>(entity).pipeline = slotMachine.symbols[(int)rewardGenerator.generateReward()];
 		}
 	}
 }
