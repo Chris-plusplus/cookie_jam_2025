@@ -4,5 +4,5 @@
 class PointsCounter {
 public:
     int score=0;
-    int count(std::vector<int>);
+    int count(const std::vector<int>&);
 };
