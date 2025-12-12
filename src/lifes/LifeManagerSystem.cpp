@@ -20,18 +20,12 @@ void LifeManagerSystem::setup(Scene& scene) {
     slotTexSize.y = containerTexture->getHeight();
     auto&& transform = manager.addComponent(
         scene::components::TransformComponent{
-            .position = {0, 0, -0.5},
+            .position = {containerTexture->getWidth() / 2, windowHeight - containerTexture->getHeight() / 2, -0.5},
             .rotation = {0, 0, 0, 1},
-            .scale = {containerTexture->getWidth(), containerTexture->getHeight(), 0}
+            .scale = {containerTexture->getWidth() * 0.8, containerTexture->getHeight() * 0.8, 0}
         }
     );
-    auto mesh = makeMesh(defaultCenterVertices(), defaultIndices());
-    auto&& meshComp = manager.addComponent(
-        scene::components::MeshComponent{
-            .mesh = mesh,
-            .pipeline = lifeManager.containerPipeline
-        }
-    );
+
     lifeManager.containerPipeline = renderer.getPipelineManager()->create(
             gfx::pipeline::Pipeline::Desc{
                 .vertexShaderPath = "shaders/vertex_default.glsl",
@@ -40,7 +34,13 @@ void LifeManagerSystem::setup(Scene& scene) {
                 .buffers = {defaultUniformBuffer()},
             }
     );
-
+    auto mesh = makeMesh(defaultCenterVertices(), defaultIndices());
+    auto&& meshComp = manager.addComponent(
+        scene::components::MeshComponent{
+            .mesh = mesh,
+            .pipeline = lifeManager.containerPipeline
+        }
+    );
     auto&& emptyCoinTexture = makeTexture(std::string_view("textures/Asset_szkice/Life_token_nieaktywny.png"));
     slotTexSize.x = emptyCoinTexture->getWidth();
     slotTexSize.y = emptyCoinTexture->getHeight();
