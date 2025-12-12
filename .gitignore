@@ -1,0 +1,12 @@
+.vs/
+out/
+build/
+conan_files/
+.idea/
+.run/
+*.bat
+*.sh
+run/Logs/*.log
+run/msdf_cache/
+run/*.exe
+run/*.pdb
