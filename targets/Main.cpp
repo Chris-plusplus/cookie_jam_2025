@@ -4,6 +4,7 @@
 #include <slots/RewardGenerator.h>
 
 int main() {
+	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 	arch::Logger::init(arch::LogLevel::debug);
 
 	arch::Unique<arch::Application> application = arch::createUnique<VulkanVs>();
