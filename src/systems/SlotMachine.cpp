@@ -242,7 +242,23 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 	}
 
 	if (slotMachine.leverAnimationSpeed != 0) {
+		// lever
+		auto&& [leverTransform] = scene.domain().view<scene::components::TransformComponent, LeverFlag>().components().front();
+		auto adjLAS = slotMachine.leverAnimationSpeed * deltaTime;
+		slotMachine.leverAnimation += adjLAS;
 
+		if (slotMachine.leverAnimation >= 1) {
+			slotMachine.leverAnimationSpeed = -5;
+			slotMachine.leverAnimation = 1;
+		} else if (slotMachine.leverAnimation < 0) {
+			slotMachine.leverAnimationSpeed = 0;
+			slotMachine.leverAnimation = 0;
+		}
+
+		auto angle = -std::lerp(0.f, std::numbers::pi_v<float> / 2.f, slotMachine.leverAnimation);
+		//Logger::debug("angle {}", angle);
+		//Logger::debug("anim {}", slotMachine.leverAnimation);
+		leverTransform.rotation = glm::angleAxis(angle, zAxis()) * glm::quat(0, 0, 0, 1);
 	}
 
 	auto&& [pawTransform, pawComp] = scene.domain().view<scene::components::TransformComponent, Paw>().components().front();
@@ -262,26 +278,6 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 			slotMachine.pawAnimation = 0;
 		}
 		pawTransform.position.y = pawComp.originalY - slotMachine.pawAnimation * pawComp.movementScale;
-
-		// lever
-		auto&& [leverTransform] = scene.domain().view<scene::components::TransformComponent, LeverFlag>().components().front();
-		auto adjLAS = slotMachine.leverAnimationSpeed * deltaTime;
-		slotMachine.leverAnimation += adjLAS;
-
-		if (slotMachine.leverAnimation >= 1) {
-			slotMachine.leverAnimationSpeed = -5;
-			slotMachine.leverAnimation = 1;
-		} else if (slotMachine.leverAnimation < 0) {
-			slotMachine.leverAnimationSpeed = 0;
-			slotMachine.leverAnimation = 0;
-		}
-
-
-
-		auto angle = -std::lerp(0.f, std::numbers::pi_v<float> / 2.f, slotMachine.leverAnimation);
-		//Logger::debug("angle {}", angle);
-		//Logger::debug("anim {}", slotMachine.leverAnimation);
-		leverTransform.rotation = glm::angleAxis(angle, zAxis()) * glm::quat(0, 0, 0, 1);
 	}
 	if (pawComp.waiting && now - pawComp.prevTime > pawComp.waitTime) {
 		slotMachine.pawAnimationSpeed = -5;
