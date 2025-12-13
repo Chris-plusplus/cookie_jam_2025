@@ -29,6 +29,7 @@ struct Paw {
 
 void SlotMachineSystem::setup(Scene& scene) {
 	auto machine = scene.newEntity();
+	auto mesh = makeMesh(defaultCenterVertices(), defaultIndices());
 	auto&& slotMachine = machine.addComponent<SlotMachine>();
 	auto&& renderer = *gfx::Renderer::current();
 
@@ -51,33 +52,58 @@ void SlotMachineSystem::setup(Scene& scene) {
 				.buffers = {defaultUniformBuffer()},
 			}
 			);
-
 	}
 
-	// init machine sprite
-	auto machineTexture = makeTexture("textures/slotMachine.png");
-	auto&& transform = machine.addComponent(
-		scene::components::TransformComponent{
-			.position = {windowWidth / 2, windowHeight / 2, -0.5},
-			.rotation = {0, 0, 0, 1},
-			.scale = float3{machineTexture->getWidth(), machineTexture->getHeight(), 0} *0.9f
-		}
-	);
-	auto mesh = makeMesh(defaultCenterVertices(), defaultIndices());
-	auto pipeline = renderer.getPipelineManager()->create(
-		gfx::pipeline::Pipeline::Desc{
-			.vertexShaderPath = "shaders/vertex_default.glsl",
-			.fragmentShaderPath = "shaders/fragment_default.glsl",
-			.textures = {std::move(machineTexture)},
-			.buffers = {defaultUniformBuffer()},
-		}
+	{ // init machine sprite
+		auto machineTexture = makeTexture("textures/slotMachine.png");
+		auto&& transform = machine.addComponent(
+			scene::components::TransformComponent{
+				.position = {windowWidth / 2, windowHeight / 2, -0.5},
+				.rotation = {0, 0, 0, 1},
+				.scale = float3{machineTexture->getWidth(), machineTexture->getHeight(), 0} *0.9f
+			}
 		);
-	auto&& meshComp = machine.addComponent(
-		scene::components::MeshComponent{
-			.mesh = mesh,
-			.pipeline = pipeline
-		}
-	);
+		auto pipeline = renderer.getPipelineManager()->create(
+			gfx::pipeline::Pipeline::Desc{
+				.vertexShaderPath = "shaders/vertex_default.glsl",
+				.fragmentShaderPath = "shaders/fragment_default.glsl",
+				.textures = {std::move(machineTexture)},
+				.buffers = {defaultUniformBuffer()},
+			}
+			);
+		auto&& meshComp = machine.addComponent(
+			scene::components::MeshComponent{
+				.mesh = mesh,
+				.pipeline = pipeline
+			}
+		);
+	}
+	{ // init cat sprite
+		auto cat = scene.newEntity();
+		auto catTexture = makeTexture("textures/catHead.png");
+		auto&& transform = cat.addComponent(
+			scene::components::TransformComponent{
+				.position = {windowWidth / 2, catTexture->getHeight() / 2, -0.51},
+				.rotation = {0, 0, 0, 1},
+				.scale = float3{catTexture->getWidth(), catTexture->getHeight(), 0}
+			}
+		);
+		auto mesh = makeMesh(defaultCenterVertices(), defaultIndices());
+		auto pipeline = renderer.getPipelineManager()->create(
+			gfx::pipeline::Pipeline::Desc{
+				.vertexShaderPath = "shaders/vertex_default.glsl",
+				.fragmentShaderPath = "shaders/fragment_default.glsl",
+				.textures = {std::move(catTexture)},
+				.buffers = {defaultUniformBuffer()},
+			}
+			);
+		auto&& meshComp = cat.addComponent(
+			scene::components::MeshComponent{
+				.mesh = mesh,
+				.pipeline = pipeline
+			}
+		);
+	}
 
 	{ // init slots objects
 		auto file = std::ifstream("slotConfig3.txt");
