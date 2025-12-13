@@ -3,6 +3,7 @@
 #include <archimedes/Ref.h>
 #include <vector>
 #include <archimedes/Gfx.h>
+#include <archimedes/Scene.h>
 #include <slots/RewardGenerator.h>
 
 using namespace arch;
@@ -25,5 +26,5 @@ struct SlotMachine {
 	float pawAnimation = 0;
 
 	std::vector<int> drawn;
-	std::function<int(const std::vector<int>&)> onDrawn;
+	std::function<int(Scene&, const std::vector<int>&)> onDrawn;
 };

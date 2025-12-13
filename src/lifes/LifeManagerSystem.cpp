@@ -85,7 +85,6 @@ void LifeManagerSystem::setup(Scene& scene) {
 		);
 	lifeManager.containerX = lifeManager.containerWidth / 2;
 	lifeManager.containerY = windowHeight - lifeManager.containerHeight / 2;
-	Logger::info("y = {}", lifeManager.containerY);
 	lifeManager.containerScaleX = 0.9;
 	lifeManager.containerScaleY = 0.9;
 	lifeManager.coinScaleX = 0.8;
