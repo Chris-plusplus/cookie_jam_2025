@@ -12,10 +12,11 @@
 #include <systems/SlotMachine.h>
 #include <MakeMesh.h>
 
+#include "PointsCounter.h"
 #include "lifes/LifeManagerSystem.h"
 
-ecs::Entity textEntity;
-decltype(std::chrono::high_resolution_clock::now()) now;
+//ecs::Entity textEntity = ecs::nullEntity;
+decltype(std::chrono::high_resolution_clock::now()) now{};
 
 Unique<ecs::Domain> globalDomain;
 Ref<Scene> mainScene;
@@ -55,6 +56,8 @@ void VulkanVs::init() {
 	scene->domain().global<SoundManager>().init({explosionSoundPath});
 
 	now = std::chrono::high_resolution_clock::now();
+
+	PointsCounter::setup(*scene);
 
 	SlotMachineSystem::setup(*scene);
 
@@ -100,19 +103,16 @@ void VulkanVs::update() {
 	if (scene == mainScene) {
 		//static auto prevTime = std::chrono::high_resolution_clock::now();
 
-
+  PointsCounter::update(*scene);
+  
 		SlotMachineSystem::update(*scene);
 		LifeManagerSystem::update(*scene);
 
-		// synchronize audio
-		scene->domain().global<SoundManager>().audioManager->synchronize(scene->domain());
+	// synchronize audio
+	scene->domain().global<SoundManager>().audioManager->synchronize(scene->domain());
 
-		if (std::chrono::high_resolution_clock::now() - now > std::chrono::seconds(3)) {
-			MultilineTextSystem::remove(*scene, textEntity);
-		}
-
-		//std::this_thread::sleep_for(16.6666ms - (std::chrono::high_resolution_clock::now() - prevTime));
-		//prevTime = std::chrono::high_resolution_clock::now();
-	}
+	/*if (std::chrono::high_resolution_clock::now() - now > std::chrono::seconds(3)) {
+		MultilineTextSystem::remove(*scene, textEntity);
+	}*/
 }
 
