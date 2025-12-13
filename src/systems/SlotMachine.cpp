@@ -9,8 +9,14 @@
 #include <slots/SlotFlag.h>
 #include <slots/SlotObject.h>
 #include <archimedes/Input.h>
+#include <cmath>
+#include <numbers>
 
 using namespace std::chrono_literals;
+
+struct LeverFlag {
+	static constexpr bool flagComponent = true;
+};
 
 void SlotMachineSystem::setup(Scene& scene) {
 	auto machine = scene.newEntity();
@@ -94,12 +100,42 @@ void SlotMachineSystem::setup(Scene& scene) {
 			}
 		}
 	}
+
+	// init lever
+	auto lever = scene.newEntity();
+	lever.addComponent<LeverFlag>();
+	float3 leverPos{0, 0, -0.05};
+	{
+		auto file = std::ifstream("leverPos.txt");
+		file >> leverPos.x >> leverPos.y;
+	}
+	auto&& leverTex = makeTexture("textures/lever.png");
+	auto&& leverT = lever.addComponent(
+		scene::components::TransformComponent{
+			.position = leverPos,
+			.rotation = {0, 0, 0, 1},
+			.scale = float3(leverTex->getWidth(), leverTex->getHeight(), 0)
+		}
+	);
+	auto&& leverMesh = lever.addComponent(
+		scene::components::MeshComponent{
+			.mesh = mesh,
+			.pipeline = renderer.getPipelineManager()->create(
+				gfx::pipeline::Pipeline::Desc{
+					.vertexShaderPath = "shaders/vertex_default.glsl",
+					.fragmentShaderPath = "shaders/fragment_default.glsl",
+					.textures = {leverTex},
+					.buffers = {defaultUniformBuffer()},
+				}
+				)
+		}
+	);
 }
 
 void SlotMachineSystem::update(Scene& scene) {
 	auto&& slotMachine = scene.domain().components<SlotMachine>().front();
-	if (input::Keyboard::space.pressed() && !slotMachine.leverAnimation) {
-		slotMachine.leverAnimation = true;
+	if (input::Keyboard::space.pressed() && slotMachine.leverAnimationSpeed == 0) {
+		slotMachine.leverAnimationSpeed = 10;
 
 		for (auto&& [slotObject] : scene.domain().view<SlotObject>().components()) {
 			if (slotObject.jolt == 0) {
@@ -119,6 +155,7 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 	prevTime = now;
 
 	auto&& rewardGenerator = scene.domain().global<slots::RewardGenerator>();
+	auto slotMachineEntity = scene.domain().view<SlotMachine>().front();
 	auto&& slotMachine = scene.domain().components<SlotMachine>().front();
 	for (auto&& [entity, transform, slotObject] : scene.domain().view<scene::components::TransformComponent, SlotObject>().all()) {
 		float adjSpeed = slotObject.speed * deltaTime;
@@ -137,27 +174,41 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 			slotObject.speed = 0;
 			slotObject.acceleration = 0;
 			slotObject.jolt = 0;
-			slotMachine.leverAnimation = false;
-			Logger::debug("STOP");
+			//Logger::debug("STOP");
 		}
 
 		// switch to slowdown
 		if (slotObject.jolt < 0 && slotObject.speed <= slotObject.maxSpeed) {
 			slotObject.jolt = -slotObject.jolt;
-			Logger::debug("jolt switch {}", slotObject.jolt);
+			//Logger::debug("jolt switch {}", slotObject.jolt);
 		}
 
 		// update pos if out of bounds
 		if (transform.position.y < slotMachine.lowerBound) {
 			auto diff = transform.position.y - slotMachine.lowerBound;
 			transform.position.y = slotMachine.upperBound + diff;
-			Logger::debug("move slot to {1} {0}", slotMachine.upperBound, transform.position.y);
+			//Logger::debug("move slot to {1} {0}", slotMachine.upperBound, transform.position.y);
 
 			scene.domain().getComponent<scene::components::MeshComponent>(entity).pipeline = slotMachine.symbols[(int)rewardGenerator.generateReward()];
 		}
 	}
 
-	if (slotMachine.leverAnimation) {
+	if (slotMachine.leverAnimationSpeed != 0) {
+		auto&& [transform] = scene.domain().view<scene::components::TransformComponent, LeverFlag>().components().front();
+		auto adjLAS = slotMachine.leverAnimationSpeed * deltaTime;
+		slotMachine.leverAnimation += adjLAS;
 
+		if (slotMachine.leverAnimation >= 1) {
+			slotMachine.leverAnimationSpeed = -slotMachine.leverAnimationSpeed;
+			slotMachine.leverAnimation = 1;
+		} else if (slotMachine.leverAnimation < 0) {
+			slotMachine.leverAnimationSpeed = 0;
+			slotMachine.leverAnimation = 0;
+		}
+
+		auto angle = -std::lerp(0.f, std::numbers::pi_v<float> / 2.f, slotMachine.leverAnimation);
+		Logger::debug("angle {}", angle);
+		Logger::debug("anim {}", slotMachine.leverAnimation);
+		transform.rotation = glm::angleAxis(angle, zAxis()) * glm::quat(0, 0, 0, 1);
 	}
 }
