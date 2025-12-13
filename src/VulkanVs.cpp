@@ -37,7 +37,7 @@ void VulkanVs::init() {
 	mainScene = scene;
 	scene::SceneManager::get()->changeScene(scene);
 
-	auto textEnt = scene->newEntity();
+	/*auto textEnt = scene->newEntity();
 	textEntity = textEnt.handle();
 	textEnt.addComponent(
 		scene::components::TransformComponent{
@@ -50,7 +50,7 @@ void VulkanVs::init() {
 		"shaders/text/fragment_atlas.glsl",
 		"shaders/text/fragment_atlas_yellow.glsl",
 		"shaders/text/fragment_atlas_blue.glsl"
-		});
+		});*/
 
 	// init SoundManager
 	scene->domain().global<SoundManager>().init({explosionSoundPath});
@@ -103,16 +103,17 @@ void VulkanVs::update() {
 	if (scene == mainScene) {
 		//static auto prevTime = std::chrono::high_resolution_clock::now();
 
-  PointsCounter::update(*scene);
-  
+		PointsCounter::update(*scene);
+
 		SlotMachineSystem::update(*scene);
 		LifeManagerSystem::update(*scene);
 
 	// synchronize audio
-	scene->domain().global<SoundManager>().audioManager->synchronize(scene->domain());
+		scene->domain().global<SoundManager>().audioManager->synchronize(scene->domain());
 
-	/*if (std::chrono::high_resolution_clock::now() - now > std::chrono::seconds(3)) {
-		MultilineTextSystem::remove(*scene, textEntity);
-	}*/
+		/*if (std::chrono::high_resolution_clock::now() - now > std::chrono::seconds(3)) {
+			MultilineTextSystem::remove(*scene, textEntity);
+		}*/
+	}
 }
 
