@@ -3,13 +3,16 @@
 #include <archimedes/Font.h>
 #include <Config.h>
 #include <Defaults.h>
-#include <MakeTexture.h>
-#include <MakeMesh.h>
+#include <lifes/LifeManager.h>
 
 int PointsCounter::score = 0;
 
-int PointsCounter::count(const std::vector<int>& wyniki) {
+int PointsCounter::count(Scene& scene, const std::vector<int>& wyniki) {
 	int sum = 0;
+	auto&& cpool = scene.domain().components<LifeManager>().base();
+	auto cnt = cpool.count();
+	auto&& manager = scene.domain().view<LifeManager>().front();
+	auto&& lifeManager = scene.domain().getComponent<LifeManager>(manager);
 	//Zliczanie wyników losowania
 	int ct[] = {0, 0, 0, 0, 0, 0, 0};
 	for (int i : wyniki) {
@@ -29,12 +32,12 @@ int PointsCounter::count(const std::vector<int>& wyniki) {
 	}
 	//Sumowanie punktów
 	sum += 20 * ct[2] + 50 * ct[3] + 120 * ct[4] + 200 * ct[5];
-	//TODO HP+=ct[6]
+	lifeManager.updateLifes(ct[6]);
 	if (ct[2] > 2) { sum += 60; }
 	if (ct[3] > 2) { sum += 150; }
 	if (ct[4] > 2) { sum += 360; }
 	if (ct[5] > 2) { sum += 600; }
-	if (ct[6] > 2) {}//TODO HP+=6
+	if (ct[6] > 2) {lifeManager.updateLifes(6);}
 	score += sum;
 	return sum;
 };
