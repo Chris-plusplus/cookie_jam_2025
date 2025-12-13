@@ -72,6 +72,7 @@ void PointsCounter::setup(Scene& scene) {
 		}
 	);
 	auto points = scene.newEntity();
+	points.addComponent(ScoreTextFlag{});
 	auto&& scoreTransform = points.addComponent(
 		scene::components::TransformComponent{
 			.position = {windowWidth/2.f-10, windowHeight - 195.f, -0.6f},
