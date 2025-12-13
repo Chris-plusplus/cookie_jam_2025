@@ -98,7 +98,7 @@ void OfferSystem::setup(Scene& scene) {
 	auto&& dismiss = scene.newEntity();
 	auto&& dismissT = dismiss.addComponent(
 		scene::components::TransformComponent{
-			.position = {dial.dismissButtonX, dial.dismissButtonY,  1.0},
+			.position = {dial.dismissButtonX, dial.dismissButtonY, 1.0},
 			.rotation = {0, 0, 0, 1},
 			.scale = {dial.buttonWidth * dial.buttonScaleX, dial.buttonHeight * dial.buttonScaleY, 0}
 		}
@@ -134,7 +134,7 @@ void OfferSystem::setup(Scene& scene) {
 	container.addComponent(ContainerFlag{});
 }
 
-void OfferSystem::clearOfferDialogue(Scene &scene) {
+void OfferSystem::clearOfferDialogue(Scene& scene) {
 	auto&& dial = scene.domain().view<ContainerFlag>().front();
 	auto&& transform = scene.domain().getComponent<scene::components::TransformComponent>(dial);
 	transform.position.z = 1.0;
@@ -150,19 +150,21 @@ void OfferSystem::clearOfferDialogue(Scene &scene) {
 
 void OfferSystem::spawnOfferDialogue(Scene& scene, std::string_view offerText) {
 	auto&& container = scene.domain().view<ContainerFlag>().front();
-	auto&& transform = scene.domain().getComponent<scene::components::TransformComponent>(container);
-	transform.position.z = -0.65;
+	auto&& containerT = scene.domain().getComponent<scene::components::TransformComponent>(container);
+	containerT.position.z = -0.65;
 
 	auto&& accept = scene.domain().view<AcceptButtonFlag>().front();
-	auto&& transform2 = scene.domain().getComponent<scene::components::TransformComponent>(accept);
-	transform2.position.z = -0.7;
+	auto&& acceptT = scene.domain().getComponent<scene::components::TransformComponent>(accept);
+	acceptT.position.z = -0.7;
 
 	auto&& dismiss = scene.domain().view<DismissButtonFlag>().front();
-	auto&& transform3 = scene.domain().getComponent<scene::components::TransformComponent>(dismiss);
-	transform3.position.z = -0.7;
+	auto&& dismissT = scene.domain().getComponent<scene::components::TransformComponent>(dismiss);
+	dismissT.position.z = -0.7;
 
-	std::ofstream stream("offer.txt", std::ios::out | std::ios::trunc);
-	stream << offerText;
+	{
+		std::ofstream stream("offer.txt", std::ios::out | std::ios::trunc);
+		stream << offerText;
+	}
 
 	{ // example text
 		auto textParent = scene.newEntity();
@@ -175,14 +177,22 @@ void OfferSystem::spawnOfferDialogue(Scene& scene, std::string_view offerText) {
 		auto&& dial = scene.domain().view<OfferDialogue>().front();
 		auto&& container = scene.domain().getComponent<OfferDialogue>(dial);
 
-		auto&& transform = textParent.addComponent(
+		////////////////////
+		////////////////////
+		////////////////////
+		////////////////////
+		////////////////////
+		////////////////////
+		////////////////////
+
+		auto&& textParentT = textParent.addComponent(
 			scene::components::TransformComponent{
 				.position = float3(container.containerX, container.containerY, -0.8) + float3{-container.containerScaleX, container.containerScaleY, 0.0} / 2.f + textDeltaPos,
 				.rotation = {0, 0, 0, 1},
 				.scale = {fontSize, fontSize, 0}
 			}
 		);
-		transform.position.z = -1.0;
+		textParentT.position.z = -0.8;
 
 		std::u32string offerText;
 		{
@@ -195,8 +205,10 @@ void OfferSystem::spawnOfferDialogue(Scene& scene, std::string_view offerText) {
 
 			offerText = text::convertTo<char32_t>(std::string_view(buffer));
 		}
+		Logger::debug("pre {}, {}, {}", textParentT.position.x, textParentT.position.y, textParentT.position.z);
+
 		MultilineTextSystem::setup(scene, textParent, offerText, *font::FontDB::get()["Arial"]->regular(),
-			{"shaders/text/fragment_atlas_black.glsl",});
+			{"shaders/text/fragment_atlas_black.glsl", });
 	}
 }
 
