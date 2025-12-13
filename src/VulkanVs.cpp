@@ -11,6 +11,7 @@
 #include <systems/MultilineText.h>
 #include <systems/SlotMachine.h>
 
+#include "PointsCounter.h"
 #include "lifes/LifeManagerSystem.h"
 
 ecs::Entity textEntity;
@@ -74,6 +75,8 @@ void VulkanVs::init() {
 
 	now = std::chrono::high_resolution_clock::now();
 
+	PointsCounter::setup(*scene);
+
 	SlotMachineSystem::setup(*scene);
 
 	LifeManagerSystem::setup(*scene);
@@ -85,6 +88,8 @@ void VulkanVs::update() {
 	//static auto prevTime = std::chrono::high_resolution_clock::now();
 
 	Ref<Scene> scene = scene::SceneManager::get()->currentScene();
+
+	PointsCounter::update(*scene);
 
 	SlotMachineSystem::update(*scene);
 	LifeManagerSystem::update(*scene);
