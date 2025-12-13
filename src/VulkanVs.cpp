@@ -11,6 +11,7 @@
 #include <systems/MultilineText.h>
 #include <systems/SlotMachine.h>
 #include <MakeMesh.h>
+#include <systems/Button.h>
 
 #include "PointsCounter.h"
 #include "demon/OfferSystem.h"
@@ -105,6 +106,8 @@ void VulkanVs::update() {
 	Ref<Scene> scene = scene::SceneManager::get()->currentScene();
 	if (scene == mainScene) {
 		//static auto prevTime = std::chrono::high_resolution_clock::now();
+
+		ButtonSystem::update(*scene);
 
 		PointsCounter::update(*scene);
 

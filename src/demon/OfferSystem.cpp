@@ -13,6 +13,7 @@
 #include <systems/MultilineText.h>
 #include <archimedes/Font.h>
 #include <archimedes/Text.h>
+#include <systems/Button.h>
 
 namespace demon {
 void OfferSystem::spawnOfferDialogue(Scene& scene) {
@@ -51,7 +52,7 @@ void OfferSystem::spawnOfferDialogue(Scene& scene) {
 		}
 		);
 
-		// prepare dismiss button texture and params
+	// prepare dismiss button texture and params
 	auto&& dismissTexture = makeTexture(std::string_view("textures/Asset_szkice/Odrzucenie_button.png"));
 	offerDialogue.dismissButtonPipeline = renderer.getPipelineManager()->create(
 		gfx::pipeline::Pipeline::Desc{
@@ -63,14 +64,14 @@ void OfferSystem::spawnOfferDialogue(Scene& scene) {
 		);
 
 
-		// add accept button to the screen
+	// add accept button to the screen
 	offerDialogue.acceptButtonX = offerDialogue.buttonWidth / 2;
 	offerDialogue.acceptButtonY = windowHeight - offerDialogue.buttonHeight / 2;
 	offerDialogue.buttonScaleX = 0.9;
 	offerDialogue.buttonScaleY = 0.9;
 
 	auto&& accept = scene.newEntity();
-	accept.addComponent(
+	auto&& acceptT = accept.addComponent(
 		scene::components::TransformComponent{
 			.position = {offerDialogue.acceptButtonX, offerDialogue.acceptButtonY, -0.7},
 			.rotation = {0, 0, 0, 1},
@@ -84,14 +85,16 @@ void OfferSystem::spawnOfferDialogue(Scene& scene) {
 			.pipeline = offerDialogue.acceptButtonPipeline
 		}
 	);
-	accept.addComponent(AcceptButtonFlag{});
+	ButtonSystem::setup(scene, accept.handle(), float2{-acceptT.scale.x, acceptT.scale.y} / 2.f, float2{acceptT.scale.x, -acceptT.scale.y} / 2.f, [&](...) {
+		Logger::debug("accepted");
+	});
 
 	// add dismiss button texture to the screen
 	offerDialogue.dismissButtonX = offerDialogue.buttonWidth;
 	offerDialogue.dismissButtonY = windowHeight - offerDialogue.buttonHeight;
 
 	auto&& dismiss = scene.newEntity();
-	dismiss.addComponent(
+	auto&& dismissT = dismiss.addComponent(
 		scene::components::TransformComponent{
 			.position = {offerDialogue.dismissButtonX, offerDialogue.dismissButtonY, -0.7},
 			.rotation = {0, 0, 0, 1},
@@ -105,7 +108,9 @@ void OfferSystem::spawnOfferDialogue(Scene& scene) {
 			.pipeline = offerDialogue.dismissButtonPipeline
 		}
 	);
-	dismiss.addComponent(DismissButtonFlag{});
+	ButtonSystem::setup(scene, dismiss.handle(), float2{-dismissT.scale.x, dismissT.scale.y} / 2.f, float2{dismissT.scale.x, -dismissT.scale.y} / 2.f, [&](...) {
+		Logger::debug("dismiss");
+	});
 
 	// add container button texture to the screen
 	auto&& container = scene.newEntity();
