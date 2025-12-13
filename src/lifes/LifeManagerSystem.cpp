@@ -21,8 +21,8 @@ void LifeManagerSystem::drawCoins(Scene& scene) {
         scene.domain().kill(entity);
     }
 
-    float x = lifeManager.containerX / 2;
-    float y = lifeManager.containerY - lifeManager.coinHeight / 2;
+    float x = lifeManager.containerX / 2 - lifeManager.coinWidth * lifeManager.coinScaleX * 0.75;
+    float y = lifeManager.containerY;
     for (int i = 0; i < lifeManager.currentLifes; i++) {
         auto&& coin = scene.newEntity();
         auto&& transform = coin.addComponent(
@@ -84,11 +84,12 @@ void LifeManagerSystem::setup(Scene& scene) {
             }
     );
     lifeManager.containerX = lifeManager.containerWidth / 2;
-    lifeManager.containerY = windowHeight + lifeManager.containerHeight / 2;
-    lifeManager.containerScaleX = 0.8;
-    lifeManager.containerScaleY = 0.8;
+    lifeManager.containerY = windowHeight - lifeManager.containerHeight / 2;
+    Logger::info("y = {}", lifeManager.containerY);
+    lifeManager.containerScaleX = 0.9;
+    lifeManager.containerScaleY = 0.9;
     lifeManager.coinScaleX = 0.8;
-    lifeManager.containerY = 0.8;
+    lifeManager.coinScaleY = 0.8;
     auto&& transform = manager.addComponent(
     scene::components::TransformComponent{
         .position = {lifeManager.containerX, lifeManager.containerY, -0.5},
