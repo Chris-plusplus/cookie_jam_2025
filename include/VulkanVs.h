@@ -11,11 +11,9 @@ using namespace arch;
 class VulkanVs: public Application {
 public:
 	VulkanVs() = default;
+	~VulkanVs();
 
 	void init() override;
 	void update() override;
-
-private:
-	Ref<physics::System> _physicsSystem;
 };
 
