@@ -9,6 +9,7 @@
 #include "demon/OfferDialogue.h"
 #include "demon/AcceptButtonFlag.h"
 #include "demon/DismissButtonFlag.h"
+#include "demon/ContainerFlag.h"
 
 namespace demon {
 void OfferSystem::spawnOfferDialogue(Scene& scene) {
@@ -16,6 +17,21 @@ void OfferSystem::spawnOfferDialogue(Scene& scene) {
     auto&& offerDialogue = scene.domain().getComponent<OfferDialogue>(manager);
 
     auto&& renderer = *gfx::Renderer::current();
+    auto&& containerTexture = makeTexture(std::string_view("textures/Asset_szkice/Okienko_dialog.png"));
+    offerDialogue.containerWidth = containerTexture->getWidth();
+    offerDialogue.containerHeight = containerTexture->getHeight();
+    offerDialogue.containerPipeline = renderer.getPipelineManager()->create(
+        gfx::pipeline::Pipeline::Desc{
+            .vertexShaderPath = "shaders/vertex_default.glsl",
+            .fragmentShaderPath = "shaders/fragment_default.glsl",
+            .textures = {std::move(containerTexture)},
+            .buffers = {defaultUniformBuffer()},
+        }
+        );
+    offerDialogue.containerX = offerDialogue.containerWidth / 2;
+    offerDialogue.containerY = windowHeight - offerDialogue.containerHeight / 2;
+    offerDialogue.containerScaleX = 0.9;
+    offerDialogue.containerScaleY = 0.9;
 
     auto&& acceptTexture = makeTexture(std::string_view("textures/Asset_szkice/Akceptacja_button.png"));
     offerDialogue.buttonWidth = acceptTexture->getWidth();
@@ -42,8 +58,8 @@ void OfferSystem::spawnOfferDialogue(Scene& scene) {
 
     offerDialogue.acceptButtonX = offerDialogue.buttonWidth / 2;
     offerDialogue.acceptButtonY = windowHeight - offerDialogue.buttonHeight / 2;
-    offerDialogue.buttonScaleX = 0.8;
-    offerDialogue.buttonScaleY = 0.8;
+    offerDialogue.buttonScaleX = 0.9;
+    offerDialogue.buttonScaleY = 0.9;
 
     auto&& accept = scene.newEntity();
     accept.addComponent(
@@ -81,6 +97,23 @@ void OfferSystem::spawnOfferDialogue(Scene& scene) {
         }
     );
     dismiss.addComponent(DismissButtonFlag{});
+
+    auto&& container = scene.newEntity();
+    container.addComponent(
+        scene::components::TransformComponent{
+            .position = {offerDialogue.containerX, offerDialogue.containerY, -0.7},
+            .rotation = {0, 0, 0, 1},
+            .scale = {offerDialogue.containerWidth * offerDialogue.containerScaleX, offerDialogue.containerHeight * offerDialogue.containerScaleY, 0}
+        }
+    );
+    auto mesh3 = makeMesh(defaultCenterVertices(), defaultIndices());
+    container.addComponent(
+        scene::components::MeshComponent{
+            .mesh = mesh3,
+            .pipeline = offerDialogue.containerPipeline
+        }
+    );
+    container.addComponent(ContainerFlag{});
 }
 
 void OfferSystem::setup(Scene &scene) {
