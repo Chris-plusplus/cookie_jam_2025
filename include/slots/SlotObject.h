@@ -1,6 +1,6 @@
 #pragma once
 
-#include <slots/SlotsManager.h>
+#include <slots/RewardGenerator.h>
 
 using namespace arch;
 

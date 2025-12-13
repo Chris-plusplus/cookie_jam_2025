@@ -19,23 +19,19 @@ enum class RewardType {
     std::string rewardAsString(RewardType type);
 
     class RewardGenerator {
-        const std::vector<int> _startingWeightsInt {
-            1, //cucumber
-            10, //catnip
-            40, //dry
-            20, //sachet
-            10, //feather
-            5, //sardines
-            10, //coin
+    	std::vector<float> _weights {
+            .01, //cucumber
+            .1, //catnip
+            .4, //dry
+            .2, //sachet
+            .1, //feather
+            .09, //sardines
+            .1, //coin
         };
-
-        std::vector<float> _weights;
 
         std::random_device _randomDevice;
         std::shared_ptr<std::mt19937> _randomGenerator;
         std::shared_ptr<std::discrete_distribution<>> _distribution;
-
-        void _initializeWeights();
 
         void _generateDistribution();
 

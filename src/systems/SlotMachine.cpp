@@ -1,7 +1,7 @@
 #include <components/SlotMachine.h>
 #include <systems/SlotMachine.h>
 #include <Defaults.h>
-#include <slots/SlotsManager.h>
+#include <slots/RewardGenerator.h>
 #include <MakeTexture.h>
 #include <MakeMesh.h>
 #include <Config.h>

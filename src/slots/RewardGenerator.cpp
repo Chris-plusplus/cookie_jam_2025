@@ -21,16 +21,6 @@ namespace slots {
         return "";
     }
 
-    void RewardGenerator::_initializeWeights() {
-        int sum = 0;
-        for (auto& w : _startingWeightsInt) {
-            sum += w;
-        }
-        for (int i = 0; i < _startingWeightsInt.size(); i++) {
-            _weights.push_back((float)_startingWeightsInt[i] / sum);
-        }
-    }
-
     void RewardGenerator::_generateDistribution() {
         _distribution = std::make_shared<std::discrete_distribution<>>(_weights.begin(), _weights.end());
     }
@@ -41,7 +31,6 @@ namespace slots {
     }
 
     RewardGenerator::RewardGenerator() {
-        _initializeWeights();
         _randomGenerator = std::make_shared<std::mt19937>(_randomDevice());
         _generateDistribution();
     }
@@ -56,8 +45,11 @@ namespace slots {
         for (int i = 0; i < _weights.size(); i++) {
             sum += _weights[i];
         }
+        float difference = sum - 1.0;
         for (int i = 0; i < _weights.size(); i++) {
-            _weights[i] /= sum;
+            if (i != index) {
+                _weights[i] -= difference / _weights.size();
+            }
         }
         _generateDistribution();
     }
