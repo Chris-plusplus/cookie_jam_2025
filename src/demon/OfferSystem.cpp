@@ -161,7 +161,6 @@ void OfferSystem::setup(Scene& scene) {
 		}
 		MultilineTextSystem::setup(scene, textParent, offerText, *font::FontDB::get()["Arial"]->regular());
 	}
-	spawnOfferDialogue(scene);
 }
 
 void OfferSystem::clearOfferDialogue(Scene &scene) {
