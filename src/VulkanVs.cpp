@@ -71,11 +71,12 @@ void VulkanVs::init() {
 
 	DemonManager::setup(*scene);
 
+	demon::OfferSystem::setup(*scene);
+
 	SlotMachineSystem::setup(*scene);
 
 	LifeManagerSystem::setup(*scene);
 
-	demon::OfferSystem::setup(*scene);
 	SlotMachineSystem::onDrawn(*scene, PointsCounter::count);
 
 	settingsScene = createRef<Scene>();

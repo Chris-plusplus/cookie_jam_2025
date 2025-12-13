@@ -12,7 +12,7 @@ namespace demon {
     struct OfferSystem {
         static void setup(Scene& scene);
 
-        static void spawnOfferDialogue(Scene& scene);
+        static void spawnOfferDialogue(Scene& scene, std::string_view offerText);
 
         static void clearOfferDialogue(Scene& scene);
 

@@ -14,11 +14,12 @@
 #include <archimedes/Font.h>
 #include <archimedes/Text.h>
 #include <systems/Button.h>
+#include "demon/OfferTextFlag.h"
 
 namespace demon {
 void OfferSystem::setup(Scene& scene) {
 	auto&& manager = scene.newEntity();
-	auto&& dial = manager.addComponent(OfferDialogue{});
+	auto&& dial = manager.addComponent<OfferDialogue>();
 	auto&& renderer = *gfx::Renderer::current();
 
 	// prepare container texture and params
@@ -131,36 +132,6 @@ void OfferSystem::setup(Scene& scene) {
 		}
 	);
 	container.addComponent(ContainerFlag{});
-
-	{ // example text
-		auto textParent = scene.newEntity();
-		float3 textDeltaPos;
-		float fontSize;
-		{
-			auto file = std::ifstream("offerConfig.txt");
-			file >> textDeltaPos.x >> textDeltaPos.y >> textDeltaPos.z >> fontSize;
-		}
-		textParent.addComponent(
-			scene::components::TransformComponent{
-				.position = containerT.position + float3{-containerT.scale.x, containerT.scale.y, 0} / 2.f + textDeltaPos,
-				.rotation = {0, 0, 0, 1},
-				.scale = {fontSize, fontSize, 0}
-			}
-		);
-
-		std::u32string offerText;
-		{
-			auto file = std::ifstream("offer.txt");
-			file.seekg(0, std::ios::end);
-			size_t size = file.tellg();
-			std::string buffer(size, ' ');
-			file.seekg(0);
-			file.read(&buffer[0], size);
-
-			offerText = text::convertTo<char32_t>(std::string_view(buffer));
-		}
-		MultilineTextSystem::setup(scene, textParent, offerText, *font::FontDB::get()["Arial"]->regular());
-	}
 }
 
 void OfferSystem::clearOfferDialogue(Scene &scene) {
@@ -177,9 +148,9 @@ void OfferSystem::clearOfferDialogue(Scene &scene) {
 	transform3.position.z = 1.0;
 }
 
-void OfferSystem::spawnOfferDialogue(Scene& scene) {
-	auto&& dial = scene.domain().view<ContainerFlag>().front();
-	auto&& transform = scene.domain().getComponent<scene::components::TransformComponent>(dial);
+void OfferSystem::spawnOfferDialogue(Scene& scene, std::string_view offerText) {
+	auto&& container = scene.domain().view<ContainerFlag>().front();
+	auto&& transform = scene.domain().getComponent<scene::components::TransformComponent>(container);
 	transform.position.z = -0.65;
 
 	auto&& accept = scene.domain().view<AcceptButtonFlag>().front();
@@ -189,6 +160,44 @@ void OfferSystem::spawnOfferDialogue(Scene& scene) {
 	auto&& dismiss = scene.domain().view<DismissButtonFlag>().front();
 	auto&& transform3 = scene.domain().getComponent<scene::components::TransformComponent>(dismiss);
 	transform3.position.z = -0.7;
+
+	std::ofstream stream("offer.txt", std::ios::out | std::ios::trunc);
+	stream << offerText;
+
+	{ // example text
+		auto textParent = scene.newEntity();
+		float3 textDeltaPos;
+		float fontSize;
+		{
+			auto file = std::ifstream("offerConfig.txt");
+			file >> textDeltaPos.x >> textDeltaPos.y >> textDeltaPos.z >> fontSize;
+		}
+		auto&& dial = scene.domain().view<OfferDialogue>().front();
+		auto&& container = scene.domain().getComponent<OfferDialogue>(dial);
+
+		auto&& transform = textParent.addComponent(
+			scene::components::TransformComponent{
+				.position = float3(container.containerX, container.containerY, -0.8) + float3{-container.containerScaleX, container.containerScaleY, 0.0} / 2.f + textDeltaPos,
+				.rotation = {0, 0, 0, 1},
+				.scale = {fontSize, fontSize, 0}
+			}
+		);
+		transform.position.z = -0.8;
+
+		std::u32string offerText;
+		{
+			auto file = std::ifstream("offer.txt");
+			file.seekg(0, std::ios::end);
+			size_t size = file.tellg();
+			std::string buffer(size, ' ');
+			file.seekg(0);
+			file.read(&buffer[0], size);
+
+			offerText = text::convertTo<char32_t>(std::string_view(buffer));
+		}
+		MultilineTextSystem::setup(scene, textParent, offerText, *font::FontDB::get()["Arial"]->regular(),
+			{"shaders/text/fragment_atlas_black.glsl",});
+	}
 }
 
 void OfferSystem::update(Scene& scene) {}
