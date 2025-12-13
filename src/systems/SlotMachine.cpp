@@ -9,6 +9,7 @@
 #include <slots/SlotFlag.h>
 #include <slots/SlotObject.h>
 #include <archimedes/Input.h>
+#include <lifes/LifeManager.h>
 
 void SlotMachineSystem::setup(Scene& scene) {
 	auto machine = scene.newEntity();
@@ -101,6 +102,9 @@ void SlotMachineSystem::update(Scene& scene) {
 				slotObject.jolt = -1.f;
 			}
 		}
+		auto&& manager = scene.domain().view<LifeManager>().front();
+		auto&& lifeManager = scene.domain().getComponent<LifeManager>(manager);
+		lifeManager.updateLifes(-1);
 	}
 	updateAnimation(scene);
 }

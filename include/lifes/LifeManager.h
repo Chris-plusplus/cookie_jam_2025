@@ -19,4 +19,6 @@ struct LifeManager {
 
     int currentLifes = 9;
     int maxLifes = 9;
+
+    void updateLifes(int difference);
 };

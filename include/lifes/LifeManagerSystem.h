@@ -10,6 +10,4 @@ struct LifeManagerSystem {
     static void update(Scene& scene);
 
     static void drawCoins(Scene& scene);
-
-    static void updateLifes(Scene& scene, int difference);
 };

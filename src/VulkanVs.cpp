@@ -94,6 +94,7 @@ void VulkanVs::update() {
 	Ref<Scene> scene = scene::SceneManager::get()->currentScene();
 
 	SlotMachineSystem::update(*scene);
+	LifeManagerSystem::update(*scene);
 
 	// update physics & transforms
 	_physicsSystem->update();
