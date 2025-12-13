@@ -1,18 +1,7 @@
 #include <VulkanVs.h>
 #include <MakeTexture.h>
-#include <LayerMatrixDef.h>
-#include <systems/colliders/LayerSystem.h>
 #include <archimedes/Font.h>
 #include <archimedes/Scene.h>
-#include <systems/Vulkan.h>
-#include <systems/Ground.h>
-#include <systems/Competition.h>
-#include <systems/colliders/AABBSystem.h>
-#include <systems/Particle.h>
-#include <components/Particle.h>
-#include <components/colliders/LayeredAABB.h>
-#include <systems/Explosion.h>
-#include <systems/AutoExplosion.h>
 #include <systems/Kill.h>
 #include <Config.h>
 #include <SoundManager.h>
@@ -90,7 +79,11 @@ void VulkanVs::init() {
 	LifeManagerSystem::setup(*scene);
 }
 
+using namespace std::chrono_literals;
+
 void VulkanVs::update() {
+	//static auto prevTime = std::chrono::high_resolution_clock::now();
+
 	Ref<Scene> scene = scene::SceneManager::get()->currentScene();
 
 	SlotMachineSystem::update(*scene);
@@ -98,7 +91,6 @@ void VulkanVs::update() {
 
 	// update physics & transforms
 	_physicsSystem->update();
-	TransformUpdateSystem::update(scene->domain());
 
 	// update layer collisions
 	//coll::LayerSystem::update(scene->domain());
@@ -126,5 +118,8 @@ void VulkanVs::update() {
 	if (std::chrono::high_resolution_clock::now() - now > std::chrono::seconds(3)) {
 		MultilineTextSystem::remove(*scene, textEntity);
 	}
+
+	//std::this_thread::sleep_for(16.6666ms - (std::chrono::high_resolution_clock::now() - prevTime));
+	//prevTime = std::chrono::high_resolution_clock::now();
 }
 
