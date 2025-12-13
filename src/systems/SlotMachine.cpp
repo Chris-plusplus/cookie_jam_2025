@@ -319,7 +319,7 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 		}
 
 		if (slotMachine.onDrawn) {
-			slotMachine.onDrawn(slotMachine.drawn);
+			slotMachine.onDrawn(scene, slotMachine.drawn);
 		}
 
 		Logger::debug("reward = {}", slots::rewardAsString(SlotMachineSystem::reward(scene)));
@@ -392,6 +392,6 @@ const std::vector<int>& SlotMachineSystem::drawn(Scene& scene) {
 	return scene.domain().components<SlotMachine>().front().drawn;
 }
 
-void SlotMachineSystem::onDrawn(Scene& scene, std::function<int(const std::vector<int>&)> event) {
+void SlotMachineSystem::onDrawn(Scene& scene, std::function<int(Scene&, const std::vector<int>&)> event) {
 	scene.domain().components<SlotMachine>().front().onDrawn = event;
 }

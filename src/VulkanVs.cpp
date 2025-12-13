@@ -66,6 +66,7 @@ void VulkanVs::init() {
 	LifeManagerSystem::setup(*scene);
 
 	demon::OfferSystem::setup(*scene);
+	SlotMachineSystem::onDrawn(*scene, PointsCounter::count);
 
 	settingsScene = createRef<Scene>();
 	auto setting = settingsScene->newEntity();
