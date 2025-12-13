@@ -15,8 +15,8 @@ int main() {
 		.backgroundColor = arch::Color(0, 0, 0, 0),
 		.renderingApi = arch::gfx::RenderingAPI::Nvrhi_VK
 	};
+	//slots::RewardGenerator slotsManager;
 
-	slots::RewardGenerator slotsManager;
 	auto engine = arch::Engine(engineConfig, application);
 	engine.start();
 	// for (int i = 0; i < 100; i++) {
