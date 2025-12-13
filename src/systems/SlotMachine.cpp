@@ -12,6 +12,7 @@
 #include <lifes/LifeManager.h>
 #include <cmath>
 #include <numbers>
+#include <demon/DemonManager.h>
 
 using namespace std::chrono_literals;
 
@@ -321,7 +322,7 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 		if (slotMachine.onDrawn) {
 			slotMachine.onDrawn(slotMachine.drawn);
 		}
-
+		DemonManager::addroll();
 		Logger::debug("reward = {}", slots::rewardAsString(SlotMachineSystem::reward(scene)));
 	}
 

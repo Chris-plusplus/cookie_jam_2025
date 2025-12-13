@@ -15,6 +15,10 @@
 #include "PointsCounter.h"
 #include "demon/OfferSystem.h"
 #include "lifes/LifeManagerSystem.h"
+#include "demon/DemonManager.h"
+#include "demon/demon1.h"
+#include "demon/demon2.h"
+#include "demon/demon3.h"
 
 ecs::Entity textEntity = ecs::nullEntity;
 decltype(std::chrono::high_resolution_clock::now()) now{};
@@ -59,6 +63,12 @@ void VulkanVs::init() {
 	now = std::chrono::high_resolution_clock::now();
 
 	PointsCounter::setup(*scene);
+
+	demon1::setup(*scene);
+	demon2::setup(*scene);
+	demon3::setup(*scene);
+
+	DemonManager::setup(*scene);
 
 	SlotMachineSystem::setup(*scene);
 
@@ -110,6 +120,8 @@ void VulkanVs::update() {
 
 		SlotMachineSystem::update(*scene);
 		LifeManagerSystem::update(*scene);
+
+		DemonManager::update(*scene);
 
 	// synchronize audio
 		scene->domain().global<SoundManager>().audioManager->synchronize(scene->domain());
