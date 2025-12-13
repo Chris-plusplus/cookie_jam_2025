@@ -10,11 +10,22 @@
 #include <systems/StaticText.h>
 #include <systems/MultilineText.h>
 #include <systems/SlotMachine.h>
+#include <MakeMesh.h>
 
+#include "PointsCounter.h"
 #include "lifes/LifeManagerSystem.h"
 
-ecs::Entity textEntity;
-decltype(std::chrono::high_resolution_clock::now()) now;
+//ecs::Entity textEntity = ecs::nullEntity;
+decltype(std::chrono::high_resolution_clock::now()) now{};
+
+Unique<ecs::Domain> globalDomain;
+Ref<Scene> mainScene;
+Ref<Scene> settingsScene;
+
+VulkanVs::~VulkanVs() {
+	mainScene = nullptr;
+	settingsScene = nullptr;
+}
 
 void VulkanVs::init() {
 	// load font
@@ -23,6 +34,7 @@ void VulkanVs::init() {
 
 	// make scene
 	Ref<Scene> scene = createRef<Scene>();
+	mainScene = scene;
 	scene::SceneManager::get()->changeScene(scene);
 
 	auto textEnt = scene->newEntity();
@@ -40,90 +52,67 @@ void VulkanVs::init() {
 		"shaders/text/fragment_atlas_blue.glsl"
 		});
 
-	// init physics system
-	_physicsSystem = createUnique<physics::System>(scene->domain());
-
 	// init SoundManager
 	scene->domain().global<SoundManager>().init({explosionSoundPath});
 
-	// explosion keys
-	// auto&& leftVulkanKey = input::Keyboard::shiftLeft;
-	// auto&& rightVulkanKey = input::Keyboard::enter;
-
-	// volcano setup
-	// auto vulkan1 = scene->newEntity();
-	// VulkanSystem::setup(vulkan1, leftVulkanKey, false);
-	// auto vulkan2 = scene->newEntity();
-	// VulkanSystem::setup(vulkan2, rightVulkanKey, true);
-
-	// AutoExplosionSystem::setup(vulkan1, input::Keyboard::one, {&leftVulkanKey, &rightVulkanKey});
-	// AutoExplosionSystem::setup(vulkan2, input::Keyboard::two, {&leftVulkanKey, &rightVulkanKey});
-
-	// ExplosionSystem::setupListener(*scene, vulkan1, vulkan2);
-
-	// GroundSystem::setup(*scene);
-
-	// CompetitionSystem::setup(*scene);
-
-	// StaticTextSystem::setup(*scene,
-	// 	U"Lewy shift",
-	// 	*font::FontDB::get()["Arial"]->italic(), 100,
-	// 	{10, vulkan1.getComponent<Vulkan>().particleOrigin.y + 25, -0.2f}
-	// );
-	// StaticTextSystem::setup(*scene,
-	// 	U"Enter",
-	// 	*font::FontDB::get()["Arial"]->italic(), 100,
-	// 	{windowWidth - 300, vulkan2.getComponent<Vulkan>().particleOrigin.y + 25, -0.2f}
-	// );
-
 	now = std::chrono::high_resolution_clock::now();
+
+	PointsCounter::setup(*scene);
 
 	SlotMachineSystem::setup(*scene);
 
 	LifeManagerSystem::setup(*scene);
+
+	settingsScene = createRef<Scene>();
+	auto setting = settingsScene->newEntity();
+	setting.addComponent(
+		scene::components::TransformComponent{
+			.position = {500, 500, -0.1},
+			.rotation = {0, 0, 0, 1},
+			.scale = {100, 100, 0}
+		}
+	);
+	auto setTex = makeTexture("textures/slotMachine.png");
+	setting.addComponent(
+		scene::components::MeshComponent{
+			.mesh = makeMesh(defaultCenterVertices(), defaultIndices()),
+			.pipeline = gfx::Renderer::getCurrent()->getPipelineManager()->create(
+				gfx::pipeline::Pipeline::Desc{
+					.vertexShaderPath = "shaders/vertex_default.glsl",
+					.fragmentShaderPath = "shaders/fragment_default.glsl",
+					.textures = {setTex},
+					.buffers = {defaultUniformBuffer()},
+				}
+				)
+		}
+	);
 }
 
 using namespace std::chrono_literals;
 
 void VulkanVs::update() {
-	//static auto prevTime = std::chrono::high_resolution_clock::now();
+	if (input::Keyboard::enter.pressed()) {
+		if (scene::SceneManager::get()->currentScene() == mainScene) {
+			scene::SceneManager::get()->changeScene(settingsScene);
+		} else {
+			scene::SceneManager::get()->changeScene(mainScene);
+		}
+	}
 
 	Ref<Scene> scene = scene::SceneManager::get()->currentScene();
+	if (scene == mainScene) {
+		//static auto prevTime = std::chrono::high_resolution_clock::now();
 
-	SlotMachineSystem::update(*scene);
-	LifeManagerSystem::update(*scene);
-
-	// update physics & transforms
-	_physicsSystem->update();
-
-	// update layer collisions
-	//coll::LayerSystem::update(scene->domain());
-
-	// update particles & explosions
-	//ParticleSystem::update(scene->domain());
-	//ExplosionSystem::updateText(scene->domain());
-
-	// kill flagged entities
-	//KillSystem::update(*scene);
-	// remove layer collision flags
-	//coll::LayerSystem::removeFlags(scene->domain());
-
-	// update volcanos`
-	//VulkanSystem::update(*scene);
-	// update scores
-	//CompetitionSystem::update(*scene);
-
-	// update autoexplosion
-	//AutoExplosionSystem::update(*scene);
+  PointsCounter::update(*scene);
+  
+		SlotMachineSystem::update(*scene);
+		LifeManagerSystem::update(*scene);
 
 	// synchronize audio
 	scene->domain().global<SoundManager>().audioManager->synchronize(scene->domain());
 
-	if (std::chrono::high_resolution_clock::now() - now > std::chrono::seconds(3)) {
+	/*if (std::chrono::high_resolution_clock::now() - now > std::chrono::seconds(3)) {
 		MultilineTextSystem::remove(*scene, textEntity);
-	}
-
-	//std::this_thread::sleep_for(16.6666ms - (std::chrono::high_resolution_clock::now() - prevTime));
-	//prevTime = std::chrono::high_resolution_clock::now();
+	}*/
 }
 
