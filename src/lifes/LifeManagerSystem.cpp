@@ -134,7 +134,13 @@ void LifeManagerSystem::setup(Scene& scene) {
 }
 
 void LifeManagerSystem::update(Scene& scene) {
-
+    drawCoins(scene);
 }
 
-void LifeManagerSystem::updateAnimation(Scene &scene) {}
+void LifeManagerSystem::updateLifes(Scene& scene, int difference) {
+    auto&& manager = scene.domain().view<LifeManager>().front();
+    auto&& lifeManager = scene.domain().getComponent<LifeManager>(manager);
+
+    int newLifes = lifeManager.currentLifes + difference;
+    lifeManager.currentLifes = std::clamp(newLifes, 0, lifeManager.maxLifes);
+}

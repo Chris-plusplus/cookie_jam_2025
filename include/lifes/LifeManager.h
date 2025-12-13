@@ -11,8 +11,6 @@ struct LifeManager {
     Ref<gfx::pipeline::Pipeline> emptyCoinPipeline;
     Ref<gfx::pipeline::Pipeline> fullCoinPipeline;
 
-
-
     float coinWidth, coinHeight;
     float coinScaleX, coinScaleY;
     float containerWidth, containerHeight;
