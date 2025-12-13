@@ -37,7 +37,7 @@ int PointsCounter::count(Scene& scene, const std::vector<int>& wyniki) {
 	if (ct[3] > 2) { sum += 150; }
 	if (ct[4] > 2) { sum += 360; }
 	if (ct[5] > 2) { sum += 600; }
-	if (ct[6] > 2) {lifeManager.updateLifes(6);}
+	if (ct[6] > 2) { lifeManager.updateLifes(6); }
 	score += sum;
 	return sum;
 };
@@ -64,7 +64,7 @@ void PointsCounter::update(Scene& scene) {
 		text::TextComponent(
 			text::convertTo<char32_t>(std::string_view(std::format("{}", score))),
 			{buffer},
-			"Arial"
+			"Pixelated Elegance"
 		)
 	);
 }
