@@ -11,11 +11,17 @@
 #include <systems/MultilineText.h>
 #include <systems/SlotMachine.h>
 #include <MakeMesh.h>
+#include <systems/Button.h>
 
 #include "PointsCounter.h"
+#include "demon/OfferSystem.h"
 #include "lifes/LifeManagerSystem.h"
+#include "demon/DemonManager.h"
+#include "demon/demon1.h"
+#include "demon/demon2.h"
+#include "demon/demon3.h"
 
-//ecs::Entity textEntity = ecs::nullEntity;
+ecs::Entity textEntity = ecs::nullEntity;
 decltype(std::chrono::high_resolution_clock::now()) now{};
 
 Unique<ecs::Domain> globalDomain;
@@ -37,7 +43,7 @@ void VulkanVs::init() {
 	mainScene = scene;
 	scene::SceneManager::get()->changeScene(scene);
 
-	/*auto textEnt = scene->newEntity();
+	auto textEnt = scene->newEntity();
 	textEntity = textEnt.handle();
 	textEnt.addComponent(
 		scene::components::TransformComponent{
@@ -50,7 +56,7 @@ void VulkanVs::init() {
 		"shaders/text/fragment_atlas.glsl",
 		"shaders/text/fragment_atlas_yellow.glsl",
 		"shaders/text/fragment_atlas_blue.glsl"
-		});*/
+		});
 
 	// init SoundManager
 	scene->domain().global<SoundManager>().init({explosionSoundPath});
@@ -59,10 +65,17 @@ void VulkanVs::init() {
 
 	PointsCounter::setup(*scene);
 
+	demon1::setup(*scene);
+	demon2::setup(*scene);
+	demon3::setup(*scene);
+
+	DemonManager::setup(*scene);
+
 	SlotMachineSystem::setup(*scene);
 
 	LifeManagerSystem::setup(*scene);
 
+	demon::OfferSystem::setup(*scene);
 	SlotMachineSystem::onDrawn(*scene, PointsCounter::count);
 
 	settingsScene = createRef<Scene>();
@@ -105,10 +118,14 @@ void VulkanVs::update() {
 	if (scene == mainScene) {
 		//static auto prevTime = std::chrono::high_resolution_clock::now();
 
+		ButtonSystem::update(*scene);
+
 		PointsCounter::update(*scene);
 
 		SlotMachineSystem::update(*scene);
 		LifeManagerSystem::update(*scene);
+
+		DemonManager::update(*scene);
 
 	// synchronize audio
 		scene->domain().global<SoundManager>().audioManager->synchronize(scene->domain());
