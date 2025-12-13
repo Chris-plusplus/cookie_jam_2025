@@ -17,6 +17,8 @@ void OfferSystem::spawnOfferDialogue(Scene& scene) {
     auto&& offerDialogue = scene.domain().getComponent<OfferDialogue>(manager);
 
     auto&& renderer = *gfx::Renderer::current();
+
+    // prepare container texture and params
     auto&& containerTexture = makeTexture(std::string_view("textures/Asset_szkice/Okienko_dialog.png"));
     offerDialogue.containerWidth = containerTexture->getWidth();
     offerDialogue.containerHeight = containerTexture->getHeight();
@@ -33,6 +35,7 @@ void OfferSystem::spawnOfferDialogue(Scene& scene) {
     offerDialogue.containerScaleX = 0.9;
     offerDialogue.containerScaleY = 0.9;
 
+    // prepare accept button texture and params
     auto&& acceptTexture = makeTexture(std::string_view("textures/Asset_szkice/Akceptacja_button.png"));
     offerDialogue.buttonWidth = acceptTexture->getWidth();
     offerDialogue.buttonHeight = acceptTexture->getHeight();
@@ -45,6 +48,7 @@ void OfferSystem::spawnOfferDialogue(Scene& scene) {
             }
     );
 
+    // prepare dismiss button texture and params
     auto&& dismissTexture = makeTexture(std::string_view("textures/Asset_szkice/Odrzucenie_button.png"));
     offerDialogue.dismissButtonPipeline = renderer.getPipelineManager()->create(
             gfx::pipeline::Pipeline::Desc{
@@ -56,6 +60,7 @@ void OfferSystem::spawnOfferDialogue(Scene& scene) {
     );
 
 
+    // add accept button to the screen
     offerDialogue.acceptButtonX = offerDialogue.buttonWidth / 2;
     offerDialogue.acceptButtonY = windowHeight - offerDialogue.buttonHeight / 2;
     offerDialogue.buttonScaleX = 0.9;
@@ -78,6 +83,7 @@ void OfferSystem::spawnOfferDialogue(Scene& scene) {
     );
     accept.addComponent(AcceptButtonFlag{});
 
+    // add dismiss button texture to the screen
     offerDialogue.dismissButtonX = offerDialogue.buttonWidth;
     offerDialogue.dismissButtonY = windowHeight - offerDialogue.buttonHeight;
 
@@ -98,6 +104,7 @@ void OfferSystem::spawnOfferDialogue(Scene& scene) {
     );
     dismiss.addComponent(DismissButtonFlag{});
 
+    // add container button texture to the screen
     auto&& container = scene.newEntity();
     container.addComponent(
         scene::components::TransformComponent{
