@@ -23,7 +23,7 @@ void OfferSystem::spawnOfferDialogue(Scene& scene) {
 	auto&& renderer = *gfx::Renderer::current();
 
 	// prepare container texture and params
-	auto&& containerTexture = makeTexture(std::string_view("textures/Asset_szkice/Okienko_dialog.png"));
+	auto&& containerTexture = makeTexture(std::string_view("textures/Asset_final/okienko_dialog.png"));
 	offerDialogue.containerWidth = containerTexture->getWidth();
 	offerDialogue.containerHeight = containerTexture->getHeight();
 	offerDialogue.containerPipeline = renderer.getPipelineManager()->create(
@@ -40,7 +40,7 @@ void OfferSystem::spawnOfferDialogue(Scene& scene) {
 	offerDialogue.containerScaleY = 0.9;
 
 	// prepare accept button texture and params
-	auto&& acceptTexture = makeTexture(std::string_view("textures/Asset_szkice/Akceptacja_button.png"));
+	auto&& acceptTexture = makeTexture(std::string_view("textures/Asset_final/Akceptacja_button.png"));
 	offerDialogue.buttonWidth = acceptTexture->getWidth();
 	offerDialogue.buttonHeight = acceptTexture->getHeight();
 	offerDialogue.acceptButtonPipeline = renderer.getPipelineManager()->create(
@@ -53,7 +53,7 @@ void OfferSystem::spawnOfferDialogue(Scene& scene) {
 		);
 
 	// prepare dismiss button texture and params
-	auto&& dismissTexture = makeTexture(std::string_view("textures/Asset_szkice/Odrzucenie_button.png"));
+	auto&& dismissTexture = makeTexture(std::string_view("textures/Asset_final/Odrzucenie_button.png"));
 	offerDialogue.dismissButtonPipeline = renderer.getPipelineManager()->create(
 		gfx::pipeline::Pipeline::Desc{
 			.vertexShaderPath = "shaders/vertex_default.glsl",
