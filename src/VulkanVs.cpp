@@ -75,7 +75,7 @@ void VulkanVs::init() {
 
 	DemonManager::setup(*scene);
 
-	SwitchSystem::addEffect<PositiveSwitch>(*scene, 0.5);
+	SwitchSystem::addEffect<PositiveSwitch>(*scene, 1);
 
 	SlotMachineSystem::setup(*scene);
 

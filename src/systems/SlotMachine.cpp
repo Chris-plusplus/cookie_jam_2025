@@ -360,7 +360,7 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 			}
 			int count = 0, val = 0;
 			for (int i = 0; i != counts.size(); ++i) {
-				if (counts[i] > val) {
+				if (counts[i] > count) {
 					count = counts[i];
 					val = i;
 				}
@@ -368,19 +368,22 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 			return std::tuple{count, val};
 		};
 
-		Logger::debug("switchVal = {}", switchVal);
+		//Logger::debug("switchVal = {}", switchVal);
 		auto&& [count, what] = getScore();
-		Logger::debug("count = {}", count);
+		//Logger::debug("count = {}", count);
+		//Logger::debug("what = {}", slots::rewardAsString((slots::RewardType)what));
 		if (switchVal < 0 && count == slotMachine.drawn.size()) {
 			auto i = SwitchSystem::indexToSwitch(slotMachine.drawn.size() - 1);
 			auto original = drawnObj[i]->type;
 			while (drawnObj[i]->type == original) {
 				drawnObj[i]->type = scene.domain().global<slots::RewardGenerator>().generateReward();
+				slotMachine.drawn[i] = (int)drawnObj[i]->type;
 			}
 			scene.domain().getComponent<scene::components::MeshComponent>(drawnObjEnt[i]).pipeline = slotMachine.symbols[(int)drawnObj[i]->type];
 		} else if (switchVal > 0 && count == slotMachine.drawn.size() - 1) {
 			auto i = std::ranges::find_if_not(slotMachine.drawn, [what](auto x) { return x == what; }) - slotMachine.drawn.begin();
 			drawnObj[i]->type = (slots::RewardType)what;
+			slotMachine.drawn[i] = what;
 			scene.domain().getComponent<scene::components::MeshComponent>(drawnObjEnt[i]).pipeline = slotMachine.symbols[(int)drawnObj[i]->type];
 		}
 
