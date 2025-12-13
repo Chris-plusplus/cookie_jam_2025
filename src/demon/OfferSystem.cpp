@@ -16,10 +16,9 @@
 #include <systems/Button.h>
 
 namespace demon {
-void OfferSystem::spawnOfferDialogue(Scene& scene) {
-	auto&& manager = scene.domain().view<OfferDialogue>().front();
-	auto&& dial = scene.domain().getComponent<OfferDialogue>(manager);
-
+void OfferSystem::setup(Scene& scene) {
+	auto&& manager = scene.newEntity();
+	auto&& dial = manager.addComponent(OfferDialogue{});
 	auto&& renderer = *gfx::Renderer::current();
 
 	// prepare container texture and params
@@ -74,7 +73,7 @@ void OfferSystem::spawnOfferDialogue(Scene& scene) {
 	auto&& accept = scene.newEntity();
 	auto&& acceptT = accept.addComponent(
 		scene::components::TransformComponent{
-			.position = {dial.acceptButtonX, dial.acceptButtonY, -0.7},
+			.position = {dial.acceptButtonX, dial.acceptButtonY, 1.0},
 			.rotation = {0, 0, 0, 1},
 			.scale = {dial.buttonWidth * dial.buttonScaleX, dial.buttonHeight * dial.buttonScaleY, 0}
 		}
@@ -87,8 +86,9 @@ void OfferSystem::spawnOfferDialogue(Scene& scene) {
 		}
 	);
 	ButtonSystem::setup(scene, accept.handle(), float2{-acceptT.scale.x, acceptT.scale.y} / 2.f, float2{acceptT.scale.x, -acceptT.scale.y} / 2.f, [&](...) {
-		Logger::debug("accepted");
+		clearOfferDialogue(scene);
 	});
+	accept.addComponent(AcceptButtonFlag{});
 
 	// add dismiss button texture to the screen
 	dial.dismissButtonX = dial.acceptButtonX - dial.buttonWidth * dial.buttonScaleX;
@@ -97,7 +97,7 @@ void OfferSystem::spawnOfferDialogue(Scene& scene) {
 	auto&& dismiss = scene.newEntity();
 	auto&& dismissT = dismiss.addComponent(
 		scene::components::TransformComponent{
-			.position = {dial.dismissButtonX, dial.dismissButtonY, -0.7},
+			.position = {dial.dismissButtonX, dial.dismissButtonY,  1.0},
 			.rotation = {0, 0, 0, 1},
 			.scale = {dial.buttonWidth * dial.buttonScaleX, dial.buttonHeight * dial.buttonScaleY, 0}
 		}
@@ -110,14 +110,15 @@ void OfferSystem::spawnOfferDialogue(Scene& scene) {
 		}
 	);
 	ButtonSystem::setup(scene, dismiss.handle(), float2{-dismissT.scale.x, dismissT.scale.y} / 2.f, float2{dismissT.scale.x, -dismissT.scale.y} / 2.f, [&](...) {
-		Logger::debug("dismiss");
+		clearOfferDialogue(scene);
 	});
+	dismiss.addComponent(DismissButtonFlag{});
 
 	// add container button texture to the screen
 	auto&& container = scene.newEntity();
 	auto&& containerT = container.addComponent(
 		scene::components::TransformComponent{
-			.position = {dial.containerX, dial.containerY, -0.65},
+			.position = {dial.containerX, dial.containerY, 1.0},
 			.rotation = {0, 0, 0, 1},
 			.scale = {dial.containerWidth * dial.containerScaleX, dial.containerHeight * dial.containerScaleY, 0}
 		}
@@ -160,12 +161,35 @@ void OfferSystem::spawnOfferDialogue(Scene& scene) {
 		}
 		MultilineTextSystem::setup(scene, textParent, offerText, *font::FontDB::get()["Arial"]->regular());
 	}
+	spawnOfferDialogue(scene);
 }
 
-void OfferSystem::setup(Scene& scene) {
-	auto&& manager = scene.newEntity();
-	auto&& dial = manager.addComponent(OfferDialogue{});
-	spawnOfferDialogue(scene);
+void OfferSystem::clearOfferDialogue(Scene &scene) {
+	auto&& dial = scene.domain().view<ContainerFlag>().front();
+	auto&& transform = scene.domain().getComponent<scene::components::TransformComponent>(dial);
+	transform.position.z = 1.0;
+
+	auto&& accept = scene.domain().view<AcceptButtonFlag>().front();
+	auto&& transform2 = scene.domain().getComponent<scene::components::TransformComponent>(accept);
+	transform2.position.z = 1.0;
+
+	auto&& dismiss = scene.domain().view<DismissButtonFlag>().front();
+	auto&& transform3 = scene.domain().getComponent<scene::components::TransformComponent>(dismiss);
+	transform3.position.z = 1.0;
+}
+
+void OfferSystem::spawnOfferDialogue(Scene& scene) {
+	auto&& dial = scene.domain().view<ContainerFlag>().front();
+	auto&& transform = scene.domain().getComponent<scene::components::TransformComponent>(dial);
+	transform.position.z = -0.65;
+
+	auto&& accept = scene.domain().view<AcceptButtonFlag>().front();
+	auto&& transform2 = scene.domain().getComponent<scene::components::TransformComponent>(accept);
+	transform2.position.z = -0.7;
+
+	auto&& dismiss = scene.domain().view<DismissButtonFlag>().front();
+	auto&& transform3 = scene.domain().getComponent<scene::components::TransformComponent>(dismiss);
+	transform3.position.z = -0.7;
 }
 
 void OfferSystem::update(Scene& scene) {}

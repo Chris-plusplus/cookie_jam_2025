@@ -14,6 +14,8 @@ namespace demon {
 
         static void spawnOfferDialogue(Scene& scene);
 
+        static void clearOfferDialogue(Scene& scene);
+
         static void update(Scene& scene);
     };
 }
