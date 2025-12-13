@@ -12,5 +12,7 @@ struct SlotMachineSystem {
 	static void update(Scene& scene);
 
 	static slots::RewardType reward(Scene& scene);
-	static const std::vector<slots::RewardType>& drawn(Scene& scene);
+	static const std::vector<int>& drawn(Scene& scene);
+
+	static void onDrawn(Scene& scene, std::function<int(const std::vector<int>&)> event);
 };
