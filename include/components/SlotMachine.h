@@ -12,4 +12,7 @@ struct SlotMachine {
 	float upperBound;
 	float lowerBound;
 	u32 slotCount = 3;
+
+	float leverAnimationSpeed = 0;
+	float leverAnimation = 0;
 };
