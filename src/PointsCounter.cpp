@@ -2,7 +2,11 @@
 #include <archimedes/Text.h>
 #include <archimedes/Font.h>
 #include <Config.h>
-#include "Defaults.h"
+#include <Defaults.h>
+#include <MakeTexture.h>
+#include <MakeMesh.h>
+
+int PointsCounter::score=0;
 
 int PointsCounter::count(const std::vector<int>& wyniki) {
     int sum=0;
@@ -42,26 +46,50 @@ int PointsCounter::count(const std::vector<int>& wyniki) {
 
 //Wizualny licznik punktów
 void PointsCounter::setup(Scene& scene) {
-	auto score = scene.newEntity();
-	auto&& scoreTransform = score.addComponent(
+	auto frame = scene.newEntity();
+	auto frameTexture = makeTexture("textures/Asset_szkice/Score_bar.png");
+	auto&& renderer = *gfx::Renderer::current();
+	auto&& transform = frame.addComponent(
 		scene::components::TransformComponent{
-			.position = {windowWidth/2.f, windowHeight - 170.f, -0.6f},
+			.position = {windowWidth / 2, windowHeight -180, -0.55},
+			.rotation = {0, 0, 0, 1},
+			.scale = {frameTexture->getWidth(), frameTexture->getHeight(), 0}
+		}
+	);
+	auto mesh = makeMesh(defaultCenterVertices(), defaultIndices());
+	auto pipeline = renderer.getPipelineManager()->create(
+		gfx::pipeline::Pipeline::Desc{
+			.vertexShaderPath = "shaders/vertex_default.glsl",
+			.fragmentShaderPath = "shaders/fragment_default.glsl",
+			.textures = {std::move(frameTexture)},
+			.buffers = {defaultUniformBuffer()},
+		}
+		);
+	auto&& meshComp = frame.addComponent(
+		scene::components::MeshComponent{
+			.mesh = mesh,
+			.pipeline = pipeline
+		}
+	);
+	auto points = scene.newEntity();
+	auto&& scoreTransform = points.addComponent(
+		scene::components::TransformComponent{
+			.position = {windowWidth/2.f-10, windowHeight - 195.f, -0.6f},
 			.rotation = {0, 0, 0, 1},
 			.scale = {50, 50, 0}
 		}
 	);
-	scoreTransform.position.y -= 100;
-	score.addComponent<ScoreTextFlag>();
+	points.addComponent<ScoreTextFlag>();
 }
 
 //Aktualizacja scora na liczniku
 void PointsCounter::update(Scene& scene) {
 	auto buffer = defaultUniformBuffer();
-	auto score = scene.entitiesWith<ScoreTextFlag>().front();
-	score.removeComponent<text::TextComponent>();
-	score.addComponent(
+	auto points = scene.entitiesWith<ScoreTextFlag>().front();
+	points.removeComponent<text::TextComponent>();
+	points.addComponent(
 		text::TextComponent(
-			text::convertTo<char32_t>(std::string_view(std::format("score: {}", score.handle()))),
+			text::convertTo<char32_t>(std::string_view(std::format("{}", score))),
 			{buffer},
 			"Arial"
 		)
