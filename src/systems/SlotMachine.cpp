@@ -79,6 +79,31 @@ void SlotMachineSystem::setup(Scene& scene) {
 			}
 		);
 	}
+	{ // init background sprite
+		auto background = scene.newEntity();
+		auto backgroundTexture = makeTexture("textures/background.png");
+		auto&& transform = background.addComponent(
+			scene::components::TransformComponent{
+				.position = {windowWidth / 2, windowHeight / 2, -0.45},
+				.rotation = {0, 0, 0, 1},
+				.scale = float3{backgroundTexture->getWidth(), backgroundTexture->getHeight(), 0} *0.9f
+			}
+		);
+		auto pipeline = renderer.getPipelineManager()->create(
+			gfx::pipeline::Pipeline::Desc{
+				.vertexShaderPath = "shaders/vertex_default.glsl",
+				.fragmentShaderPath = "shaders/fragment_default.glsl",
+				.textures = {std::move(backgroundTexture)},
+				.buffers = {defaultUniformBuffer()},
+			}
+			);
+		auto&& meshComp = background.addComponent(
+			scene::components::MeshComponent{
+				.mesh = mesh,
+				.pipeline = pipeline
+			}
+		);
+	}
 	{ // init cat sprite
 		auto cat = scene.newEntity();
 		auto catTexture = makeTexture("textures/catHead.png");
@@ -140,7 +165,7 @@ void SlotMachineSystem::setup(Scene& scene) {
 	{ // init lever
 		auto lever = scene.newEntity();
 		lever.addComponent<LeverFlag>();
-		float3 leverPos{0, 0, -0.05};
+		float3 leverPos{0, 0, -0.475};
 		{
 			auto file = std::ifstream("leverPos3.txt");
 			file >> leverPos.x >> leverPos.y;
