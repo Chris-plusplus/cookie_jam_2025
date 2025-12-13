@@ -6,7 +6,62 @@
 #include <Config.h>
 #include <fstream>
 #include <archimedes/Input.h>
+#include <lifes/LifeFlag.h>
 
+
+void LifeManagerSystem::drawCoins(Scene& scene) {
+    auto&& manager = scene.domain().view<LifeManager>().front();
+    auto&& lifeManager = scene.domain().getComponent<LifeManager>(manager);
+
+    std::vector<ecs::Entity> toRemove;
+    for (auto&& entity : scene.domain().view<LifeFlag>()) {
+        toRemove.push_back(entity);
+    }
+    for (auto&& entity : toRemove) {
+        scene.domain().kill(entity);
+    }
+
+    float x = lifeManager.containerX / 2;
+    float y = lifeManager.containerY - lifeManager.coinHeight / 2;
+    for (int i = 0; i < lifeManager.currentLifes; i++) {
+        auto&& coin = scene.newEntity();
+        auto&& transform = coin.addComponent(
+        scene::components::TransformComponent{
+            .position = {x, y, -0.6},
+            .rotation = {0, 0, 0, 1},
+            .scale = {lifeManager.coinWidth * lifeManager.coinScaleX, lifeManager.coinHeight * lifeManager.coinScaleY, 0}
+        }
+        );
+        auto mesh = makeMesh(defaultCenterVertices(), defaultIndices());
+        auto&& meshComp = coin.addComponent(
+            scene::components::MeshComponent{
+                .mesh = mesh,
+                .pipeline = lifeManager.fullCoinPipeline
+            }
+        );
+        auto&& flag = coin.addComponent(LifeFlag{});
+        x += lifeManager.coinWidth * lifeManager.coinScaleX;
+    }
+    for (int i = 0; i < lifeManager.maxLifes - lifeManager.currentLifes; i++) {
+        auto&& coin = scene.newEntity();
+        auto&& transform = coin.addComponent(
+        scene::components::TransformComponent{
+            .position = {x, y, -0.6},
+            .rotation = {0, 0, 0, 1},
+            .scale = {lifeManager.coinWidth * lifeManager.coinScaleX, lifeManager.coinHeight * lifeManager.coinScaleY, 0}
+        }
+        );
+        auto mesh = makeMesh(defaultCenterVertices(), defaultIndices());
+        auto&& meshComp = coin.addComponent(
+            scene::components::MeshComponent{
+                .mesh = mesh,
+                .pipeline = lifeManager.emptyCoinPipeline
+            }
+        );
+        auto&& flag = coin.addComponent(LifeFlag{});
+        x += lifeManager.coinWidth * lifeManager.coinScaleX;
+    }
+}
 
 void LifeManagerSystem::setup(Scene& scene) {
     auto manager = scene.newEntity();
@@ -18,14 +73,8 @@ void LifeManagerSystem::setup(Scene& scene) {
     auto&& containerTexture = makeTexture(std::string_view("textures/Asset_szkice/Life_bar_asset.png"));
     slotTexSize.x = containerTexture->getWidth();
     slotTexSize.y = containerTexture->getHeight();
-    auto&& transform = manager.addComponent(
-        scene::components::TransformComponent{
-            .position = {containerTexture->getWidth() / 2, windowHeight - containerTexture->getHeight() / 2, -0.5},
-            .rotation = {0, 0, 0, 1},
-            .scale = {containerTexture->getWidth() * 0.8, containerTexture->getHeight() * 0.8, 0}
-        }
-    );
-
+    lifeManager.containerWidth = containerTexture->getWidth();
+    lifeManager.containerHeight = containerTexture->getHeight();
     lifeManager.containerPipeline = renderer.getPipelineManager()->create(
             gfx::pipeline::Pipeline::Desc{
                 .vertexShaderPath = "shaders/vertex_default.glsl",
@@ -34,6 +83,19 @@ void LifeManagerSystem::setup(Scene& scene) {
                 .buffers = {defaultUniformBuffer()},
             }
     );
+    lifeManager.containerX = lifeManager.containerWidth / 2;
+    lifeManager.containerY = windowHeight + lifeManager.containerHeight / 2;
+    lifeManager.containerScaleX = 0.8;
+    lifeManager.containerScaleY = 0.8;
+    lifeManager.coinScaleX = 0.8;
+    lifeManager.containerY = 0.8;
+    auto&& transform = manager.addComponent(
+    scene::components::TransformComponent{
+        .position = {lifeManager.containerX, lifeManager.containerY, -0.5},
+        .rotation = {0, 0, 0, 1},
+        .scale = {lifeManager.containerWidth * lifeManager.containerScaleX, lifeManager.containerHeight * lifeManager.containerScaleY, 0}
+    }
+);
     auto mesh = makeMesh(defaultCenterVertices(), defaultIndices());
     auto&& meshComp = manager.addComponent(
         scene::components::MeshComponent{
@@ -44,6 +106,8 @@ void LifeManagerSystem::setup(Scene& scene) {
     auto&& emptyCoinTexture = makeTexture(std::string_view("textures/Asset_szkice/Life_token_nieaktywny.png"));
     slotTexSize.x = emptyCoinTexture->getWidth();
     slotTexSize.y = emptyCoinTexture->getHeight();
+    lifeManager.coinWidth = slotTexSize.x;
+    lifeManager.coinHeight = slotTexSize.y;
     lifeManager.emptyCoinPipeline = renderer.getPipelineManager()->create(
             gfx::pipeline::Pipeline::Desc{
                 .vertexShaderPath = "shaders/vertex_default.glsl",
@@ -64,8 +128,12 @@ void LifeManagerSystem::setup(Scene& scene) {
                 .buffers = {defaultUniformBuffer()},
             }
     );
+
+    drawCoins(scene);
 }
 
-void LifeManagerSystem::update(Scene& scene) {}
+void LifeManagerSystem::update(Scene& scene) {
+
+}
 
 void LifeManagerSystem::updateAnimation(Scene &scene) {}

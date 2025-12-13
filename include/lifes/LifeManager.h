@@ -11,6 +11,14 @@ struct LifeManager {
     Ref<gfx::pipeline::Pipeline> emptyCoinPipeline;
     Ref<gfx::pipeline::Pipeline> fullCoinPipeline;
 
+
+
+    float coinWidth, coinHeight;
+    float coinScaleX, coinScaleY;
+    float containerWidth, containerHeight;
+    float containerX, containerY;
+    float containerScaleX, containerScaleY;
+
     int currentLifes = 9;
     int maxLifes = 9;
 };

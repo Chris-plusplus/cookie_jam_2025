@@ -9,4 +9,6 @@ struct LifeManagerSystem {
 
     static void updateAnimation(Scene& scene);
     static void update(Scene& scene);
+
+    static void drawCoins(Scene& scene);
 };
