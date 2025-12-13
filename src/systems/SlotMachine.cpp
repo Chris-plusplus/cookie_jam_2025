@@ -84,7 +84,7 @@ void SlotMachineSystem::setup(Scene& scene) {
 		auto backgroundTexture = makeTexture("textures/background.png");
 		auto&& transform = background.addComponent(
 			scene::components::TransformComponent{
-				.position = {windowWidth / 2, windowHeight / 2, -0.45},
+				.position = {windowWidth / 2, windowHeight / 2, -0.3},
 				.rotation = {0, 0, 0, 1},
 				.scale = float3{backgroundTexture->getWidth(), backgroundTexture->getHeight(), 0} *0.9f
 			}

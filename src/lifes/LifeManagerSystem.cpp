@@ -70,7 +70,7 @@ void LifeManagerSystem::setup(Scene& scene) {
 
 	// init lifes container sprite
 	float2 slotTexSize{};
-	auto&& containerTexture = makeTexture(std::string_view("textures/Asset_szkice/Life_bar_asset.png"));
+	auto&& containerTexture = makeTexture(std::string_view("textures/Asset_final/health_bar.png"));
 	slotTexSize.x = containerTexture->getWidth();
 	slotTexSize.y = containerTexture->getHeight();
 	lifeManager.containerWidth = containerTexture->getWidth();
@@ -87,8 +87,8 @@ void LifeManagerSystem::setup(Scene& scene) {
 	lifeManager.containerY = windowHeight - lifeManager.containerHeight / 2;
 	lifeManager.containerScaleX = 0.9;
 	lifeManager.containerScaleY = 0.9;
-	lifeManager.coinScaleX = 0.8;
-	lifeManager.coinScaleY = 0.8;
+	lifeManager.coinScaleX = 0.025;
+	lifeManager.coinScaleY = 0.025;
 	auto&& transform = manager.addComponent(
 		scene::components::TransformComponent{
 			.position = {lifeManager.containerX, lifeManager.containerY, -0.5},
@@ -103,7 +103,7 @@ void LifeManagerSystem::setup(Scene& scene) {
 			.pipeline = lifeManager.containerPipeline
 		}
 	);
-	auto&& emptyCoinTexture = makeTexture(std::string_view("textures/Asset_szkice/Life_token_nieaktywny.png"));
+	auto&& emptyCoinTexture = makeTexture(std::string_view("textures/Asset_final/Monetka_wygaszona.png"));
 	slotTexSize.x = emptyCoinTexture->getWidth();
 	slotTexSize.y = emptyCoinTexture->getHeight();
 	lifeManager.coinWidth = slotTexSize.x;
@@ -117,7 +117,7 @@ void LifeManagerSystem::setup(Scene& scene) {
 		}
 		);
 
-	auto&& fullCoinTexture = makeTexture(std::string_view("textures/Asset_szkice/Life_token_aktywny.png"));
+	auto&& fullCoinTexture = makeTexture(std::string_view("textures/Asset_final/Monetka_aktywna.png"));
 	slotTexSize.x = fullCoinTexture->getWidth();
 	slotTexSize.y = fullCoinTexture->getHeight();
 	lifeManager.fullCoinPipeline = renderer.getPipelineManager()->create(
