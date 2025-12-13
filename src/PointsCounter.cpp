@@ -1,4 +1,8 @@
 #include <PointsCounter.h>
+#include <archimedes/Text.h>
+#include <archimedes/Font.h>
+#include <Config.h>
+#include "Defaults.h"
 
 int PointsCounter::count(const std::vector<int>& wyniki) {
     int sum=0;
@@ -35,3 +39,31 @@ int PointsCounter::count(const std::vector<int>& wyniki) {
     score+=sum;
     return sum;
 };
+
+//Wizualny licznik punktów
+void PointsCounter::setup(Scene& scene) {
+	auto score = scene.newEntity();
+	auto&& scoreTransform = score.addComponent(
+		scene::components::TransformComponent{
+			.position = {windowWidth/2.f, windowHeight - 170.f, -0.6f},
+			.rotation = {0, 0, 0, 1},
+			.scale = {50, 50, 0}
+		}
+	);
+	scoreTransform.position.y -= 100;
+	score.addComponent<ScoreTextFlag>();
+}
+
+//Aktualizacja scora na liczniku
+void PointsCounter::update(Scene& scene) {
+	auto buffer = defaultUniformBuffer();
+	auto score = scene.entitiesWith<ScoreTextFlag>().front();
+	score.removeComponent<text::TextComponent>();
+	score.addComponent(
+		text::TextComponent(
+			text::convertTo<char32_t>(std::string_view(std::format("score: {}", score.handle()))),
+			{buffer},
+			"Arial"
+		)
+	);
+}
