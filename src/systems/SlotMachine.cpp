@@ -213,6 +213,10 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 		float adjAcc = slotObject.acceleration * deltaTime;
 		float adjJolt = slotObject.jolt * deltaTime;
 
+		if (adjSpeed > 0) {
+			Logger::debug("{}", adjSpeed);
+		}
+
 		// update physics
 		transform.position.y += adjSpeed;
 		slotObject.speed += adjAcc;
@@ -237,6 +241,7 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 
 			slotMachine.strideCompute = true;
 			slotMachine.stride = true;
+			slotObject.speed = slotObject.minSpeed;
 
 			//slotObject.speed = 0;
 			//slotMachine.slotStride = false;
