@@ -17,9 +17,7 @@ void LifeManagerSystem::drawCoins(Scene& scene) {
 	for (auto&& entity : scene.domain().view<LifeFlag>()) {
 		toRemove.push_back(entity);
 	}
-	Logger::debug("removing");
 	for (auto&& entity : toRemove) {
-		Logger::debug("{:v}", entity);
 		scene.domain().kill(entity);
 	}
 
