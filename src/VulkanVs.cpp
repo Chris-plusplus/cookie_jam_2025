@@ -13,9 +13,10 @@
 #include <MakeMesh.h>
 
 #include "PointsCounter.h"
+#include "demon/OfferSystem.h"
 #include "lifes/LifeManagerSystem.h"
 
-//ecs::Entity textEntity = ecs::nullEntity;
+ecs::Entity textEntity = ecs::nullEntity;
 decltype(std::chrono::high_resolution_clock::now()) now{};
 
 Unique<ecs::Domain> globalDomain;
@@ -62,6 +63,8 @@ void VulkanVs::init() {
 	SlotMachineSystem::setup(*scene);
 
 	LifeManagerSystem::setup(*scene);
+
+	demon::OfferSystem::setup(*scene);
 
 	settingsScene = createRef<Scene>();
 	auto setting = settingsScene->newEntity();
@@ -113,6 +116,7 @@ void VulkanVs::update() {
 
 	/*if (std::chrono::high_resolution_clock::now() - now > std::chrono::seconds(3)) {
 		MultilineTextSystem::remove(*scene, textEntity);
-	}*/
+		*/
+	}
 }
 
