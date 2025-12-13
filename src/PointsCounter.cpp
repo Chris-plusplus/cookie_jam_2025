@@ -4,6 +4,7 @@
 #include <Config.h>
 #include <Defaults.h>
 #include <lifes/LifeManager.h>
+#include "demon/deals.h"
 
 int PointsCounter::score = 0;
 
