@@ -41,35 +41,10 @@ int PointsCounter::count(const std::vector<int>& wyniki) {
 
 //Wizualny licznik punktów
 void PointsCounter::setup(Scene& scene) {
-	auto frame = scene.newEntity();
-	auto frameTexture = makeTexture("textures/Asset_szkice/Score_bar.png");
-	auto&& renderer = *gfx::Renderer::current();
-	auto&& transform = frame.addComponent(
-		scene::components::TransformComponent{
-			.position = {windowWidth / 2, windowHeight - 180, -0.55},
-			.rotation = {0, 0, 0, 1},
-			.scale = {frameTexture->getWidth(), frameTexture->getHeight(), 0}
-		}
-	);
-	auto mesh = makeMesh(defaultCenterVertices(), defaultIndices());
-	auto pipeline = renderer.getPipelineManager()->create(
-		gfx::pipeline::Pipeline::Desc{
-			.vertexShaderPath = "shaders/vertex_default.glsl",
-			.fragmentShaderPath = "shaders/fragment_default.glsl",
-			.textures = {std::move(frameTexture)},
-			.buffers = {defaultUniformBuffer()},
-		}
-		);
-	auto&& meshComp = frame.addComponent(
-		scene::components::MeshComponent{
-			.mesh = mesh,
-			.pipeline = pipeline
-		}
-	);
 	auto points = scene.newEntity();
 	auto&& scoreTransform = points.addComponent(
 		scene::components::TransformComponent{
-			.position = {windowWidth / 2.f - 10, windowHeight - 195.f, -0.6f},
+			.position = {windowWidth / 2.f - 10, windowHeight - 225.f, -0.6f},
 			.rotation = {0, 0, 0, 1},
 			.scale = {50, 50, 0}
 		}
