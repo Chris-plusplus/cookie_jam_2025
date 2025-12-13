@@ -1,7 +1,7 @@
 #include <systems/MultilineText.h>
 #include <Defaults.h>
 
-void MultilineTextSystem::setup(Scene& scene, ecs::Entity _parent, const std::u32string& text, font::Face& font) {
+void MultilineTextSystem::setup(Scene& scene, ecs::Entity _parent, const std::u32string& text, font::Face& font, const std::vector<std::string>& shaders) {
 	remove(scene, _parent);
 
 	auto lines = text | std::views::split('\n') | std::views::transform([](auto&& subview) {
@@ -23,7 +23,8 @@ void MultilineTextSystem::setup(Scene& scene, ecs::Entity _parent, const std::u3
 			text::TextComponent(
 				std::u32string(line.begin(), line.end()),
 				{defaultUniformBuffer()},
-				font
+				font,
+				shaders[i % shaders.size()]
 			)
 		);
 	}
