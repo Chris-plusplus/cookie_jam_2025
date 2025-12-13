@@ -18,15 +18,15 @@
 namespace demon {
 void OfferSystem::spawnOfferDialogue(Scene& scene) {
 	auto&& manager = scene.domain().view<OfferDialogue>().front();
-	auto&& offerDialogue = scene.domain().getComponent<OfferDialogue>(manager);
+	auto&& dial = scene.domain().getComponent<OfferDialogue>(manager);
 
 	auto&& renderer = *gfx::Renderer::current();
 
 	// prepare container texture and params
 	auto&& containerTexture = makeTexture(std::string_view("textures/Asset_final/okienko_dialog.png"));
-	offerDialogue.containerWidth = containerTexture->getWidth();
-	offerDialogue.containerHeight = containerTexture->getHeight();
-	offerDialogue.containerPipeline = renderer.getPipelineManager()->create(
+	dial.containerWidth = containerTexture->getWidth();
+	dial.containerHeight = containerTexture->getHeight();
+	dial.containerPipeline = renderer.getPipelineManager()->create(
 		gfx::pipeline::Pipeline::Desc{
 			.vertexShaderPath = "shaders/vertex_default.glsl",
 			.fragmentShaderPath = "shaders/fragment_default.glsl",
@@ -34,16 +34,17 @@ void OfferSystem::spawnOfferDialogue(Scene& scene) {
 			.buffers = {defaultUniformBuffer()},
 		}
 		);
-	offerDialogue.containerX = offerDialogue.containerWidth / 2;
-	offerDialogue.containerY = windowHeight - offerDialogue.containerHeight / 2;
-	offerDialogue.containerScaleX = 0.9;
-	offerDialogue.containerScaleY = 0.9;
+	dial.containerScaleX = 0.9;
+	dial.containerScaleY = 0.9;
+	dial.containerX = windowWidth / 2;
+	dial.containerY = windowHeight - dial.containerHeight * dial.containerScaleY / 2;
+
 
 	// prepare accept button texture and params
 	auto&& acceptTexture = makeTexture(std::string_view("textures/Asset_final/Akceptacja_button.png"));
-	offerDialogue.buttonWidth = acceptTexture->getWidth();
-	offerDialogue.buttonHeight = acceptTexture->getHeight();
-	offerDialogue.acceptButtonPipeline = renderer.getPipelineManager()->create(
+	dial.buttonWidth = acceptTexture->getWidth();
+	dial.buttonHeight = acceptTexture->getHeight();
+	dial.acceptButtonPipeline = renderer.getPipelineManager()->create(
 		gfx::pipeline::Pipeline::Desc{
 			.vertexShaderPath = "shaders/vertex_default.glsl",
 			.fragmentShaderPath = "shaders/fragment_default.glsl",
@@ -54,7 +55,7 @@ void OfferSystem::spawnOfferDialogue(Scene& scene) {
 
 	// prepare dismiss button texture and params
 	auto&& dismissTexture = makeTexture(std::string_view("textures/Asset_final/Odrzucenie_button.png"));
-	offerDialogue.dismissButtonPipeline = renderer.getPipelineManager()->create(
+	dial.dismissButtonPipeline = renderer.getPipelineManager()->create(
 		gfx::pipeline::Pipeline::Desc{
 			.vertexShaderPath = "shaders/vertex_default.glsl",
 			.fragmentShaderPath = "shaders/fragment_default.glsl",
@@ -63,26 +64,26 @@ void OfferSystem::spawnOfferDialogue(Scene& scene) {
 		}
 		);
 
-
+	dial.buttonScaleX = 0.9;
+	dial.buttonScaleY = 0.9;
 	// add accept button to the screen
-	offerDialogue.acceptButtonX = offerDialogue.buttonWidth / 2;
-	offerDialogue.acceptButtonY = windowHeight - offerDialogue.buttonHeight / 2;
-	offerDialogue.buttonScaleX = 0.9;
-	offerDialogue.buttonScaleY = 0.9;
+	dial.acceptButtonX = dial.containerX + dial.containerWidth / 2 * dial.containerScaleX - 1.55 * dial.buttonWidth * dial.buttonScaleX;
+	dial.acceptButtonY = dial.containerY - dial.containerHeight / 2 * dial.containerScaleY + 1.75 * dial.buttonHeight * dial.buttonScaleY;
+
 
 	auto&& accept = scene.newEntity();
 	auto&& acceptT = accept.addComponent(
 		scene::components::TransformComponent{
-			.position = {offerDialogue.acceptButtonX, offerDialogue.acceptButtonY, -0.7},
+			.position = {dial.acceptButtonX, dial.acceptButtonY, -0.7},
 			.rotation = {0, 0, 0, 1},
-			.scale = {offerDialogue.buttonWidth * offerDialogue.buttonScaleX, offerDialogue.buttonHeight * offerDialogue.buttonScaleY, 0}
+			.scale = {dial.buttonWidth * dial.buttonScaleX, dial.buttonHeight * dial.buttonScaleY, 0}
 		}
 	);
 	auto mesh1 = makeMesh(defaultCenterVertices(), defaultIndices());
 	accept.addComponent(
 		scene::components::MeshComponent{
 			.mesh = mesh1,
-			.pipeline = offerDialogue.acceptButtonPipeline
+			.pipeline = dial.acceptButtonPipeline
 		}
 	);
 	ButtonSystem::setup(scene, accept.handle(), float2{-acceptT.scale.x, acceptT.scale.y} / 2.f, float2{acceptT.scale.x, -acceptT.scale.y} / 2.f, [&](...) {
@@ -90,22 +91,22 @@ void OfferSystem::spawnOfferDialogue(Scene& scene) {
 	});
 
 	// add dismiss button texture to the screen
-	offerDialogue.dismissButtonX = offerDialogue.buttonWidth;
-	offerDialogue.dismissButtonY = windowHeight - offerDialogue.buttonHeight;
+	dial.dismissButtonX = dial.acceptButtonX - dial.buttonWidth * dial.buttonScaleX;
+	dial.dismissButtonY = dial.acceptButtonY;
 
 	auto&& dismiss = scene.newEntity();
 	auto&& dismissT = dismiss.addComponent(
 		scene::components::TransformComponent{
-			.position = {offerDialogue.dismissButtonX, offerDialogue.dismissButtonY, -0.7},
+			.position = {dial.dismissButtonX, dial.dismissButtonY, -0.7},
 			.rotation = {0, 0, 0, 1},
-			.scale = {offerDialogue.buttonWidth * offerDialogue.buttonScaleX, offerDialogue.buttonHeight * offerDialogue.buttonScaleY, 0}
+			.scale = {dial.buttonWidth * dial.buttonScaleX, dial.buttonHeight * dial.buttonScaleY, 0}
 		}
 	);
 	auto mesh2 = makeMesh(defaultCenterVertices(), defaultIndices());
 	dismiss.addComponent(
 		scene::components::MeshComponent{
 			.mesh = mesh2,
-			.pipeline = offerDialogue.dismissButtonPipeline
+			.pipeline = dial.dismissButtonPipeline
 		}
 	);
 	ButtonSystem::setup(scene, dismiss.handle(), float2{-dismissT.scale.x, dismissT.scale.y} / 2.f, float2{dismissT.scale.x, -dismissT.scale.y} / 2.f, [&](...) {
@@ -116,16 +117,16 @@ void OfferSystem::spawnOfferDialogue(Scene& scene) {
 	auto&& container = scene.newEntity();
 	auto&& containerT = container.addComponent(
 		scene::components::TransformComponent{
-			.position = {offerDialogue.containerX, offerDialogue.containerY, -0.7},
+			.position = {dial.containerX, dial.containerY, -0.65},
 			.rotation = {0, 0, 0, 1},
-			.scale = {offerDialogue.containerWidth * offerDialogue.containerScaleX, offerDialogue.containerHeight * offerDialogue.containerScaleY, 0}
+			.scale = {dial.containerWidth * dial.containerScaleX, dial.containerHeight * dial.containerScaleY, 0}
 		}
 	);
 	auto mesh3 = makeMesh(defaultCenterVertices(), defaultIndices());
 	container.addComponent(
 		scene::components::MeshComponent{
 			.mesh = mesh3,
-			.pipeline = offerDialogue.containerPipeline
+			.pipeline = dial.containerPipeline
 		}
 	);
 	container.addComponent(ContainerFlag{});
@@ -163,7 +164,7 @@ void OfferSystem::spawnOfferDialogue(Scene& scene) {
 
 void OfferSystem::setup(Scene& scene) {
 	auto&& manager = scene.newEntity();
-	auto&& offerDialogue = manager.addComponent(OfferDialogue{});
+	auto&& dial = manager.addComponent(OfferDialogue{});
 	spawnOfferDialogue(scene);
 }
 
