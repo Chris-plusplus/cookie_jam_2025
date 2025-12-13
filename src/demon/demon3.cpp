@@ -8,9 +8,10 @@ void demon3::setup(Scene& scene) {
     auto head = scene.newEntity();
     auto headTexture = makeTexture("textures/Asset_szkice/Demon3_glowa_asset.png");
     auto&& renderer = *gfx::Renderer::current();
+    head.addComponent<Demon3Flag>();
     auto&& transform = head.addComponent(
         scene::components::TransformComponent{
-            .position = {windowWidth /5, windowHeight*0.4, -0.4},
+            .position = {windowWidth /5, windowHeight*0.4, 1},
             .rotation = {0, 0, 0, 1},
             .scale = {headTexture->getWidth()*0.65, headTexture->getHeight()*0.7, 0}
         }
@@ -30,4 +31,15 @@ void demon3::setup(Scene& scene) {
             .pipeline = pipeline
         }
     );
+}
+void demon3::show(Scene& scene) {
+    auto head = scene.entitiesWith<Demon3Flag>().front();
+    auto && transform = head.getComponent<scene::components::TransformComponent>();
+    transform.position.z=-0.4;
+
+}
+void demon3::hide(Scene& scene) {
+    auto head = scene.entitiesWith<Demon3Flag>().front();
+    auto && transform = head.getComponent<scene::components::TransformComponent>();
+    transform.position.z=1;
 }

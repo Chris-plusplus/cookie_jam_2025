@@ -5,8 +5,8 @@ using namespace arch;
 
 class demon2 {
 public:
-    //    void show();
-    // void hide();
+    static void show(Scene& scene);
+    static void hide(Scene& scene);
     static void setup(Scene& scene);
 };
 
