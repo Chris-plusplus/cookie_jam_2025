@@ -13,6 +13,9 @@
 #include <cmath>
 #include <numbers>
 #include <demon/DemonManager.h>
+#include <demon/PositiveSwitch.h>
+#include <demon/NegativeSwitch.h>
+#include <demon/SwitchSystem.h>
 
 using namespace std::chrono_literals;
 
@@ -154,7 +157,7 @@ void SlotMachineSystem::setup(Scene& scene) {
 				auto&& meshCompSlot = slotEntity.addComponent(
 					scene::components::MeshComponent{
 						.mesh = mesh,
-						.pipeline = slotMachine.symbols[i]
+						.pipeline = slotMachine.symbols[(int)scene.domain().global<slots::RewardGenerator>().generateReward()]
 					}
 				);
 				slotEntity.addComponent<SlotObject>();
@@ -326,22 +329,59 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 
 		// check reward
 		auto center = (slotMachine.upperBound + slotMachine.lowerBound) / 2;
+		std::vector<SlotObject*> drawnObj;
+		std::vector<ecs::Entity> drawnObjEnt;
 		for (auto&& col : slotMachine.slotsByCollumn) {
 			// find closest to center in collumn
-			auto ofMin = slots::RewardType::_none;
 			float min = std::numeric_limits<float>::infinity();
+			SlotObject* minObj = nullptr;
+			ecs::Entity minEnt = ecs::nullEntity;
 			for (auto&& slotEntity : col) {
 				auto&& slotObject = scene.domain().getComponent<SlotObject>(slotEntity);
 				auto&& transform = scene.domain().getComponent<scene::components::TransformComponent>(slotEntity);
 				auto diff = std::fabs(transform.position.y - center);
 				if (diff < min) {
 					min = diff;
-					ofMin = slotObject.type;
+					minObj = &slotObject;
+					minEnt = slotEntity;
 				}
 			}
-			Logger::debug("got = {}", slots::rewardAsString(ofMin));
-			slotMachine.drawn.push_back((int)ofMin);
+			Logger::debug("got = {}", slots::rewardAsString(minObj->type));
+			slotMachine.drawn.push_back((int)minObj->type);
+			drawnObj.push_back(minObj);
+			drawnObjEnt.push_back(minEnt);
+		}
 
+		auto switchVal = SwitchSystem::getSwitch(scene);
+		auto getScore = [&slotMachine] {
+			std::array<int, (int)slots::RewardType::_count> counts{};
+			for (auto&& v : slotMachine.drawn) {
+				++counts[v];
+			}
+			int count = 0, val = 0;
+			for (int i = 0; i != counts.size(); ++i) {
+				if (counts[i] > val) {
+					count = counts[i];
+					val = i;
+				}
+			}
+			return std::tuple{count, val};
+		};
+
+		Logger::debug("switchVal = {}", switchVal);
+		auto&& [count, what] = getScore();
+		Logger::debug("count = {}", count);
+		if (switchVal < 0 && count == slotMachine.drawn.size()) {
+			auto i = SwitchSystem::indexToSwitch(slotMachine.drawn.size() - 1);
+			auto original = drawnObj[i]->type;
+			while (drawnObj[i]->type == original) {
+				drawnObj[i]->type = scene.domain().global<slots::RewardGenerator>().generateReward();
+			}
+			scene.domain().getComponent<scene::components::MeshComponent>(drawnObjEnt[i]).pipeline = slotMachine.symbols[(int)drawnObj[i]->type];
+		} else if (switchVal > 0 && count == slotMachine.drawn.size() - 1) {
+			auto i = std::ranges::find_if_not(slotMachine.drawn, [what](auto x) { return x == what; }) - slotMachine.drawn.begin();
+			drawnObj[i]->type = (slots::RewardType)what;
+			scene.domain().getComponent<scene::components::MeshComponent>(drawnObjEnt[i]).pipeline = slotMachine.symbols[(int)drawnObj[i]->type];
 		}
 
 		if (slotMachine.onDrawn) {

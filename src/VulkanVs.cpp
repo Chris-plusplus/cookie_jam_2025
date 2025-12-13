@@ -21,6 +21,9 @@
 #include "demon/demon1.h"
 #include "demon/demon2.h"
 #include "demon/demon3.h"
+#include "demon/SwitchSystem.h"
+#include "demon/NegativeSwitch.h"
+#include "demon/PositiveSwitch.h"
 
 ecs::Entity textEntity = ecs::nullEntity;
 decltype(std::chrono::high_resolution_clock::now()) now{};
@@ -71,6 +74,8 @@ void VulkanVs::init() {
 	demon3::setup(*scene);
 
 	DemonManager::setup(*scene);
+
+	SwitchSystem::addEffect<PositiveSwitch>(*scene, 0.5);
 
 	SlotMachineSystem::setup(*scene);
 
