@@ -182,7 +182,7 @@ void OfferSystem::spawnOfferDialogue(Scene& scene, std::string_view offerText) {
 				.scale = {fontSize, fontSize, 0}
 			}
 		);
-		transform.position.z = -0.8;
+		transform.position.z = -1.0;
 
 		std::u32string offerText;
 		{
