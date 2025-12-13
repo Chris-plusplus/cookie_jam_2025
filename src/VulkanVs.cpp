@@ -11,6 +11,7 @@
 #include <systems/MultilineText.h>
 #include <systems/SlotMachine.h>
 #include <MakeMesh.h>
+#include <systems/PledgeSystem.h>
 
 #include "PointsCounter.h"
 #include "lifes/LifeManagerSystem.h"
@@ -109,6 +110,15 @@ void VulkanVs::update() {
 
 		SlotMachineSystem::update(*scene);
 		LifeManagerSystem::update(*scene);
+
+		if (input::Keyboard::Q.pressed()) {
+			PledgeSystem::setup(*scene);
+			PledgeSystem::setCallback(*scene, [&] {
+				Logger::debug("anim end");
+			});
+		}
+
+		PledgeSystem::update(*scene);
 
 	// synchronize audio
 		scene->domain().global<SoundManager>().audioManager->synchronize(scene->domain());
