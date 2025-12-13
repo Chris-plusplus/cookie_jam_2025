@@ -80,13 +80,13 @@ void SlotMachineSystem::setup(Scene& scene) {
 	);
 
 	{ // init slots objects
-		auto file = std::ifstream("slotConfig.txt");
+		auto file = std::ifstream("slotConfig3.txt");
 		for (auto i = 0; i != slotMachine.slotCount; ++i) {
 			float originalX{}, originalY{};
 			file >> originalX >> originalY;
 
-			slotMachine.lowerBound = originalY - 1.f * slotTexSize.y;
-			slotMachine.upperBound = originalY + 2.f * slotTexSize.y;
+			slotMachine.lowerBound = originalY - 1.5f * slotTexSize.y;
+			slotMachine.upperBound = originalY + 1.5f * slotTexSize.y;
 
 			auto&& collumn = slotMachine.slotsByCollumn.emplace_back();
 			for (auto j = -1; j <= 1; ++j) {
@@ -115,7 +115,7 @@ void SlotMachineSystem::setup(Scene& scene) {
 		lever.addComponent<LeverFlag>();
 		float3 leverPos{0, 0, -0.05};
 		{
-			auto file = std::ifstream("leverPos.txt");
+			auto file = std::ifstream("leverPos3.txt");
 			file >> leverPos.x >> leverPos.y;
 		}
 		auto&& leverTex = makeTexture("textures/lever.png");
@@ -145,7 +145,7 @@ void SlotMachineSystem::setup(Scene& scene) {
 		auto paw = scene.newEntity();
 		float3 pawPos{0, 0, -0.6};
 		{
-			auto file = std::ifstream("pawPos.txt");
+			auto file = std::ifstream("pawPos3.txt");
 			auto&& pawComp = paw.addComponent<Paw>(0, 0, std::chrono::milliseconds(300), std::chrono::high_resolution_clock::now());
 			file >> pawPos.x >> pawPos.y >> pawComp.movementScale;
 			pawComp.originalY = pawPos.y;
@@ -189,11 +189,13 @@ void SlotMachineSystem::update(Scene& scene) {
 				slotObject.jolt = -10000.f;
 			}
 		}
-
-
 	}
 	updateAnimation(scene);
 }
+
+struct SlotStride {
+	float value;
+};
 
 void SlotMachineSystem::updateAnimation(Scene& scene) {
 	static auto prevTime = std::chrono::high_resolution_clock::now();
@@ -204,6 +206,7 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 	auto&& rewardGenerator = scene.domain().global<slots::RewardGenerator>();
 	auto slotMachineEntity = scene.domain().view<SlotMachine>().front();
 	auto&& slotMachine = scene.domain().components<SlotMachine>().front();
+	bool resetStride = false;
 	for (auto&& [entity, transform, slotObject] : scene.domain().view<scene::components::TransformComponent, SlotObject>().all()) {
 		float adjSpeed = slotObject.speed * deltaTime;
 		float adjAcc = slotObject.acceleration * deltaTime;
@@ -216,12 +219,26 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 
 		//Logger::debug("{}", slotObject.speed);
 
+		if (slotObject.stride) {
+			slotObject.stride += adjSpeed;
+			if (slotObject.stride < 0) {
+				slotObject.speed = 0;
+				slotObject.stride = 0;
+				resetStride = true;
+				transform.position.y -= slotObject.stride;
+			}
+		}
+
 		// STOP if hits min speed
 		if (slotObject.jolt > 0 && slotObject.speed >= slotObject.minSpeed) {
-			slotObject.speed = 0;
 			slotObject.acceleration = 0;
 			slotObject.jolt = 0;
-			slotMachine.slotAnimation = false;
+
+			slotMachine.strideCompute = true;
+			slotMachine.stride = true;
+
+			//slotObject.speed = 0;
+			//slotMachine.slotStride = false;
 			//Logger::debug("STOP");
 		}
 
@@ -238,6 +255,26 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 			//Logger::debug("move slot to {1} {0}", slotMachine.upperBound, transform.position.y);
 
 			scene.domain().getComponent<scene::components::MeshComponent>(entity).pipeline = slotMachine.symbols[(int)rewardGenerator.generateReward()];
+		}
+	}
+
+	if (resetStride) {
+		resetStride = false;
+		slotMachine.stride = false;
+		slotMachine.slotAnimation = false;
+	}
+
+	if (slotMachine.strideCompute) {
+		slotMachine.strideCompute = false;
+		float min = std::numeric_limits<float>::infinity();
+		for (auto&& [entity, transform, slotObject] : scene.domain().view<scene::components::TransformComponent, SlotObject>().all()) {
+			auto diff = transform.position.y - (slotMachine.lowerBound + slotMachine.upperBound) / 2;
+			if (diff >= 0 && diff < min) {
+				min = diff;
+			}
+		}
+		for (auto&& [slotObject] : scene.domain().view<SlotObject>().components()) {
+			slotObject.stride = min;
 		}
 	}
 
