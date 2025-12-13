@@ -9,6 +9,7 @@
 #include <slots/SlotFlag.h>
 #include <slots/SlotObject.h>
 #include <archimedes/Input.h>
+#include <lifes/LifeManager.h>
 #include <cmath>
 #include <numbers>
 
@@ -172,7 +173,11 @@ void SlotMachineSystem::setup(Scene& scene) {
 
 void SlotMachineSystem::update(Scene& scene) {
 	auto&& slotMachine = scene.domain().components<SlotMachine>().front();
-	if (input::Keyboard::space.pressed() && slotMachine.leverAnimationSpeed == 0) {
+	auto&& manager = scene.domain().view<LifeManager>().front();
+	auto&& lifeManager = scene.domain().getComponent<LifeManager>(manager);
+	if (input::Keyboard::space.pressed() && slotMachine.leverAnimationSpeed == 0 && lifeManager.currentLifes > 0) {
+		lifeManager.updateLifes(-1);
+
 		slotMachine.leverAnimationSpeed = 10;
 
 		for (auto&& [slotObject] : scene.domain().view<SlotObject>().components()) {
