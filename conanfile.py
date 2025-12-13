@@ -16,7 +16,7 @@ class ArchimedesTemplate(ConanFile):
 
 	def requirements(self):
 		# require archimedes v0.1.2
-		self.requires('archimedes/0.1.3')
+		self.requires('archimedes/0.1.3') 
 
 	# define CMake layout
 	def layout(self):

@@ -106,17 +106,17 @@ void VulkanVs::update() {
 	if (scene == mainScene) {
 		//static auto prevTime = std::chrono::high_resolution_clock::now();
 
-  PointsCounter::update(*scene);
-  
+		PointsCounter::update(*scene);
+
 		SlotMachineSystem::update(*scene);
 		LifeManagerSystem::update(*scene);
 
 	// synchronize audio
-	scene->domain().global<SoundManager>().audioManager->synchronize(scene->domain());
+		scene->domain().global<SoundManager>().audioManager->synchronize(scene->domain());
 
-	/*if (std::chrono::high_resolution_clock::now() - now > std::chrono::seconds(3)) {
-		MultilineTextSystem::remove(*scene, textEntity);
-		*/
+		/*if (std::chrono::high_resolution_clock::now() - now > std::chrono::seconds(3)) {
+			MultilineTextSystem::remove(*scene, textEntity);
+		}*/
 	}
 }
 

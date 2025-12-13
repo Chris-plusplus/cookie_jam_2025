@@ -29,6 +29,7 @@ struct Paw {
 
 void SlotMachineSystem::setup(Scene& scene) {
 	auto machine = scene.newEntity();
+	auto mesh = makeMesh(defaultCenterVertices(), defaultIndices());
 	auto&& slotMachine = machine.addComponent<SlotMachine>();
 	auto&& renderer = *gfx::Renderer::current();
 
@@ -51,33 +52,58 @@ void SlotMachineSystem::setup(Scene& scene) {
 				.buffers = {defaultUniformBuffer()},
 			}
 			);
-
 	}
 
-	// init machine sprite
-	auto machineTexture = makeTexture("textures/slotMachine.png");
-	auto&& transform = machine.addComponent(
-		scene::components::TransformComponent{
-			.position = {windowWidth / 2, windowHeight / 2, -0.5},
-			.rotation = {0, 0, 0, 1},
-			.scale = float3{machineTexture->getWidth(), machineTexture->getHeight(), 0} *0.9f
-		}
-	);
-	auto mesh = makeMesh(defaultCenterVertices(), defaultIndices());
-	auto pipeline = renderer.getPipelineManager()->create(
-		gfx::pipeline::Pipeline::Desc{
-			.vertexShaderPath = "shaders/vertex_default.glsl",
-			.fragmentShaderPath = "shaders/fragment_default.glsl",
-			.textures = {std::move(machineTexture)},
-			.buffers = {defaultUniformBuffer()},
-		}
+	{ // init machine sprite
+		auto machineTexture = makeTexture("textures/slotMachine.png");
+		auto&& transform = machine.addComponent(
+			scene::components::TransformComponent{
+				.position = {windowWidth / 2, windowHeight / 2, -0.5},
+				.rotation = {0, 0, 0, 1},
+				.scale = float3{machineTexture->getWidth(), machineTexture->getHeight(), 0} *0.9f
+			}
 		);
-	auto&& meshComp = machine.addComponent(
-		scene::components::MeshComponent{
-			.mesh = mesh,
-			.pipeline = pipeline
-		}
-	);
+		auto pipeline = renderer.getPipelineManager()->create(
+			gfx::pipeline::Pipeline::Desc{
+				.vertexShaderPath = "shaders/vertex_default.glsl",
+				.fragmentShaderPath = "shaders/fragment_default.glsl",
+				.textures = {std::move(machineTexture)},
+				.buffers = {defaultUniformBuffer()},
+			}
+			);
+		auto&& meshComp = machine.addComponent(
+			scene::components::MeshComponent{
+				.mesh = mesh,
+				.pipeline = pipeline
+			}
+		);
+	}
+	{ // init cat sprite
+		auto cat = scene.newEntity();
+		auto catTexture = makeTexture("textures/catHead.png");
+		auto&& transform = cat.addComponent(
+			scene::components::TransformComponent{
+				.position = {windowWidth / 2, catTexture->getHeight() / 2, -0.51},
+				.rotation = {0, 0, 0, 1},
+				.scale = float3{catTexture->getWidth(), catTexture->getHeight(), 0}
+			}
+		);
+		auto mesh = makeMesh(defaultCenterVertices(), defaultIndices());
+		auto pipeline = renderer.getPipelineManager()->create(
+			gfx::pipeline::Pipeline::Desc{
+				.vertexShaderPath = "shaders/vertex_default.glsl",
+				.fragmentShaderPath = "shaders/fragment_default.glsl",
+				.textures = {std::move(catTexture)},
+				.buffers = {defaultUniformBuffer()},
+			}
+			);
+		auto&& meshComp = cat.addComponent(
+			scene::components::MeshComponent{
+				.mesh = mesh,
+				.pipeline = pipeline
+			}
+		);
+	}
 
 	{ // init slots objects
 		auto file = std::ifstream("slotConfig3.txt");
@@ -288,8 +314,12 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 				}
 			}
 			Logger::debug("got = {}", slots::rewardAsString(ofMin));
-			slotMachine.drawn.push_back(ofMin);
+			slotMachine.drawn.push_back((int)ofMin);
 
+		}
+
+		if (slotMachine.onDrawn) {
+			slotMachine.onDrawn(slotMachine.drawn);
 		}
 
 		Logger::debug("reward = {}", slots::rewardAsString(SlotMachineSystem::reward(scene)));
@@ -355,9 +385,13 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 
 slots::RewardType SlotMachineSystem::reward(Scene& scene) {
 	auto&& drawn = scene.domain().components<SlotMachine>().front().drawn;
-	return drawn.size() == 0 ? slots::RewardType::_none : (std::ranges::count(drawn, drawn.front()) == drawn.size() ? drawn.front() : slots::RewardType::_none);
+	return drawn.size() == 0 ? slots::RewardType::_none : (std::ranges::count(drawn, drawn.front()) == drawn.size() ? (slots::RewardType)drawn.front() : slots::RewardType::_none);
 }
 
-const std::vector<slots::RewardType>& SlotMachineSystem::drawn(Scene& scene) {
+const std::vector<int>& SlotMachineSystem::drawn(Scene& scene) {
 	return scene.domain().components<SlotMachine>().front().drawn;
+}
+
+void SlotMachineSystem::onDrawn(Scene& scene, std::function<int(const std::vector<int>&)> event) {
+	scene.domain().components<SlotMachine>().front().onDrawn = event;
 }
