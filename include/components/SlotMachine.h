@@ -24,5 +24,6 @@ struct SlotMachine {
 	float pawAnimationSpeed = 0;
 	float pawAnimation = 0;
 
-	std::vector<slots::RewardType> drawn;
+	std::vector<int> drawn;
+	std::function<int(const std::vector<int>&)> onDrawn;
 };

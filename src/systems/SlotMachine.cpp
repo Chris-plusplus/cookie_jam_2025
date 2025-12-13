@@ -314,8 +314,12 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 				}
 			}
 			Logger::debug("got = {}", slots::rewardAsString(ofMin));
-			slotMachine.drawn.push_back(ofMin);
+			slotMachine.drawn.push_back((int)ofMin);
 
+		}
+
+		if (slotMachine.onDrawn) {
+			slotMachine.onDrawn(slotMachine.drawn);
 		}
 
 		Logger::debug("reward = {}", slots::rewardAsString(SlotMachineSystem::reward(scene)));
@@ -381,9 +385,13 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 
 slots::RewardType SlotMachineSystem::reward(Scene& scene) {
 	auto&& drawn = scene.domain().components<SlotMachine>().front().drawn;
-	return drawn.size() == 0 ? slots::RewardType::_none : (std::ranges::count(drawn, drawn.front()) == drawn.size() ? drawn.front() : slots::RewardType::_none);
+	return drawn.size() == 0 ? slots::RewardType::_none : (std::ranges::count(drawn, drawn.front()) == drawn.size() ? (slots::RewardType)drawn.front() : slots::RewardType::_none);
 }
 
-const std::vector<slots::RewardType>& SlotMachineSystem::drawn(Scene& scene) {
+const std::vector<int>& SlotMachineSystem::drawn(Scene& scene) {
 	return scene.domain().components<SlotMachine>().front().drawn;
+}
+
+void SlotMachineSystem::onDrawn(Scene& scene, std::function<int(const std::vector<int>&)> event) {
+	scene.domain().components<SlotMachine>().front().onDrawn = event;
 }
