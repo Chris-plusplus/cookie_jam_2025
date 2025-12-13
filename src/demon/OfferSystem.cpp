@@ -11,6 +11,8 @@
 #include "demon/DismissButtonFlag.h"
 #include "demon/ContainerFlag.h"
 #include <systems/MultilineText.h>
+#include <archimedes/Font.h>
+#include <archimedes/Text.h>
 
 namespace demon {
 void OfferSystem::spawnOfferDialogue(Scene& scene) {
@@ -67,7 +69,7 @@ void OfferSystem::spawnOfferDialogue(Scene& scene) {
 	offerDialogue.buttonScaleX = 0.9;
 	offerDialogue.buttonScaleY = 0.9;
 
-		auto&& accept = scene.newEntity();
+	auto&& accept = scene.newEntity();
 	accept.addComponent(
 		scene::components::TransformComponent{
 			.position = {offerDialogue.acceptButtonX, offerDialogue.acceptButtonY, -0.7},
@@ -107,7 +109,7 @@ void OfferSystem::spawnOfferDialogue(Scene& scene) {
 
 	// add container button texture to the screen
 	auto&& container = scene.newEntity();
-	container.addComponent(
+	auto&& containerT = container.addComponent(
 		scene::components::TransformComponent{
 			.position = {offerDialogue.containerX, offerDialogue.containerY, -0.7},
 			.rotation = {0, 0, 0, 1},
@@ -126,14 +128,31 @@ void OfferSystem::spawnOfferDialogue(Scene& scene) {
 	{ // example text
 		auto textParent = scene.newEntity();
 		float3 textDeltaPos;
+		float fontSize;
 		{
-			auto file = std::ifstream();
+			auto file = std::ifstream("offerConfig.txt");
+			file >> textDeltaPos.x >> textDeltaPos.y >> textDeltaPos.z >> fontSize;
 		}
-		MultilineTextSystem::setup(*scene, textEntity, U"lorem\nipsum\ndupa", *font::FontDB::get()["Arial"]->regular(), {
-			"shaders/text/fragment_atlas.glsl",
-			"shaders/text/fragment_atlas_yellow.glsl",
-			"shaders/text/fragment_atlas_blue.glsl"
-			});
+		textParent.addComponent(
+			scene::components::TransformComponent{
+				.position = containerT.position + float3{-containerT.scale.x, containerT.scale.y, 0} / 2.f + textDeltaPos,
+				.rotation = {0, 0, 0, 1},
+				.scale = {fontSize, fontSize, 0}
+			}
+		);
+
+		std::u32string offerText;
+		{
+			auto file = std::ifstream("offer.txt");
+			file.seekg(0, std::ios::end);
+			size_t size = file.tellg();
+			std::string buffer(size, ' ');
+			file.seekg(0);
+			file.read(&buffer[0], size);
+
+			offerText = text::convertTo<char32_t>(std::string_view(buffer));
+		}
+		MultilineTextSystem::setup(scene, textParent, offerText, *font::FontDB::get()["Arial"]->regular());
 	}
 }
 
