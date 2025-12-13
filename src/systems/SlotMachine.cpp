@@ -183,6 +183,7 @@ void SlotMachineSystem::update(Scene& scene) {
 		slotMachine.slotAnimation = true;
 		slotMachine.leverAnimationSpeed = 10;
 		slotMachine.pawAnimationSpeed = 10;
+		slotMachine.drawn.clear();
 
 		for (auto&& [slotObject] : scene.domain().view<SlotObject>().components()) {
 			if (slotObject.jolt == 0) {
@@ -254,14 +255,39 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 			transform.position.y = slotMachine.upperBound + diff;
 			//Logger::debug("move slot to {1} {0}", slotMachine.upperBound, transform.position.y);
 
-			scene.domain().getComponent<scene::components::MeshComponent>(entity).pipeline = slotMachine.symbols[(int)rewardGenerator.generateReward()];
+			slotObject.type = rewardGenerator.generateReward();
+			scene.domain().getComponent<scene::components::MeshComponent>(entity).pipeline = slotMachine.symbols[(int)slotObject.type];
 		}
 	}
 
+	// animation final end
 	if (resetStride) {
+		// flags
 		resetStride = false;
 		slotMachine.stride = false;
 		slotMachine.slotAnimation = false;
+
+		// check reward
+		auto center = (slotMachine.upperBound + slotMachine.lowerBound) / 2;
+		for (auto&& col : slotMachine.slotsByCollumn) {
+			// find closest to center in collumn
+			auto ofMin = slots::RewardType::_none;
+			float min = std::numeric_limits<float>::infinity();
+			for (auto&& slotEntity : col) {
+				auto&& slotObject = scene.domain().getComponent<SlotObject>(slotEntity);
+				auto&& transform = scene.domain().getComponent<scene::components::TransformComponent>(slotEntity);
+				auto diff = std::fabs(transform.position.y - center);
+				if (diff < min) {
+					min = diff;
+					ofMin = slotObject.type;
+				}
+			}
+			Logger::debug("got = {}", slots::rewardAsString(ofMin));
+			slotMachine.drawn.push_back(ofMin);
+
+		}
+
+		Logger::debug("reward = {}", slots::rewardAsString(SlotMachineSystem::reward(scene)));
 	}
 
 	if (slotMachine.strideCompute) {
@@ -320,4 +346,13 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 		slotMachine.pawAnimationSpeed = -5;
 		pawComp.waiting = false;
 	}
+}
+
+slots::RewardType SlotMachineSystem::reward(Scene& scene) {
+	auto&& drawn = scene.domain().components<SlotMachine>().front().drawn;
+	return drawn.size() == 0 ? slots::RewardType::_none : (std::ranges::count(drawn, drawn.front()) == drawn.size() ? drawn.front() : slots::RewardType::_none);
+}
+
+const std::vector<slots::RewardType>& SlotMachineSystem::drawn(Scene& scene) {
+	return scene.domain().components<SlotMachine>().front().drawn;
 }
