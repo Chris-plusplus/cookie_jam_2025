@@ -6,9 +6,12 @@ using namespace arch;
 
 class PointsCounter {
 public:
-    static int score;
-    int count(const std::vector<int>&);
-    static void setup(Scene& scene);
-    static void update(Scene& scene);
+	static int score;
+	int count(const std::vector<int>&);
+	static void setup(Scene& scene);
+	static void update(Scene& scene);
 };
-struct ScoreTextFlag {};
+
+struct ScoreTextFlag {
+	static constexpr bool flagComponent = true;
+};

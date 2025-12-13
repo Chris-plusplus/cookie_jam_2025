@@ -14,8 +14,8 @@
 #include "PointsCounter.h"
 #include "lifes/LifeManagerSystem.h"
 
-ecs::Entity textEntity;
-decltype(std::chrono::high_resolution_clock::now()) now;
+//ecs::Entity textEntity = ecs::nullEntity;
+decltype(std::chrono::high_resolution_clock::now()) now{};
 
 void VulkanVs::init() {
 	// load font
@@ -120,9 +120,9 @@ void VulkanVs::update() {
 	// synchronize audio
 	scene->domain().global<SoundManager>().audioManager->synchronize(scene->domain());
 
-	if (std::chrono::high_resolution_clock::now() - now > std::chrono::seconds(3)) {
+	/*if (std::chrono::high_resolution_clock::now() - now > std::chrono::seconds(3)) {
 		MultilineTextSystem::remove(*scene, textEntity);
-	}
+	}*/
 
 	//std::this_thread::sleep_for(16.6666ms - (std::chrono::high_resolution_clock::now() - prevTime));
 	//prevTime = std::chrono::high_resolution_clock::now();
