@@ -18,6 +18,11 @@ struct LeverFlag {
 	static constexpr bool flagComponent = true;
 };
 
+struct Paw {
+	float originalY;
+	float movementScale;
+};
+
 void SlotMachineSystem::setup(Scene& scene) {
 	auto machine = scene.newEntity();
 	auto&& slotMachine = machine.addComponent<SlotMachine>();
@@ -101,35 +106,68 @@ void SlotMachineSystem::setup(Scene& scene) {
 		}
 	}
 
-	// init lever
-	auto lever = scene.newEntity();
-	lever.addComponent<LeverFlag>();
-	float3 leverPos{0, 0, -0.05};
-	{
-		auto file = std::ifstream("leverPos.txt");
-		file >> leverPos.x >> leverPos.y;
+	{ // init lever
+		auto lever = scene.newEntity();
+		lever.addComponent<LeverFlag>();
+		float3 leverPos{0, 0, -0.05};
+		{
+			auto file = std::ifstream("leverPos.txt");
+			file >> leverPos.x >> leverPos.y;
+		}
+		auto&& leverTex = makeTexture("textures/lever.png");
+		auto&& leverT = lever.addComponent(
+			scene::components::TransformComponent{
+				.position = leverPos,
+				.rotation = {0, 0, 0, 1},
+				.scale = float3(leverTex->getWidth(), leverTex->getHeight(), 0)
+			}
+		);
+		auto&& leverMesh = lever.addComponent(
+			scene::components::MeshComponent{
+				.mesh = mesh,
+				.pipeline = renderer.getPipelineManager()->create(
+					gfx::pipeline::Pipeline::Desc{
+						.vertexShaderPath = "shaders/vertex_default.glsl",
+						.fragmentShaderPath = "shaders/fragment_default.glsl",
+						.textures = {leverTex},
+						.buffers = {defaultUniformBuffer()},
+					}
+					)
+			}
+		);
 	}
-	auto&& leverTex = makeTexture("textures/lever.png");
-	auto&& leverT = lever.addComponent(
-		scene::components::TransformComponent{
-			.position = leverPos,
-			.rotation = {0, 0, 0, 1},
-			.scale = float3(leverTex->getWidth(), leverTex->getHeight(), 0)
+
+	{ // init paw
+		auto paw = scene.newEntity();
+		float3 pawPos{0, 0, -0.6};
+		{
+			auto file = std::ifstream("pawPos.txt");
+			auto&& pawComp = paw.addComponent<Paw>();
+			file >> pawPos.x >> pawPos.y >> pawComp.movementScale;
+			pawComp.originalY = pawPos.y;
 		}
-	);
-	auto&& leverMesh = lever.addComponent(
-		scene::components::MeshComponent{
-			.mesh = mesh,
-			.pipeline = renderer.getPipelineManager()->create(
-				gfx::pipeline::Pipeline::Desc{
-					.vertexShaderPath = "shaders/vertex_default.glsl",
-					.fragmentShaderPath = "shaders/fragment_default.glsl",
-					.textures = {leverTex},
-					.buffers = {defaultUniformBuffer()},
-				}
-				)
-		}
-	);
+		auto&& pawTex = makeTexture("textures/paw.png");
+		auto&& pawT = paw.addComponent(
+			scene::components::TransformComponent{
+				.position = pawPos,
+				.rotation = {0, 0, 0, 1},
+				.scale = float3(pawTex->getWidth(), pawTex->getHeight(), 0) / 1.4f
+			}
+		);
+		auto&& pawMesh = paw.addComponent(
+			scene::components::MeshComponent{
+				.mesh = mesh,
+				.pipeline = renderer.getPipelineManager()->create(
+					gfx::pipeline::Pipeline::Desc{
+						.vertexShaderPath = "shaders/vertex_default.glsl",
+						.fragmentShaderPath = "shaders/fragment_default.glsl",
+						.textures = {pawTex},
+						.buffers = {defaultUniformBuffer()},
+					}
+					)
+			}
+		);
+	}
 }
 
 void SlotMachineSystem::update(Scene& scene) {
@@ -194,7 +232,8 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 	}
 
 	if (slotMachine.leverAnimationSpeed != 0) {
-		auto&& [transform] = scene.domain().view<scene::components::TransformComponent, LeverFlag>().components().front();
+		auto&& [leverTransform] = scene.domain().view<scene::components::TransformComponent, LeverFlag>().components().front();
+		auto&& [pawTransform, pawComp] = scene.domain().view<scene::components::TransformComponent, Paw>().components().front();
 		auto adjLAS = slotMachine.leverAnimationSpeed * deltaTime;
 		slotMachine.leverAnimation += adjLAS;
 
@@ -207,8 +246,9 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 		}
 
 		auto angle = -std::lerp(0.f, std::numbers::pi_v<float> / 2.f, slotMachine.leverAnimation);
-		Logger::debug("angle {}", angle);
-		Logger::debug("anim {}", slotMachine.leverAnimation);
-		transform.rotation = glm::angleAxis(angle, zAxis()) * glm::quat(0, 0, 0, 1);
+		//Logger::debug("angle {}", angle);
+		//Logger::debug("anim {}", slotMachine.leverAnimation);
+		leverTransform.rotation = glm::angleAxis(angle, zAxis()) * glm::quat(0, 0, 0, 1);
+		pawTransform.position.y = pawComp.originalY - slotMachine.leverAnimation * pawComp.movementScale;
 	}
 }
