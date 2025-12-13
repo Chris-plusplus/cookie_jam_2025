@@ -60,7 +60,7 @@ void PointsCounter::update(Scene& scene) {
 	auto buffer = defaultUniformBuffer();
 	auto points = scene.entitiesWith<ScoreTextFlag>().front();
 	points.removeComponent<text::TextComponent>();
-	points.addComponent(
+	auto&& text_comp= points.addComponent(
 		text::TextComponent(
 			text::convertTo<char32_t>(std::string_view(std::format("{}", score))),
 			{buffer},
