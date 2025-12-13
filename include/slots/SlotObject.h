@@ -8,7 +8,7 @@ struct SlotObject {
 	float speed{};
 	float acceleration{};
 	float jolt{};
-	float minSpeed = -10;
-	float maxSpeed = -50;
+	float minSpeed = -25;
+	float maxSpeed = -5000;
 	slots::RewardType type;
 };

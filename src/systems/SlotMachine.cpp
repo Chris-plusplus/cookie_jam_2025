@@ -9,11 +9,30 @@
 #include <slots/SlotFlag.h>
 #include <slots/SlotObject.h>
 #include <archimedes/Input.h>
+#include <lifes/LifeManager.h>
+#include <cmath>
+#include <numbers>
+
+using namespace std::chrono_literals;
+
+struct LeverFlag {
+	static constexpr bool flagComponent = true;
+};
+
+struct Paw {
+	float originalY;
+	float movementScale;
+	std::chrono::milliseconds waitTime;
+	decltype(std::chrono::high_resolution_clock::now()) prevTime;
+	bool waiting = false;
+};
 
 void SlotMachineSystem::setup(Scene& scene) {
 	auto machine = scene.newEntity();
 	auto&& slotMachine = machine.addComponent<SlotMachine>();
 	auto&& renderer = *gfx::Renderer::current();
+
+	scene.domain().global<slots::RewardGenerator>();
 
 	float2 slotTexSize{};
 	// init slots' pipelines
@@ -41,7 +60,7 @@ void SlotMachineSystem::setup(Scene& scene) {
 		scene::components::TransformComponent{
 			.position = {windowWidth / 2, windowHeight / 2, -0.5},
 			.rotation = {0, 0, 0, 1},
-			.scale = {machineTexture->getWidth(), machineTexture->getHeight(), 0}
+			.scale = float3{machineTexture->getWidth(), machineTexture->getHeight(), 0} *0.9f
 		}
 	);
 	auto mesh = makeMesh(defaultCenterVertices(), defaultIndices());
@@ -90,46 +109,182 @@ void SlotMachineSystem::setup(Scene& scene) {
 			}
 		}
 	}
+
+	{ // init lever
+		auto lever = scene.newEntity();
+		lever.addComponent<LeverFlag>();
+		float3 leverPos{0, 0, -0.05};
+		{
+			auto file = std::ifstream("leverPos.txt");
+			file >> leverPos.x >> leverPos.y;
+		}
+		auto&& leverTex = makeTexture("textures/lever.png");
+		auto&& leverT = lever.addComponent(
+			scene::components::TransformComponent{
+				.position = leverPos,
+				.rotation = {0, 0, 0, 1},
+				.scale = float3(leverTex->getWidth(), leverTex->getHeight(), 0)
+			}
+		);
+		auto&& leverMesh = lever.addComponent(
+			scene::components::MeshComponent{
+				.mesh = mesh,
+				.pipeline = renderer.getPipelineManager()->create(
+					gfx::pipeline::Pipeline::Desc{
+						.vertexShaderPath = "shaders/vertex_default.glsl",
+						.fragmentShaderPath = "shaders/fragment_default.glsl",
+						.textures = {leverTex},
+						.buffers = {defaultUniformBuffer()},
+					}
+					)
+			}
+		);
+	}
+
+	{ // init paw
+		auto paw = scene.newEntity();
+		float3 pawPos{0, 0, -0.6};
+		{
+			auto file = std::ifstream("pawPos.txt");
+			auto&& pawComp = paw.addComponent<Paw>(0, 0, std::chrono::milliseconds(300), std::chrono::high_resolution_clock::now());
+			file >> pawPos.x >> pawPos.y >> pawComp.movementScale;
+			pawComp.originalY = pawPos.y;
+		}
+		auto&& pawTex = makeTexture("textures/paw.png");
+		auto&& pawT = paw.addComponent(
+			scene::components::TransformComponent{
+				.position = pawPos,
+				.rotation = {0, 0, 0, 1},
+				.scale = float3(pawTex->getWidth(), pawTex->getHeight(), 0) / 1.4f
+			}
+		);
+		auto&& pawMesh = paw.addComponent(
+			scene::components::MeshComponent{
+				.mesh = mesh,
+				.pipeline = renderer.getPipelineManager()->create(
+					gfx::pipeline::Pipeline::Desc{
+						.vertexShaderPath = "shaders/vertex_default.glsl",
+						.fragmentShaderPath = "shaders/fragment_default.glsl",
+						.textures = {pawTex},
+						.buffers = {defaultUniformBuffer()},
+					}
+					)
+			}
+		);
+	}
 }
 
 void SlotMachineSystem::update(Scene& scene) {
-	if (input::Keyboard::space.pressed()) {
+	auto&& slotMachine = scene.domain().components<SlotMachine>().front();
+	auto&& manager = scene.domain().view<LifeManager>().front();
+	auto&& lifeManager = scene.domain().getComponent<LifeManager>(manager);
+	if (input::Keyboard::space.pressed() && !slotMachine.slotAnimation && lifeManager.currentLifes > 0) {
+		lifeManager.updateLifes(-1);
+		slotMachine.slotAnimation = true;
+		slotMachine.leverAnimationSpeed = 10;
+		slotMachine.pawAnimationSpeed = 10;
+
 		for (auto&& [slotObject] : scene.domain().view<SlotObject>().components()) {
 			if (slotObject.jolt == 0) {
-				slotObject.jolt = -1.f;
+				slotObject.jolt = -10000.f;
 			}
 		}
+
+
 	}
 	updateAnimation(scene);
 }
 
 void SlotMachineSystem::updateAnimation(Scene& scene) {
+	static auto prevTime = std::chrono::high_resolution_clock::now();
+	const auto now = std::chrono::high_resolution_clock::now();
+	auto deltaTime = (float)std::chrono::duration_cast<decltype(0.0s)>(now - prevTime).count();
+	prevTime = now;
+
+	auto&& rewardGenerator = scene.domain().global<slots::RewardGenerator>();
+	auto slotMachineEntity = scene.domain().view<SlotMachine>().front();
 	auto&& slotMachine = scene.domain().components<SlotMachine>().front();
-	for (auto&& [transform, slotObject] : scene.domain().view<scene::components::TransformComponent, SlotObject>().components()) {
+	for (auto&& [entity, transform, slotObject] : scene.domain().view<scene::components::TransformComponent, SlotObject>().all()) {
+		float adjSpeed = slotObject.speed * deltaTime;
+		float adjAcc = slotObject.acceleration * deltaTime;
+		float adjJolt = slotObject.jolt * deltaTime;
+
 		// update physics
-		transform.position.y += slotObject.speed;
-		slotObject.speed += slotObject.acceleration;
-		slotObject.acceleration += slotObject.jolt;
+		transform.position.y += adjSpeed;
+		slotObject.speed += adjAcc;
+		slotObject.acceleration += adjJolt;
+
+		//Logger::debug("{}", slotObject.speed);
 
 		// STOP if hits min speed
 		if (slotObject.jolt > 0 && slotObject.speed >= slotObject.minSpeed) {
 			slotObject.speed = 0;
 			slotObject.acceleration = 0;
 			slotObject.jolt = 0;
-			Logger::debug("STOP");
+			slotMachine.slotAnimation = false;
+			//Logger::debug("STOP");
 		}
 
 		// switch to slowdown
 		if (slotObject.jolt < 0 && slotObject.speed <= slotObject.maxSpeed) {
 			slotObject.jolt = -slotObject.jolt;
-			Logger::debug("jolt switch {}", slotObject.jolt);
+			//Logger::debug("jolt switch {}", slotObject.jolt);
 		}
 
 		// update pos if out of bounds
 		if (transform.position.y < slotMachine.lowerBound) {
 			auto diff = transform.position.y - slotMachine.lowerBound;
 			transform.position.y = slotMachine.upperBound + diff;
-			Logger::debug("move slot to {1} {0}", slotMachine.upperBound, transform.position.y);
+			//Logger::debug("move slot to {1} {0}", slotMachine.upperBound, transform.position.y);
+
+			scene.domain().getComponent<scene::components::MeshComponent>(entity).pipeline = slotMachine.symbols[(int)rewardGenerator.generateReward()];
 		}
+	}
+
+	if (slotMachine.leverAnimationSpeed != 0) {
+
+	}
+
+	auto&& [pawTransform, pawComp] = scene.domain().view<scene::components::TransformComponent, Paw>().components().front();
+	if (slotMachine.pawAnimationSpeed != 0) {
+		// paw
+		auto adjPAS = slotMachine.pawAnimationSpeed * deltaTime;
+		slotMachine.pawAnimation += adjPAS;
+
+		if (slotMachine.pawAnimation >= 1) {
+			slotMachine.pawAnimationSpeed = 0;
+			slotMachine.pawAnimation = 1;
+
+			pawComp.prevTime = std::chrono::high_resolution_clock::now();
+			pawComp.waiting = true;
+		} else if (slotMachine.pawAnimation < 0) {
+			slotMachine.pawAnimationSpeed = 0;
+			slotMachine.pawAnimation = 0;
+		}
+		pawTransform.position.y = pawComp.originalY - slotMachine.pawAnimation * pawComp.movementScale;
+
+		// lever
+		auto&& [leverTransform] = scene.domain().view<scene::components::TransformComponent, LeverFlag>().components().front();
+		auto adjLAS = slotMachine.leverAnimationSpeed * deltaTime;
+		slotMachine.leverAnimation += adjLAS;
+
+		if (slotMachine.leverAnimation >= 1) {
+			slotMachine.leverAnimationSpeed = -5;
+			slotMachine.leverAnimation = 1;
+		} else if (slotMachine.leverAnimation < 0) {
+			slotMachine.leverAnimationSpeed = 0;
+			slotMachine.leverAnimation = 0;
+		}
+
+
+
+		auto angle = -std::lerp(0.f, std::numbers::pi_v<float> / 2.f, slotMachine.leverAnimation);
+		//Logger::debug("angle {}", angle);
+		//Logger::debug("anim {}", slotMachine.leverAnimation);
+		leverTransform.rotation = glm::angleAxis(angle, zAxis()) * glm::quat(0, 0, 0, 1);
+	}
+	if (pawComp.waiting && now - pawComp.prevTime > pawComp.waitTime) {
+		slotMachine.pawAnimationSpeed = -5;
+		pawComp.waiting = false;
 	}
 }
