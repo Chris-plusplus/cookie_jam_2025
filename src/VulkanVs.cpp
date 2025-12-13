@@ -25,16 +25,20 @@ void VulkanVs::init() {
 	Ref<Scene> scene = createRef<Scene>();
 	scene::SceneManager::get()->changeScene(scene);
 
-	// auto textEnt = scene->newEntity();
-	// textEntity = textEnt.handle();
-	// textEnt.addComponent(
-	// 	scene::components::TransformComponent{
-	// 		.position = {100, 500, -0.3},
-	// 		.rotation = {0, 0, 0, 1},
-	// 		.scale = {100, 100, 0}
-	// 	}
-	// );
-	// MultilineTextSystem::setup(*scene, textEntity, U"lorem\nipsum\ndupa", *font::FontDB::get()["Arial"]->regular());
+	auto textEnt = scene->newEntity();
+	textEntity = textEnt.handle();
+	textEnt.addComponent(
+		scene::components::TransformComponent{
+			.position = {100, 500, -0.3},
+			.rotation = {0, 0, 0, 1},
+			.scale = {100, 100, 0}
+		}
+	);
+	MultilineTextSystem::setup(*scene, textEntity, U"lorem\nipsum\ndupa", *font::FontDB::get()["Arial"]->regular(), {
+		"shaders/text/fragment_atlas.glsl",
+		"shaders/text/fragment_atlas_yellow.glsl",
+		"shaders/text/fragment_atlas_blue.glsl"
+		});
 
 	// init physics system
 	_physicsSystem = createUnique<physics::System>(scene->domain());
