@@ -25,14 +25,14 @@ void DemonManager::update(Scene& scene) {
 			points_to_demon += std::uniform_int_distribution<int>{2000, 3000}(rng);
 			active_demon = demon::DemonType::demon2;
 			demon2::show(scene);
-			std::string flavour = "Witaj. Mam dla ciebie \n propozycję nie do odrzucenia. \n";
+			std::string flavour = "Witaj. Mam dla ciebie\npropozycję nie do odrzucenia. \n";
 			int temp = std::uniform_int_distribution<int>{1, 2}(rng);
 			switch (temp) {
 				case 1:
-					demon::OfferSystem::spawnOfferDialogue(scene, flavour + "Chciałbyś zwiększyć wartość suchej \n karmy za negatywne punkty z \n losowej nagrody?", demon::OfferType::d21);
+					demon::OfferSystem::spawnOfferDialogue(scene, flavour + "Chciałbyś zwiększyć wartość suchej\nkarmy za negatywne punkty z\nlosowej nagrody?", demon::OfferType::d21);
 					break;
 				case 2:
-					demon::OfferSystem::spawnOfferDialogue(scene, flavour + "Chciałbyś zwiększyć wartość suchej \n karmy kosztem szansy na \n utracenie wylosowanego jackpota?", demon::OfferType::d22);
+					demon::OfferSystem::spawnOfferDialogue(scene, flavour + "Chciałbyś zwiększyć wartość suchej\nkarmy kosztem szansy na\nutracenie wylosowanego jackpota?", demon::OfferType::d22);
 					break;
 			}
 			Logger::debug("demon2");
@@ -40,21 +40,21 @@ void DemonManager::update(Scene& scene) {
 			// cool
 			roll_to_demon += std::uniform_int_distribution<int>{5, 7}(rng);
 			active_demon = demon::DemonType::demon1;
-			std::string flavour = "Siema, tego ten. \n Może zechcesz podpisać mały pakt? \n";
+			std::string flavour = "Siema, tego ten.\nMoże zechcesz podpisać mały pakt? \n";
 			demon1::show(scene);
 			int temp = std::uniform_int_distribution<int>{1, 4}(rng);
 			switch (temp) {
 				case 1:
-					demon::OfferSystem::spawnOfferDialogue(scene, flavour + "Chciałbyś zwiększyć szanse na \n wylosowanie dobrej karmy za \n trochę życia?", demon::OfferType::d11);
+					demon::OfferSystem::spawnOfferDialogue(scene, flavour + "Chciałbyś zwiększyć szanse na\nwylosowanie dobrej karmy za\ntrochę życia?", demon::OfferType::d11);
 					break;
 				case 2:
-					demon::OfferSystem::spawnOfferDialogue(scene, flavour + "Chciałbyś zwiększyć szanse na \n wylosowanie dobrej karmy \n oraz suchej karmy?", demon::OfferType::d12);
+					demon::OfferSystem::spawnOfferDialogue(scene, flavour + "Chciałbyś zwiększyć szanse na\nwylosowanie dobrej karmy\noraz suchej karmy?", demon::OfferType::d12);
 					break;
 				case 3:
-					demon::OfferSystem::spawnOfferDialogue(scene, flavour + "Chciałbyś zwiększyć szanse na \n wylosowanie jackpota za \n trochę życia?", demon::OfferType::d13);
+					demon::OfferSystem::spawnOfferDialogue(scene, flavour + "Chciałbyś zwiększyć szanse na\nwylosowanie jackpota za\ntrochę życia?", demon::OfferType::d13);
 					break;
 				case 4:
-					demon::OfferSystem::spawnOfferDialogue(scene, flavour + "Chciałbyś zwiększyć szanse na \n wylosowanie jackpota oraz \n suchej karmy?", demon::OfferType::d14);
+					demon::OfferSystem::spawnOfferDialogue(scene, flavour + "Chciałbyś zwiększyć szanse na\nwylosowanie jackpota oraz\nsuchej karmy?", demon::OfferType::d14);
 					break;
 			}
 			Logger::debug("demon1");
@@ -62,15 +62,15 @@ void DemonManager::update(Scene& scene) {
 			// distorted
 			roll_to_demon2 += std::uniform_int_distribution<int>{1, 14}(rng);
 			active_demon = demon::DemonType::demon3;
-			std::string flavour = "Per i Kele witają cię. \n Co powiesz na taki korzystny pakt? \n";
+			std::string flavour = "Per i Kele witają cię.\nCo powiesz na taki korzystny pakt? \n";
 			demon3::show(scene);
 			int temp = std::uniform_int_distribution<int>{1, 2}(rng);
 			switch (temp) {
 				case 1:
-					demon::OfferSystem::spawnOfferDialogue(scene, flavour + "Chciałbyś dostać szansę na \n zgliczowanie maszyny? (reroll)", demon::OfferType::d31);
+					demon::OfferSystem::spawnOfferDialogue(scene, flavour + "Chciałbyś dostać szansę na\nzgliczowanie maszyny? (reroll)", demon::OfferType::d31);
 					break;
 				case 2:
-					demon::OfferSystem::spawnOfferDialogue(scene, flavour + "Mogę uodpornić cię na większość \n ogórków ale w zamian rzadziej \n będą pojawiać się życia.", demon::OfferType::d32);
+					demon::OfferSystem::spawnOfferDialogue(scene, flavour + "Mogę uodpornić cię na większość\nogórków ale w zamian rzadziej\nbędą pojawiać się życia.", demon::OfferType::d32);
 					break;
 			}
 			Logger::debug("demon3");
