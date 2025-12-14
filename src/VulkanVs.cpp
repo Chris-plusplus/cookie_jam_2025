@@ -605,7 +605,38 @@ void VulkanVs::init() {
 						.bottomRight = {buttonT.scale.x / 2.f, -buttonT.scale.y / 2.f},
 						.onNotHover = pipeline,
 						.onHover = pipeline,
-						.callback = [&, meshCPtr = &meshC, texVecPtr = &texVec](...) { scene::SceneManager::get()->changeScene(mainScene);  }
+						.callback = [&, meshCPtr = &meshC, texVecPtr = &texVec](...) { scene::SceneManager::get()->changeScene(mainScene); std::ofstream("watchedTutorial") << ""; }
+					}
+				);
+			}
+
+			{ // mainScene -> tutorial button
+				auto button = mainScene->newEntity();
+				auto buttonTex = makeTexture("textures/Asset_final/Button_tutorial.png");
+				auto buttonHoverTex = makeTexture("textures/Asset_final/Button_tutorial_hover.png");
+				auto&& buttonT = button.addComponent(
+					scene::components::TransformComponent{
+						.position = {0, 0, -0.475},
+						.rotation = {0, 0, 0, 1},
+						.scale = float3{buttonTex->getWidth(), buttonTex->getHeight(), 0}
+					}
+				);
+				file >> buttonT.position.x >> buttonT.position.y;
+				auto pipeline = makePipeline(buttonTex);
+				auto pipelineHover = makePipeline(buttonHoverTex);
+				button.addComponent(
+					scene::components::MeshComponent{
+						.mesh = mesh,
+						.pipeline = pipeline
+					}
+				);
+				button.addComponent(
+					Button{
+						.topLeft = {-buttonT.scale.x / 2.f, buttonT.scale.y / 2.f},
+						.bottomRight = {buttonT.scale.x / 2.f, -buttonT.scale.y / 2.f},
+						.onNotHover = pipeline,
+						.onHover = pipelineHover,
+						.callback = [&, meshCPtr = &meshC, texVecPtr = &texVec](...) { scene::SceneManager::get()->changeScene(tutorialScene); }
 					}
 				);
 			}
@@ -644,11 +675,11 @@ void VulkanVs::update() {
 		static auto startTime = std::chrono::high_resolution_clock::now();
 		auto currTime = std::chrono::high_resolution_clock::now();
 
-		if (currTime - startTime >= std::chrono::milliseconds(500)) {
+		if (currTime - startTime >= std::chrono::milliseconds(5000)) {
 			startTime = currTime;
 			scene->domain().kill(scene->domain().view<scene::components::TransformComponent>().back());
 			if (scene->domain().components<scene::components::TransformComponent>().base().count() == 0) {
-				scene::SceneManager::get()->changeScene(tutorialScene);
+				scene::SceneManager::get()->changeScene(std::filesystem::exists("watchedTutorial") ? mainScene : tutorialScene);
 			}
 		}
 	}
