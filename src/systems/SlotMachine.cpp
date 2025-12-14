@@ -13,6 +13,10 @@
 #include <cmath>
 #include <numbers>
 #include <demon/DemonManager.h>
+#include <demon/PositiveSwitch.h>
+#include <demon/NegativeSwitch.h>
+#include <demon/SwitchSystem.h>
+#include <slots/SlotGlitchChance.h>
 
 using namespace std::chrono_literals;
 
@@ -28,6 +32,11 @@ struct Paw {
 	bool waiting = false;
 };
 
+namespace {
+auto rng = std::mt19937(std::random_device{}());
+}
+bool glitched = false;
+
 void SlotMachineSystem::setup(Scene& scene) {
 	auto machine = scene.newEntity();
 	auto mesh = makeMesh(defaultCenterVertices(), defaultIndices());
@@ -38,6 +47,18 @@ void SlotMachineSystem::setup(Scene& scene) {
 
 	float2 slotTexSize{};
 	// init slots' pipelines
+	for (auto i = 0; i != 3; ++i) {
+		auto&& glitchedPipeline = slotMachine.glitchedSymbols.emplace_back();
+		auto&& texture = makeTexture(std::string_view(std::format("textures/slots/glitch{}.png", i)));
+		glitchedPipeline = renderer.getPipelineManager()->create(
+			gfx::pipeline::Pipeline::Desc{
+				.vertexShaderPath = "shaders/vertex_default.glsl",
+				.fragmentShaderPath = "shaders/fragment_default.glsl",
+				.textures = {std::move(texture)},
+				.buffers = {defaultUniformBuffer()},
+			}
+			);
+	}
 	for (auto i = 0; i != (int)slots::RewardType::_count; ++i) {
 		auto&& symbolPipeline = slotMachine.symbols.emplace_back();
 
@@ -154,7 +175,7 @@ void SlotMachineSystem::setup(Scene& scene) {
 				auto&& meshCompSlot = slotEntity.addComponent(
 					scene::components::MeshComponent{
 						.mesh = mesh,
-						.pipeline = slotMachine.symbols[i]
+						.pipeline = slotMachine.symbols[(int)scene.domain().global<slots::RewardGenerator>().generateReward()]
 					}
 				);
 				slotEntity.addComponent<SlotObject>();
@@ -230,11 +251,16 @@ void SlotMachineSystem::update(Scene& scene) {
 	auto&& slotMachine = scene.domain().components<SlotMachine>().front();
 	auto&& manager = scene.domain().view<LifeManager>().front();
 	auto&& lifeManager = scene.domain().getComponent<LifeManager>(manager);
-	if (input::Keyboard::space.pressed() && !slotMachine.slotAnimation && lifeManager.currentLifes > 0 && DemonManager::active_demon == demon::DemonType::_none) {
-		lifeManager.updateLifes(-1);
+	if ((input::Keyboard::space.pressed() || glitched)
+		&& !slotMachine.slotAnimation &&
+		(lifeManager.currentLifes > 0 || glitched)
+		&& DemonManager::active_demon == demon::DemonType::_none) {
+		if (!glitched) {
+			lifeManager.updateLifes(-1);
+			slotMachine.leverAnimationSpeed = 10;
+			slotMachine.pawAnimationSpeed = 10;
+		}
 		slotMachine.slotAnimation = true;
-		slotMachine.leverAnimationSpeed = 10;
-		slotMachine.pawAnimationSpeed = 10;
 		slotMachine.drawn.clear();
 		DemonManager::isBlocked = true;
 
@@ -314,7 +340,9 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 			//Logger::debug("move slot to {1} {0}", slotMachine.upperBound, transform.position.y);
 
 			slotObject.type = rewardGenerator.generateReward();
-			scene.domain().getComponent<scene::components::MeshComponent>(entity).pipeline = slotMachine.symbols[(int)slotObject.type];
+			if (!glitched) {
+				scene.domain().getComponent<scene::components::MeshComponent>(entity).pipeline = slotMachine.symbols[(int)slotObject.type];
+			}
 		}
 	}
 
@@ -327,30 +355,88 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 
 		// check reward
 		auto center = (slotMachine.upperBound + slotMachine.lowerBound) / 2;
+		std::vector<SlotObject*> drawnObj;
+		std::vector<ecs::Entity> drawnObjEnt;
 		for (auto&& col : slotMachine.slotsByCollumn) {
 			// find closest to center in collumn
-			auto ofMin = slots::RewardType::_none;
 			float min = std::numeric_limits<float>::infinity();
+			SlotObject* minObj = nullptr;
+			ecs::Entity minEnt = ecs::nullEntity;
 			for (auto&& slotEntity : col) {
 				auto&& slotObject = scene.domain().getComponent<SlotObject>(slotEntity);
 				auto&& transform = scene.domain().getComponent<scene::components::TransformComponent>(slotEntity);
 				auto diff = std::fabs(transform.position.y - center);
 				if (diff < min) {
 					min = diff;
-					ofMin = slotObject.type;
+					minObj = &slotObject;
+					minEnt = slotEntity;
 				}
 			}
-			Logger::debug("got = {}", slots::rewardAsString(ofMin));
-			slotMachine.drawn.push_back((int)ofMin);
-
+			Logger::debug("got = {}", slots::rewardAsString(minObj->type));
+			slotMachine.drawn.push_back((int)minObj->type);
+			drawnObj.push_back(minObj);
+			drawnObjEnt.push_back(minEnt);
 		}
 
-		if (slotMachine.onDrawn) {
-			slotMachine.onDrawn(scene, slotMachine.drawn);
+		auto switchVal = SwitchSystem::getSwitch(scene);
+		auto getScore = [&slotMachine] {
+			std::array<int, (int)slots::RewardType::_count> counts{};
+			for (auto&& v : slotMachine.drawn) {
+				++counts[v];
+			}
+			int count = 0, val = 0;
+			for (int i = 0; i != counts.size(); ++i) {
+				if (counts[i] > count) {
+					count = counts[i];
+					val = i;
+				}
+			}
+			return std::tuple{count, val};
+		};
+
+		//Logger::debug("switchVal = {}", switchVal);
+		auto&& [count, what] = getScore();
+		//Logger::debug("count = {}", count);
+		//Logger::debug("what = {}", slots::rewardAsString((slots::RewardType)what));
+		if (switchVal < 0 && count == slotMachine.drawn.size()) {
+			auto i = SwitchSystem::indexToSwitch(slotMachine.drawn.size() - 1);
+			auto original = drawnObj[i]->type;
+			while (drawnObj[i]->type == original) {
+				drawnObj[i]->type = scene.domain().global<slots::RewardGenerator>().generateReward();
+				slotMachine.drawn[i] = (int)drawnObj[i]->type;
+			}
+			scene.domain().getComponent<scene::components::MeshComponent>(drawnObjEnt[i]).pipeline = slotMachine.symbols[(int)drawnObj[i]->type];
+		} else if (switchVal > 0 && count == slotMachine.drawn.size() - 1) {
+			auto i = std::ranges::find_if_not(slotMachine.drawn, [what](auto x) { return x == what; }) - slotMachine.drawn.begin();
+			drawnObj[i]->type = (slots::RewardType)what;
+			slotMachine.drawn[i] = what;
+			scene.domain().getComponent<scene::components::MeshComponent>(drawnObjEnt[i]).pipeline = slotMachine.symbols[(int)drawnObj[i]->type];
 		}
-		DemonManager::addroll();
-		DemonManager::isBlocked = false;
-		Logger::debug("reward = {}", slots::rewardAsString(SlotMachineSystem::reward(scene)));
+
+		if (glitched) {
+			glitched = false;
+			for (auto&& [slotObj, mesh] : scene.domain().view<SlotObject, scene::components::MeshComponent>().components()) {
+				slotObj.glitched = false;
+				mesh.pipeline = slotMachine.symbols[(int)slotObj.type];
+			}
+		}
+
+		// glitch
+		auto glitchChance = scene.domain().global<SlotGlitchChance>().value;
+		if (!glitched && std::uniform_real_distribution(0.f, 1.f)(rng) <= glitchChance) {
+			glitched = true;
+			for (auto&& [slotObj, mesh] : scene.domain().view<SlotObject, scene::components::MeshComponent>().components()) {
+				slotObj.glitched = true;
+				mesh.pipeline = slotMachine.glitchedSymbols[std::uniform_int_distribution(0, 2)(rng)];
+			}
+		} else {
+			if (slotMachine.onDrawn) {
+				slotMachine.onDrawn(scene, slotMachine.drawn);
+			}
+			DemonManager::addroll();
+			DemonManager::isBlocked = false;
+			Logger::debug("reward = {}", slots::rewardAsString(SlotMachineSystem::reward(scene)));
+		}
 	}
 
 	if (slotMachine.strideCompute) {

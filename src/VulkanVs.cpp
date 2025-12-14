@@ -11,6 +11,7 @@
 #include <systems/MultilineText.h>
 #include <systems/SlotMachine.h>
 #include <MakeMesh.h>
+#include <systems/PledgeSystem.h>
 #include <systems/Button.h>
 
 #include "PointsCounter.h"
@@ -20,6 +21,10 @@
 #include "demon/demon1.h"
 #include "demon/demon2.h"
 #include "demon/demon3.h"
+#include "demon/SwitchSystem.h"
+#include "demon/NegativeSwitch.h"
+#include "demon/PositiveSwitch.h"
+#include "slots/SlotGlitchChance.h"
 
 ecs::Entity textEntity = ecs::nullEntity;
 decltype(std::chrono::high_resolution_clock::now()) now{};
@@ -72,6 +77,9 @@ void VulkanVs::init() {
 	DemonManager::setup(*scene);
 
 	demon::OfferSystem::setup(*scene);
+
+	SwitchSystem::addEffect<PositiveSwitch>(*scene, 1);
+	scene->domain().global<SlotGlitchChance>().value = 0.5;
 
 	SlotMachineSystem::setup(*scene);
 
@@ -126,6 +134,14 @@ void VulkanVs::update() {
 		SlotMachineSystem::update(*scene);
 		LifeManagerSystem::update(*scene);
 
+		if (input::Keyboard::Q.pressed()) {
+			PledgeSystem::setup(*scene);
+			PledgeSystem::setCallback(*scene, [&] {
+				Logger::debug("anim end");
+			});
+		}
+
+		PledgeSystem::update(*scene);
 		DemonManager::update(*scene);
 
 	// synchronize audio
