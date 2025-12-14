@@ -78,8 +78,8 @@ void VulkanVs::init() {
 
 	demon::OfferSystem::setup(*scene);
 
-	SwitchSystem::addEffect<PositiveSwitch>(*scene, 1);
-	scene->domain().global<SlotGlitchChance>().value = 0.1;
+	//SwitchSystem::addEffect<PositiveSwitch>(*scene, 1);
+	//scene->domain().global<SlotGlitchChance>().value = 0.1;
 
 	SlotMachineSystem::setup(*scene);
 

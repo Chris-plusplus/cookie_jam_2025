@@ -22,7 +22,7 @@
 
 namespace demon {
 
-OfferType OfferSystem::offer=OfferType::_none;
+OfferType OfferSystem::offer = OfferType::_none;
 
 void OfferSystem::setup(Scene& scene) {
 	auto&& manager = scene.newEntity();
@@ -108,11 +108,11 @@ void OfferSystem::setup(Scene& scene) {
 				Deal::luck_down(scene);
 				break;
 			case OfferType::d13:
-				Deal::set_positive_change();
+				Deal::set_positive_change(scene);
 				Deal::luck_down(scene);
 				break;
 			case OfferType::d14:
-				Deal::set_positive_change();
+				Deal::set_positive_change(scene);
 				Deal::nolife(scene);
 				break;
 			case OfferType::d21:
@@ -121,10 +121,10 @@ void OfferSystem::setup(Scene& scene) {
 				break;
 			case OfferType::d22:
 				Deal::quality();
-				Deal::set_negative_change();
+				Deal::set_negative_change(scene);
 				break;
 			case OfferType::d31:
-				Deal::set_glitch();
+				Deal::set_glitch(scene);
 				break;
 			case OfferType::d32:
 				Deal::set_no_gurken();
@@ -197,8 +197,8 @@ void OfferSystem::clearOfferDialogue(Scene& scene) {
 	scene.domain().kill(multiline);
 }
 
-void OfferSystem::spawnOfferDialogue(Scene& scene, std::string_view offerText,OfferType new_offer) {
-	offer=new_offer;
+void OfferSystem::spawnOfferDialogue(Scene& scene, std::string_view offerText, OfferType new_offer) {
+	offer = new_offer;
 	auto&& container = scene.domain().view<ContainerFlag>().front();
 	auto&& containerT = scene.domain().getComponent<scene::components::TransformComponent>(container);
 	containerT.position.z = -0.65;
@@ -232,8 +232,8 @@ void OfferSystem::spawnOfferDialogue(Scene& scene, std::string_view offerText,Of
 				.position = float3(cnt.containerX - cnt.containerWidth / 2 * cnt.containerScaleX,
 					cnt.containerY + cnt.containerHeight / 2 * cnt.buttonScaleY,
 					-0.8) + float3{-cnt.containerScaleX, cnt.containerScaleY, 0.0} / 2.f + textDeltaPos,
-				.rotation = {0, 0, 0, 1},
-				.scale = {fontSize, fontSize, 0}
+					.rotation = {0, 0, 0, 1},
+					.scale = {fontSize, fontSize, 0}
 			}
 		);
 		textParentT.position.z = -0.8;
