@@ -720,7 +720,6 @@ void VulkanVs::update() {
 				scene::SceneManager::get()->changeScene(std::filesystem::exists("watchedTutorial") ? mainScene : tutorialScene);
 				Ambient::stopAmbient();
 				Ambient::setAmbient("main_theme.ogg");
-
 			}
 		}
 	}

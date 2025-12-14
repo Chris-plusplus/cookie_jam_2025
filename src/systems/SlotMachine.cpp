@@ -448,7 +448,7 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 				}
 				DemonManager::addroll();
 				DemonManager::isBlocked = false;
-				Logger::debug("reward = {}", slots::rewardAsString(SlotMachineSystem::reward(scene)));
+				//Logger::debug("reward = {}", slots::rewardAsString(SlotMachineSystem::reward(scene)));
 
 
 				if (scene.domain().components<LifeManager>().front().currentLifes == 0) {

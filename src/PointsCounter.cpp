@@ -39,27 +39,27 @@ int PointsCounter::count(Scene& scene, const std::vector<int>& wyniki) {
 	}
 	//Sumowanie punktów
 	sum += 20 * ct[2] + 70 * ct[3] * Deals::better_food + 50 * ct[3] + 120 * ct[4] + 200 * ct[5];
-	if (Deals::negative_points!=slots::RewardType::_none) {
+	if (Deals::negative_points != slots::RewardType::_none) {
 		switch (Deals::negative_points) {
 			case slots::RewardType::dry:
-				sum-=40*ct[2];
+				sum -= 40 * ct[2];
 				break;
 			case slots::RewardType::sachet:
-				sum-=100*ct[3]+Deals::better_food*ct[3]*70;
+				sum -= 100 * ct[3] + Deals::better_food * ct[3] * 70;
 				break;
 			case slots::RewardType::feather:
-				sum-=240*ct[4];
+				sum -= 240 * ct[4];
 				break;
 			case slots::RewardType::sardines:
-				sum-=400*ct[5];
+				sum -= 400 * ct[5];
 				break;
 		}
 	}
 	lifeManager.updateLifes(ct[6]);
-	if (ct[2] > 2 && Deals::negative_points!=slots::RewardType::dry) { sum += 60; }
-	if (ct[3] > 2 && Deals::negative_points!=slots::RewardType::sachet) { sum += 150; }
-	if (ct[4] > 2 && Deals::negative_points!=slots::RewardType::feather) { sum += 360; }
-	if (ct[5] > 2 && Deals::negative_points!=slots::RewardType::sardines) { sum += 600; }
+	if (ct[2] > 2 && Deals::negative_points != slots::RewardType::dry) { sum += 60; }
+	if (ct[3] > 2 && Deals::negative_points != slots::RewardType::sachet) { sum += 150; }
+	if (ct[4] > 2 && Deals::negative_points != slots::RewardType::feather) { sum += 360; }
+	if (ct[5] > 2 && Deals::negative_points != slots::RewardType::sardines) { sum += 600; }
 	if (ct[6] > 2) { lifeManager.updateLifes(6); }
 	for (auto num : ct) {
 		if (num == 3) {
