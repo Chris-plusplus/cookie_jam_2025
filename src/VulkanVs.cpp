@@ -29,6 +29,9 @@
 #include <systems/EndingSystem.h>
 #include <button/Button.h>
 
+#include "sound/Ambient.h"
+#include "sound/AudioDomain.h"
+
 ecs::Entity textEntity = ecs::nullEntity;
 decltype(std::chrono::high_resolution_clock::now()) now{};
 
@@ -73,8 +76,8 @@ void VulkanVs::init() {
 		"shaders/text/fragment_atlas_blue.glsl"
 		});*/
 
-	// init SoundManager
-	scene->domain().global<SoundManager>().init({explosionSoundPath});
+
+	audioDomain.global<SoundManager>().init();
 
 	//now = std::chrono::high_resolution_clock::now();
 
@@ -399,7 +402,7 @@ void VulkanVs::init() {
 			texVec.push_back(makePipeline(makeTexture("textures/Asset_final/Tutorial/Tutorial_mechanizm.png")));
 			texVec.push_back(makePipeline(makeTexture("textures/Asset_final/Tutorial/Tutorial_nagrody.png")));
 			texVec.push_back(makePipeline(makeTexture("textures/Asset_final/Tutorial/Tutorial_demony.png")));
-			texVec.push_back(makePipeline(makeTexture("textures/Asset_final/Tutorial/Tutorial_życie.png")));
+			texVec.push_back(makePipeline(makeTexture("textures/Asset_final/Tutorial/Tutorial_zycie.png")));
 
 			entity.addComponent(
 				scene::components::TransformComponent{
@@ -666,7 +669,7 @@ void VulkanVs::update() {
 		DemonManager::update(*scene);
 
 	// synchronize audio
-		scene->domain().global<SoundManager>().audioManager->synchronize(scene->domain());
+		audioDomain.global<SoundManager>().audioManager->synchronize(scene->domain());
 
 		/*if (std::chrono::high_resolution_clock::now() - now > std::chrono::seconds(3)) {
 			MultilineTextSystem::remove(*scene, textEntity);
@@ -680,6 +683,8 @@ void VulkanVs::update() {
 			scene->domain().kill(scene->domain().view<scene::components::TransformComponent>().back());
 			if (scene->domain().components<scene::components::TransformComponent>().base().count() == 0) {
 				scene::SceneManager::get()->changeScene(std::filesystem::exists("watchedTutorial") ? mainScene : tutorialScene);
+				Ambient::setAmbient("main_theme.ogg");
+
 			}
 		}
 	}
