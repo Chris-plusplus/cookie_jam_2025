@@ -151,7 +151,7 @@ void OfferSystem::clearOfferDialogue(Scene& scene) {
 
 	auto&& multiline = scene.domain().view<OfferTextFlag>().front();
 	MultilineTextSystem::remove(scene, multiline);
-
+	scene.domain().kill(multiline);
 }
 
 void OfferSystem::spawnOfferDialogue(Scene& scene, std::string_view offerText) {
