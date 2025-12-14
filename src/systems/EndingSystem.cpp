@@ -50,14 +50,16 @@ void EndingSystem::end(Scene& scene, std::string_view texturePath, std::string_v
 		scene::components::TransformComponent{
 			.position = {windowWidth / 2, windowHeight / 2, -0.2},
 			.rotation = {0, 0, 0, 1},
-			.scale = {100, 100, 0}
+			.scale = {200, 200, 0}
 		}
 	);
 	auto&& textComp = score.addComponent(
 		text::TextComponent(
 			text::convertTo<char32_t>(std::string_view(std::format("{}", PointsCounter::score))),
 			{defaultUniformBuffer()},
-			"Pixelated Elegance"
+			"Pixelated Elegance",
+			"Regular",
+			"shaders/text/fragment_atlas_outline.glsl"
 		)
 	);
 

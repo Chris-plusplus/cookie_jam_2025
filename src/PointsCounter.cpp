@@ -86,7 +86,9 @@ void PointsCounter::update(Scene& scene) {
 			text::TextComponent(
 				text::convertTo<char32_t>(std::string_view(std::format("{}", score))),
 				{buffer},
-				"Pixelated Elegance"
+				"Pixelated Elegance",
+				"Regular"
+				//"shaders/text/fragment_atlas_outline.glsl"
 			)
 		);
 
