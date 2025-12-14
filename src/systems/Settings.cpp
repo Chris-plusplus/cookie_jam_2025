@@ -276,4 +276,11 @@ void Settings::exit(Scene& scene) {
 	for (auto&& entity : toKill) {
 		scene.domain().kill(entity);
 	}
+	std::vector<ecs::Entity> buttonsToActivate;
+	for (auto&& entity : scene.domain().view<Button::InactiveFlag>()) {
+		buttonsToActivate.push_back(entity);
+	}
+	for (auto&& entity : buttonsToActivate) {
+		scene.domain().removeComponent<Button::InactiveFlag>(entity);
+	}
 }
