@@ -15,10 +15,10 @@ using namespace arch;
 void EndingSystem::end(Scene& scene, std::string_view texturePath, std::string_view endingTheme) {
 	Ambient::stopAmbient();
 	Ambient::setAmbient(endingTheme.data());
-	// endingScene = createRef<Scene>();
-	// scene::SceneManager::get()->changeScene(endingScene);
+	endingScene = createRef<Scene>();
+	scene::SceneManager::get()->changeScene(endingScene);
 
-	auto ending = scene.newEntity();
+	auto ending = endingScene->newEntity();
 	auto endingTex = makeTexture(texturePath);
 	auto mesh = makeMesh(defaultCenterVertices(), defaultIndices());
 	auto pipeline = gfx::Renderer::getCurrent()->getPipelineManager()->create(

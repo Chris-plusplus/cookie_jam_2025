@@ -439,16 +439,22 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 				mesh.pipeline = slotMachine.glitchedSymbols[std::uniform_int_distribution(0, 2)(rng)];
 			}
 		} else {
-			if (slotMachine.onDrawn) {
-				slotMachine.onDrawn(scene, slotMachine.drawn);
-			}
-			DemonManager::addroll();
-			DemonManager::isBlocked = false;
-			Logger::debug("reward = {}", slots::rewardAsString(SlotMachineSystem::reward(scene)));
-
-			if (scene.domain().components<LifeManager>().front().currentLifes == 0) {
-				EndingSystem::end(scene, "textures/Asset_final/Bad_ending.png", "bad_ending_theme.ogg");
+			if (count == slotMachine.drawn.size() && what == (int)slots::RewardType::cucumber) {
 				isEnd = true;
+				EndingSystem::end(scene, "textures/Asset_final/Ogor_ending.png", "bad_ending_theme.ogg");
+			} else {
+				if (slotMachine.onDrawn) {
+					slotMachine.onDrawn(scene, slotMachine.drawn);
+				}
+				DemonManager::addroll();
+				DemonManager::isBlocked = false;
+				Logger::debug("reward = {}", slots::rewardAsString(SlotMachineSystem::reward(scene)));
+
+
+				if (scene.domain().components<LifeManager>().front().currentLifes == 0) {
+					EndingSystem::end(scene, "textures/Asset_final/Bad_ending.png", "bad_ending_theme.ogg");
+					isEnd = true;
+				}
 			}
 		}
 	}
