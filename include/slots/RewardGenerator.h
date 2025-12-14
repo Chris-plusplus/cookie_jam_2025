@@ -29,15 +29,15 @@ class RewardGenerator {
 		.05, //sardines
 		.2, //coin
 	};
-	//std::vector<float> _weights{
-	//	.1, //cucumber
-	//	.0, //catnip
-	//	.0, //dry
-	//	.0, //sachet
-	//	.0, //feather
-	//	.0, //sardines
-	//	.0, //coin
-	//};
+	// std::vector<float> _weights{
+	// 	.1, //cucumber
+	// 	.0, //catnip
+	// 	.0, //dry
+	// 	.0, //sachet
+	// 	.0, //feather
+	// 	.0, //sardines
+	// 	.0, //coin
+	// };
 
 	std::random_device _randomDevice;
 	std::shared_ptr<std::mt19937> _randomGenerator;

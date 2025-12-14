@@ -8,6 +8,8 @@
 #include "sound/SFX.h"
 #include <systems/EndingSystem.h>
 
+#include "systems/SlotMachine.h"
+
 int PointsCounter::score = 0;
 
 int PointsCounter::count(Scene& scene, const std::vector<int>& wyniki) {
@@ -21,6 +23,7 @@ int PointsCounter::count(Scene& scene, const std::vector<int>& wyniki) {
 	}
 	//Wylosowano ogórki
 	if (ct[0] > 2) {
+		SlotMachineSystem::isEnd = true;
 		EndingSystem::end(scene, "textures/Asset_final/Ogor_ending.png", "bad_ending_theme.ogg");
 		return 0;
 	}
