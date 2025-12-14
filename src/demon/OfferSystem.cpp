@@ -15,12 +15,18 @@
 #include <archimedes/Text.h>
 #include <systems/Button.h>
 
+#include "demon/deals.h"
 #include "demon/DemonManager.h"
 #include "demon/OfferTextFlag.h"
 #include "sound/Ambient.h"
 #include "systems/PledgeSystem.h"
+#include "lifes/LifeManager.h"
+#include "systems/EndingSystem.h"
 
 namespace demon {
+
+OfferType OfferSystem::offer = OfferType::_none;
+
 void OfferSystem::setup(Scene& scene) {
 	auto&& manager = scene.newEntity();
 	auto&& dial = manager.addComponent<OfferDialogue>();
@@ -57,6 +63,16 @@ void OfferSystem::setup(Scene& scene) {
 		}
 		);
 
+	auto&& acceptHoverTexture = makeTexture(std::string_view("textures/Asset_final/Akceptacja_button_hover.png"));
+	dial.acceptButtonHoverPipeline = renderer.getPipelineManager()->create(
+		gfx::pipeline::Pipeline::Desc{
+			.vertexShaderPath = "shaders/vertex_default.glsl",
+			.fragmentShaderPath = "shaders/fragment_default.glsl",
+			.textures = {std::move(acceptHoverTexture)},
+			.buffers = {defaultUniformBuffer()},
+		}
+		);
+
 	// prepare dismiss button texture and params
 	auto&& dismissTexture = makeTexture(std::string_view("textures/Asset_final/Odrzucenie_button.png"));
 	dial.dismissButtonPipeline = renderer.getPipelineManager()->create(
@@ -64,6 +80,16 @@ void OfferSystem::setup(Scene& scene) {
 			.vertexShaderPath = "shaders/vertex_default.glsl",
 			.fragmentShaderPath = "shaders/fragment_default.glsl",
 			.textures = {std::move(dismissTexture)},
+			.buffers = {defaultUniformBuffer()},
+		}
+		);
+
+	auto&& dismissHoverTexture = makeTexture(std::string_view("textures/Asset_final/Odrzucenie_button_hover.png"));
+	dial.dismissButtonHoverPipeline = renderer.getPipelineManager()->create(
+		gfx::pipeline::Pipeline::Desc{
+			.vertexShaderPath = "shaders/vertex_default.glsl",
+			.fragmentShaderPath = "shaders/fragment_default.glsl",
+			.textures = {std::move(dismissHoverTexture)},
 			.buffers = {defaultUniformBuffer()},
 		}
 		);
@@ -90,11 +116,46 @@ void OfferSystem::setup(Scene& scene) {
 			.pipeline = dial.acceptButtonPipeline
 		}
 	);
-	ButtonSystem::setup(scene, accept.handle(), float2{-acceptT.scale.x, acceptT.scale.y} / 2.f, float2{acceptT.scale.x, -acceptT.scale.y} / 2.f, [&](...) {
+	ButtonSystem::setup(scene, accept.handle(), float2{-acceptT.scale.x, acceptT.scale.y} / 2.f, float2{acceptT.scale.x, -acceptT.scale.y} / 2.f, dial.acceptButtonPipeline, dial.acceptButtonHoverPipeline, [&](...) {
 		PledgeSystem::setup(scene);
 		PledgeSystem::setCallback(scene, [&] {
 			DemonManager::hide(scene);
 		});
+		switch (offer) {
+			case OfferType::d11:
+				Deal::big_sachet(scene);
+				Deal::nolife(scene);
+				break;
+			case OfferType::d12:
+				Deal::big_sachet(scene);
+				Deal::luck_down(scene);
+				break;
+			case OfferType::d13:
+				Deal::set_positive_change(scene);
+				Deal::luck_down(scene);
+				break;
+			case OfferType::d14:
+				Deal::set_positive_change(scene);
+				Deal::nolife(scene);
+				break;
+			case OfferType::d21:
+				Deal::quality();
+				Deal::robber();
+				break;
+			case OfferType::d22:
+				Deal::quality();
+				Deal::set_negative_change(scene);
+				break;
+			case OfferType::d31:
+				Deal::set_glitch(scene);
+				break;
+			case OfferType::d32:
+				Deal::set_no_gurken();
+				Deal::short_on_life(scene);
+				break;
+			default:
+				Logger::debug("Błąd oferty demona");
+		}
 	});
 	accept.addComponent(AcceptButtonFlag{});
 
@@ -117,7 +178,7 @@ void OfferSystem::setup(Scene& scene) {
 			.pipeline = dial.dismissButtonPipeline
 		}
 	);
-	ButtonSystem::setup(scene, dismiss.handle(), float2{-dismissT.scale.x, dismissT.scale.y} / 2.f, float2{dismissT.scale.x, -dismissT.scale.y} / 2.f, [&](...) {
+	ButtonSystem::setup(scene, dismiss.handle(), float2{-dismissT.scale.x, dismissT.scale.y} / 2.f, float2{dismissT.scale.x, -dismissT.scale.y} / 2.f, dial.dismissButtonPipeline, dial.dismissButtonHoverPipeline, [&](...) {
 		DemonManager::hide(scene);
 	});
 	dismiss.addComponent(DismissButtonFlag{});
@@ -160,9 +221,14 @@ void OfferSystem::clearOfferDialogue(Scene& scene) {
 
 	Ambient::stopAmbient(scene);
 	Ambient::setAmbient(scene, "main_theme.ogg");
+
+	if (scene.domain().components<LifeManager>().front().currentLifes == 0) {
+		EndingSystem::end("textures/Asset_final/Bad_ending.png");
+	}
 }
 
-void OfferSystem::spawnOfferDialogue(Scene& scene, std::string_view offerText) {
+void OfferSystem::spawnOfferDialogue(Scene& scene, std::string_view offerText, OfferType new_offer) {
+	offer = new_offer;
 	auto&& container = scene.domain().view<ContainerFlag>().front();
 	auto&& containerT = scene.domain().getComponent<scene::components::TransformComponent>(container);
 	containerT.position.z = -0.65;
@@ -196,8 +262,8 @@ void OfferSystem::spawnOfferDialogue(Scene& scene, std::string_view offerText) {
 				.position = float3(cnt.containerX - cnt.containerWidth / 2 * cnt.containerScaleX,
 					cnt.containerY + cnt.containerHeight / 2 * cnt.buttonScaleY,
 					-0.8) + float3{-cnt.containerScaleX, cnt.containerScaleY, 0.0} / 2.f + textDeltaPos,
-				.rotation = {0, 0, 0, 1},
-				.scale = {fontSize, fontSize, 0}
+					.rotation = {0, 0, 0, 1},
+					.scale = {fontSize, fontSize, 0}
 			}
 		);
 		textParentT.position.z = -0.8;

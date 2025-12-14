@@ -71,7 +71,7 @@ void PledgeSystem::setup(Scene& scene) {
 
 	pledge.addComponent(
 		scene::components::TransformComponent{
-			.position = {windowWidth / 2, windowHeight / 2, -0.8},
+			.position = {windowWidth / 2, windowHeight / 2, -0.9},
 			.rotation = {0, 0, 0, 1},
 			.scale = float3{textures.noPaw->getWidth(), textures.noPaw->getHeight(), 0} / 1.2f
 		}
@@ -102,7 +102,7 @@ void PledgeSystem::setup(Scene& scene) {
 
 	dark.addComponent(
 		scene::components::TransformComponent{
-			.position = {windowWidth / 2, windowHeight / 2, -0.79},
+			.position = {windowWidth / 2, windowHeight / 2, -0.89},
 			.rotation = {0, 0, 0, 1},
 			.scale = {windowWidth, windowHeight, 0}
 		}
@@ -122,7 +122,7 @@ void PledgeSystem::setup(Scene& scene) {
 		}
 		paw.addComponent(
 			scene::components::TransformComponent{
-				.position = {pawPos, -0.81},
+				.position = {pawPos, -0.91},
 				.rotation = {0, 0, 0, 1},
 				.scale = float3{textures.paw->getWidth(), textures.paw->getHeight(), 0} / 2.f
 			}

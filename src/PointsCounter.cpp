@@ -6,6 +6,7 @@
 #include <lifes/LifeManager.h>
 #include "demon/deals.h"
 #include "sound/SFX.h"
+#include <systems/EndingSystem.h>
 
 int PointsCounter::score = 0;
 
@@ -20,7 +21,7 @@ int PointsCounter::count(Scene& scene, const std::vector<int>& wyniki) {
 	}
 	//Wylosowano ogórki
 	if (ct[0] > 2) {
-		//TODO GAME OVER
+		EndingSystem::end("textures/Asset_final/Ogor_ending.png");
 		return 0;
 	}
 	if (ct[0] > 0 and !Deals::no_gurken) {
@@ -53,7 +54,7 @@ void PointsCounter::setup(Scene& scene) {
 	auto points = scene.newEntity();
 	auto&& scoreTransform = points.addComponent(
 		scene::components::TransformComponent{
-			.position = {windowWidth / 2.f - 10, windowHeight - 225.f, -0.6f},
+			.position = {windowWidth / 2.f + 5, windowHeight - 202.5f, -0.6f},
 			.rotation = {0, 0, 0, 1},
 			.scale = {50, 50, 0}
 		}
@@ -63,14 +64,32 @@ void PointsCounter::setup(Scene& scene) {
 
 //Aktualizacja scora na liczniku
 void PointsCounter::update(Scene& scene) {
-	auto buffer = defaultUniformBuffer();
 	auto points = scene.entitiesWith<ScoreTextFlag>().front();
-	points.removeComponent<text::TextComponent>();
-	auto&& text_comp= points.addComponent(
-		text::TextComponent(
-			text::convertTo<char32_t>(std::string_view(std::format("{}", score))),
-			{buffer},
-			"Pixelated Elegance"
-		)
-	);
+	static auto scorePrev = -1;
+	static auto originalPos = points.getComponent<scene::components::TransformComponent>().position;
+
+	if (scorePrev != score) {
+		scorePrev = score;
+		auto buffer = defaultUniformBuffer();
+		points.removeComponent<text::TextComponent>();
+		auto&& text_comp = points.addComponent(
+			text::TextComponent(
+				text::convertTo<char32_t>(std::string_view(std::format("{}", score))),
+				{buffer},
+				"Pixelated Elegance"
+			)
+		);
+
+		auto&& textT = points.getComponent<scene::components::TransformComponent>();
+		auto bottomLeft = text_comp.bottomLeftAdjusted();
+		auto topRight = text_comp.topRight();
+
+		auto diff = (topRight - bottomLeft) / 2.f;
+		diff.x *= -textT.scale.x;
+		diff.y *= -textT.scale.y;
+
+		Logger::debug("diff = {} {}", diff.x, diff.y);
+
+		textT.position = originalPos - diff;
+	}
 }
