@@ -7,11 +7,13 @@
 
 #include "sound/AudioDomain.h"
 
+float SFX::gain = 0.5;
 
 void SFX::playSFX(const std::string& path) {
     auto&& ambient = audioDomain.newEntity();
     auto&& ost = audioDomain.addComponent<audio::AudioSourceComponent>(ambient);
     // audio settings
+    ost.gain = gain;
     ost.path = path;
     ost.isLooped = false;
 
