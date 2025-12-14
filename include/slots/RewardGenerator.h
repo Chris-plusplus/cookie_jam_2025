@@ -20,24 +20,24 @@ enum class RewardType {
 std::string rewardAsString(RewardType type);
 
 class RewardGenerator {
-	// std::vector<float> _weights{
-	// 	.1, //cucumber
-	// 	.1, //catnip
-	// 	.3, //dry
-	// 	.15, //sachet
-	// 	.1, //feather
-	// 	.05, //sardines
-	// 	.2, //coin
-	// };
 	std::vector<float> _weights{
 		.1, //cucumber
-		.0, //catnip
-		.0, //dry
-		.0, //sachet
-		.0, //feather
-		.0, //sardines
-		.0, //coin
+		.1, //catnip
+		.3, //dry
+		.15, //sachet
+		.1, //feather
+		.05, //sardines
+		.2, //coin
 	};
+	// std::vector<float> _weights{
+	// 	.1, //cucumber
+	// 	.0, //catnip
+	// 	.0, //dry
+	// 	.0, //sachet
+	// 	.0, //feather
+	// 	.0, //sardines
+	// 	.0, //coin
+	// };
 
 	std::random_device _randomDevice;
 	std::shared_ptr<std::mt19937> _randomGenerator;
