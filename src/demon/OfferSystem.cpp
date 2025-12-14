@@ -22,7 +22,7 @@
 
 namespace demon {
 
-OfferType offer=OfferType::_none;
+OfferType OfferSystem::offer=OfferType::_none;
 
 void OfferSystem::setup(Scene& scene) {
 	auto&& manager = scene.newEntity();
