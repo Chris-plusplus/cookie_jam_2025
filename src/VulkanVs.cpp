@@ -34,6 +34,7 @@
 
 #include "sound/Ambient.h"
 #include "sound/AudioDomain.h"
+#include "systems/TakenDeals.h"
 
 ecs::Entity textEntity = ecs::nullEntity;
 decltype(std::chrono::high_resolution_clock::now()) now{};
@@ -104,6 +105,8 @@ void VulkanVs::init() {
 	LifeManagerSystem::setup(*scene);
 
 	SlotMachineSystem::onDrawn(*scene, PointsCounter::count);
+
+	TakenDeals::setup(*scene);
 
 	settingsScene = createRef<Scene>();
 	auto setting = settingsScene->newEntity();
