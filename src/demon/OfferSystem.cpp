@@ -132,11 +132,11 @@ void OfferSystem::setup(Scene& scene) {
 				break;
 			case OfferType::d13:
 				Deal::set_positive_change(scene);
-				Deal::luck_down(scene);
+				Deal::nolife(scene);
 				break;
 			case OfferType::d14:
 				Deal::set_positive_change(scene);
-				Deal::nolife(scene);
+				Deal::luck_down(scene);
 				break;
 			case OfferType::d21:
 				Deal::quality();
