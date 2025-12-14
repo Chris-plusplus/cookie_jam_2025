@@ -12,7 +12,7 @@
 
 using namespace arch;
 
-void EndingSystem::badEnd(Scene& scene, std::string_view texturePath, std::string_view endingTheme) {
+void EndingSystem::end(Scene& scene, std::string_view texturePath, std::string_view endingTheme) {
 	Ambient::stopAmbient();
 	Ambient::setAmbient(endingTheme.data());
 	endingScene = createRef<Scene>();

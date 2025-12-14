@@ -11,6 +11,7 @@
 #include "systems/SlotMachine.h"
 
 int PointsCounter::score = 0;
+int PointsCounter::threshold = 2000;
 
 int PointsCounter::count(Scene& scene, const std::vector<int>& wyniki) {
 	int sum = 0;
@@ -24,7 +25,7 @@ int PointsCounter::count(Scene& scene, const std::vector<int>& wyniki) {
 	//Wylosowano ogórki
 	if (ct[0] > 2) {
 		SlotMachineSystem::isEnd = true;
-		EndingSystem::badEnd(scene, "textures/Asset_final/Ogor_ending.png", "bad_ending_theme.ogg");
+		EndingSystem::end(scene, "textures/Asset_final/Ogor_ending.png", "bad_ending_theme.ogg");
 		return 0;
 	}
 	if (ct[0] > 0 and !Deals::no_gurken) {
@@ -49,6 +50,10 @@ int PointsCounter::count(Scene& scene, const std::vector<int>& wyniki) {
 		}
 	}
 	score += sum;
+	if (score >= threshold) {
+		EndingSystem::end(scene, "textures/Asset_final/Good_Ending.png", "happy_ending_theme.ogg");
+		SlotMachineSystem::isEnd = true;
+	}
 	return sum;
 };
 

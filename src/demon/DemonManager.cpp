@@ -11,7 +11,7 @@ int DemonManager::currentRoll = 0;
 demon::DemonType DemonManager::active_demon = demon::DemonType::_none;
 int DemonManager::roll_to_demon = std::uniform_int_distribution<int>{1, 2}(rng);
 int DemonManager::roll_to_demon2 = std::uniform_int_distribution<int>{1, 12}(rng);
-int DemonManager::points_to_demon = std::uniform_int_distribution<int>{2000, 3000}(rng);
+int DemonManager::points_to_demon = std::uniform_int_distribution<int>{500, PointsCounter::threshold}(rng);
 bool DemonManager::isBlocked = false;
 
 void DemonManager::setup(Scene& scene) {}

@@ -219,7 +219,13 @@ void VulkanVs::init() {
 				Button{
 					.topLeft = float2{-t.scale.x, t.scale.y} / 2.f,
 					.bottomRight = float2{t.scale.x, -t.scale.y} / 2.f,
-					.callback = [&](...) { Settings::setup(*menuScene); }
+					.callback = [&](Scene& scene, ecs::Entity entity) mutable {
+						for (auto&& button : scene.domain().view<Button>()) {
+							scene.domain().addComponent<Button::InactiveFlag>(button);
+						}
+						Settings::setup(scene);
+						// Entity(scene, entity).addComponent<Button::InactiveFlag>();
+					}
 				}
 			);
 		}
@@ -251,7 +257,12 @@ void VulkanVs::init() {
 				Button{
 					.topLeft = float2{-t.scale.x, t.scale.y} / 2.f,
 					.bottomRight = float2{t.scale.x, -t.scale.y} / 2.f,
-					.callback = [&](...) { Autors::setup(*menuScene); }
+					.callback = [&](Scene& scene, ecs::Entity entity) mutable {
+						for (auto&& button : scene.domain().view<Button>()) {
+							scene.domain().addComponent<Button::InactiveFlag>(button);
+						}
+						Autors::setup(*menuScene);
+					}
 				}
 			);
 		}

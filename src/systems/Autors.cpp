@@ -82,4 +82,7 @@ void Autors::exit(Scene& scene) {
     for (auto&& entity : toKill) {
         scene.domain().kill(entity);
     }
+    for (auto&& button : scene.domain().view<Button>()) {
+        scene.domain().removeComponent<Button::InactiveFlag>(button);
+    }
 }

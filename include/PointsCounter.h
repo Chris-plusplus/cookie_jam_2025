@@ -7,6 +7,7 @@ using namespace arch;
 class PointsCounter {
 public:
 	static int score;
+	static int threshold;
 	static int count(Scene& scene, const std::vector<int>&);
 	static void setup(Scene& scene);
 	static void update(Scene& scene);

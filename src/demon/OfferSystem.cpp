@@ -223,7 +223,7 @@ void OfferSystem::clearOfferDialogue(Scene& scene) {
 	Ambient::setAmbient("main_theme.ogg");
 
 	if (scene.domain().components<LifeManager>().front().currentLifes == 0) {
-		EndingSystem::badEnd(scene, "textures/Asset_final/Bad_ending.png", "bad_ending_theme.ogg");
+		EndingSystem::end(scene, "textures/Asset_final/Bad_ending.png", "bad_ending_theme.ogg");
 	}
 }
 
