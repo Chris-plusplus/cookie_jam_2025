@@ -20,7 +20,7 @@ void DemonManager::setup(Scene& scene) {
 void DemonManager::update(Scene& scene) {
 
 	if (active_demon == demon::DemonType::_none && !isBlocked) {
-		if (PointsCounter::score >= points_to_demon || true) {
+		if (PointsCounter::score >= points_to_demon) {
 			points_to_demon += std::uniform_int_distribution<int>{2000, 3000}(rng);
 			active_demon = demon::DemonType::demon2;
 			demon2::show(scene);
