@@ -441,7 +441,7 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 		} else {
 			if (count == slotMachine.drawn.size() && what == (int)slots::RewardType::cucumber) {
 				isEnd = true;
-				EndingSystem::badEnd(scene, "textures/Asset_final/Ogor_ending.png", "bad_ending_theme.ogg");
+				EndingSystem::end(scene, "textures/Asset_final/Ogor_ending.png", "bad_ending_theme.ogg");
 			} else {
 				if (slotMachine.onDrawn) {
 					slotMachine.onDrawn(scene, slotMachine.drawn);
@@ -452,7 +452,7 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 
 
 				if (scene.domain().components<LifeManager>().front().currentLifes == 0) {
-					EndingSystem::badEnd(scene, "textures/Asset_final/Bad_ending.png", "bad_ending_theme.ogg");
+					EndingSystem::end(scene, "textures/Asset_final/Bad_ending.png", "bad_ending_theme.ogg");
 					isEnd = true;
 				}
 			}

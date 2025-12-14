@@ -24,7 +24,7 @@ int PointsCounter::count(Scene& scene, const std::vector<int>& wyniki) {
 	//Wylosowano ogórki
 	if (ct[0] > 2) {
 		SlotMachineSystem::isEnd = true;
-		EndingSystem::badEnd(scene, "textures/Asset_final/Ogor_ending.png", "bad_ending_theme.ogg");
+		EndingSystem::end(scene, "textures/Asset_final/Ogor_ending.png", "bad_ending_theme.ogg");
 		return 0;
 	}
 	if (ct[0] > 0 and !Deals::no_gurken) {
