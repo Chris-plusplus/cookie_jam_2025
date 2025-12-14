@@ -37,12 +37,14 @@ Ref<Scene> mainScene{};
 Ref<Scene> settingsScene{};
 Ref<Scene> endingScene{};
 Ref<Scene> menuScene{};
+Ref<Scene> cutsceneScene{};
 
 VulkanVs::~VulkanVs() {
 	mainScene = nullptr;
 	settingsScene = nullptr;
 	endingScene = nullptr;
 	menuScene = nullptr;
+	cutsceneScene = nullptr;
 }
 
 void VulkanVs::init() {
@@ -176,7 +178,7 @@ void VulkanVs::init() {
 				Button{
 					.topLeft = float2{-t.scale.x, t.scale.y} / 2.f,
 					.bottomRight = float2{t.scale.x, -t.scale.y} / 2.f,
-					.callback = [&](...) { scene::SceneManager::get()->changeScene(mainScene); }
+					.callback = [&](...) { scene::SceneManager::get()->changeScene(cutsceneScene); }
 				}
 			);
 		}
@@ -263,6 +265,112 @@ void VulkanVs::init() {
 			);
 		}
 	}
+
+	{ // cutscene
+		cutsceneScene = createRef<Scene>();
+		scene = cutsceneScene;
+
+		{ // panel4
+			auto entity = scene->newEntity();
+			auto tex = makeTexture("textures/Asset_final/Panel_4.png");
+			auto pipeline = gfx::Renderer::getCurrent()->getPipelineManager()->create(
+				gfx::pipeline::Pipeline::Desc{
+					.vertexShaderPath = "shaders/vertex_default.glsl",
+					.fragmentShaderPath = "shaders/fragment_default.glsl",
+					.textures = {tex},
+					.buffers = {defaultUniformBuffer()},
+				}
+				);
+			entity.addComponent(
+				scene::components::TransformComponent{
+					.position = {windowWidth / 2, windowHeight / 2.f, -0.1},
+					.rotation = {0, 0, 0, 1},
+					.scale = float3{tex->getWidth(), tex->getHeight(), 0}
+				}
+			);
+			entity.addComponent(
+				scene::components::MeshComponent{
+					.mesh = mesh,
+					.pipeline = pipeline
+				}
+			);
+		}
+		{ // panel3
+			auto entity = scene->newEntity();
+			auto tex = makeTexture("textures/Asset_final/Panel_3.png");
+			auto pipeline = gfx::Renderer::getCurrent()->getPipelineManager()->create(
+				gfx::pipeline::Pipeline::Desc{
+					.vertexShaderPath = "shaders/vertex_default.glsl",
+					.fragmentShaderPath = "shaders/fragment_default.glsl",
+					.textures = {tex},
+					.buffers = {defaultUniformBuffer()},
+				}
+				);
+			entity.addComponent(
+				scene::components::TransformComponent{
+					.position = {windowWidth / 2, windowHeight / 2.f, -0.2},
+					.rotation = {0, 0, 0, 1},
+					.scale = float3{tex->getWidth(), tex->getHeight(), 0}
+				}
+			);
+			entity.addComponent(
+				scene::components::MeshComponent{
+					.mesh = mesh,
+					.pipeline = pipeline
+				}
+			);
+		}
+		{ // panel2
+			auto entity = scene->newEntity();
+			auto tex = makeTexture("textures/Asset_final/Panel_2.png");
+			auto pipeline = gfx::Renderer::getCurrent()->getPipelineManager()->create(
+				gfx::pipeline::Pipeline::Desc{
+					.vertexShaderPath = "shaders/vertex_default.glsl",
+					.fragmentShaderPath = "shaders/fragment_default.glsl",
+					.textures = {tex},
+					.buffers = {defaultUniformBuffer()},
+				}
+				);
+			entity.addComponent(
+				scene::components::TransformComponent{
+					.position = {windowWidth / 2, windowHeight / 2.f, -0.3},
+					.rotation = {0, 0, 0, 1},
+					.scale = float3{tex->getWidth(), tex->getHeight(), 0}
+				}
+			);
+			entity.addComponent(
+				scene::components::MeshComponent{
+					.mesh = mesh,
+					.pipeline = pipeline
+				}
+			);
+		}
+		{ // panel1
+			auto entity = scene->newEntity();
+			auto tex = makeTexture("textures/Asset_final/Panel_1.png");
+			auto pipeline = gfx::Renderer::getCurrent()->getPipelineManager()->create(
+				gfx::pipeline::Pipeline::Desc{
+					.vertexShaderPath = "shaders/vertex_default.glsl",
+					.fragmentShaderPath = "shaders/fragment_default.glsl",
+					.textures = {tex},
+					.buffers = {defaultUniformBuffer()},
+				}
+				);
+			entity.addComponent(
+				scene::components::TransformComponent{
+					.position = {windowWidth / 2, windowHeight / 2.f, -0.4},
+					.rotation = {0, 0, 0, 1},
+					.scale = float3{tex->getWidth(), tex->getHeight(), 0}
+				}
+			);
+			entity.addComponent(
+				scene::components::MeshComponent{
+					.mesh = mesh,
+					.pipeline = pipeline
+				}
+			);
+		}
+	}
 }
 
 using namespace std::chrono_literals;
@@ -292,6 +400,17 @@ void VulkanVs::update() {
 		/*if (std::chrono::high_resolution_clock::now() - now > std::chrono::seconds(3)) {
 			MultilineTextSystem::remove(*scene, textEntity);
 		}*/
+	} else if (scene == cutsceneScene) {
+		static auto startTime = std::chrono::high_resolution_clock::now();
+		auto currTime = std::chrono::high_resolution_clock::now();
+
+		if (currTime - startTime >= std::chrono::seconds(5)) {
+			startTime = currTime;
+			scene->domain().kill(scene->domain().view<scene::components::TransformComponent>().back());
+			if (scene->domain().components<scene::components::TransformComponent>().base().count() == 0) {
+				scene::SceneManager::get()->changeScene(mainScene);
+			}
+		}
 	}
 
 }
