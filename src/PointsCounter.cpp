@@ -12,7 +12,7 @@
 #include "systems/SlotMachine.h"
 
 int PointsCounter::score = 0;
-int PointsCounter::threshold = 5000;
+int PointsCounter::threshold = 3000;
 
 int PointsCounter::count(Scene& scene, const std::vector<int>& wyniki) {
 	int sum = 0;

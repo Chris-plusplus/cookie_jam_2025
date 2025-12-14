@@ -10,9 +10,9 @@ std::mt19937 DemonManager::rng{std::random_device{}()};
 
 int DemonManager::currentRoll = 0;
 demon::DemonType DemonManager::active_demon = demon::DemonType::_none;
-int DemonManager::roll_to_demon = std::uniform_int_distribution<int>{4, 6}(rng);
+int DemonManager::roll_to_demon = std::uniform_int_distribution<int>{3, 5}(rng);
 int DemonManager::roll_to_demon2 = std::uniform_int_distribution<int>{1, 12}(rng);
-int DemonManager::points_to_demon = std::uniform_int_distribution<int>{1500, 3000}(rng);
+int DemonManager::points_to_demon = std::uniform_int_distribution<int>{1000, 2000}(rng);
 bool DemonManager::isBlocked = false;
 
 void DemonManager::setup(Scene& scene) {}
@@ -35,7 +35,7 @@ void DemonManager::update(Scene& scene) {
 			}
 			Logger::debug("demon2");
 		} else if (currentRoll >= roll_to_demon) {
-			roll_to_demon += std::uniform_int_distribution<int>{4, 6}(rng);
+			roll_to_demon += std::uniform_int_distribution<int>{5, 7}(rng);
 			active_demon = demon::DemonType::demon1;
 			demon1::show(scene);
 			int temp = std::uniform_int_distribution<int>{1, 4}(rng);
@@ -55,7 +55,7 @@ void DemonManager::update(Scene& scene) {
 			}
 			Logger::debug("demon1");
 		} else if (currentRoll >= roll_to_demon2) {
-			roll_to_demon2 += std::uniform_int_distribution<int>{1, 12}(rng);
+			roll_to_demon2 += std::uniform_int_distribution<int>{1, 14}(rng);
 			active_demon = demon::DemonType::demon3;
 			demon3::show(scene);
 			int temp = std::uniform_int_distribution<int>{1, 2}(rng);
