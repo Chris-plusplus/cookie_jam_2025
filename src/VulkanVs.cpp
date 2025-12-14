@@ -708,7 +708,7 @@ void VulkanVs::update() {
 		static auto startTime = std::chrono::high_resolution_clock::now();
 		auto currTime = std::chrono::high_resolution_clock::now();
 
-		if (currTime - startTime >= std::chrono::milliseconds(5000)) {
+		if (currTime - startTime >= std::chrono::milliseconds(5000) || input::Keyboard::space.pressed()) {
 			startTime = currTime;
 			scene->domain().kill(scene->domain().view<scene::components::TransformComponent>().back());
 			if (scene->domain().components<scene::components::TransformComponent>().base().count() == 0) {
