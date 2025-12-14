@@ -10,6 +10,7 @@ using namespace arch;
 
 struct SlotMachine {
 	std::vector<Ref<gfx::pipeline::Pipeline>> symbols;
+	std::vector<Ref<gfx::pipeline::Pipeline>> glitchedSymbols;
 	std::vector<std::vector<ecs::Entity>> slotsByCollumn;
 	float upperBound;
 	float lowerBound;

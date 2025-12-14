@@ -24,6 +24,7 @@
 #include "demon/SwitchSystem.h"
 #include "demon/NegativeSwitch.h"
 #include "demon/PositiveSwitch.h"
+#include "slots/SlotGlitchChance.h"
 
 ecs::Entity textEntity = ecs::nullEntity;
 decltype(std::chrono::high_resolution_clock::now()) now{};
@@ -76,6 +77,7 @@ void VulkanVs::init() {
 	DemonManager::setup(*scene);
 
 	SwitchSystem::addEffect<PositiveSwitch>(*scene, 1);
+	scene->domain().global<SlotGlitchChance>().value = 0.5;
 
 	SlotMachineSystem::setup(*scene);
 
