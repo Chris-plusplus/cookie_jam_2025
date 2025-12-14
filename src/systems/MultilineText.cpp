@@ -4,6 +4,8 @@
 void MultilineTextSystem::setup(Scene& scene, ecs::Entity _parent, const std::u32string& text, font::Face& font, const std::vector<std::string>& shaders) {
 	remove(scene, _parent);
 
+	Logger::debug("xdxdxdxd {}", text::convertTo<char>(std::u32string_view(text)));
+
 	auto lines = text | std::views::split('\n') | std::views::transform([](auto&& subview) {
 		return std::u32string_view(subview.begin(), subview.end());
 	}) | std::ranges::to<std::vector>();
@@ -17,7 +19,7 @@ void MultilineTextSystem::setup(Scene& scene, ecs::Entity _parent, const std::u3
 		auto&& transform = newLine.addComponent<scene::components::TransformComponent>(parentT);
 		transform.position.y -= font.metrics().lineHeight * parentT.scale.y * i;
 
-		Logger::debug("{}, {}", transform.position.x, transform.position.y);
+		Logger::debug("{}, {}, {}", parentT.position.x, parentT.position.y, parentT.position.z);
 
 		auto&& text = newLine.addComponent(
 			text::TextComponent(
@@ -33,7 +35,8 @@ void MultilineTextSystem::setup(Scene& scene, ecs::Entity _parent, const std::u3
 void MultilineTextSystem::remove(Scene& scene, ecs::Entity _parent) {
 	auto parent = Entity(scene, _parent);
 	std::vector<ecs::Entity> toRemove;
-	toRemove.reserve(parent.childrenCount());
+	auto ccount = parent.childrenCount();
+	toRemove.reserve(ccount);
 
 	if (parent.childrenCount() != 0) {
 		for (auto&& child : parent.children()) {

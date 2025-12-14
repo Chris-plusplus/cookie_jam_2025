@@ -57,11 +57,11 @@ void VulkanVs::init() {
 			.scale = {100, 100, 0}
 		}
 	);
-	MultilineTextSystem::setup(*scene, textEntity, U"lorem\nipsum\ndupa", *font::FontDB::get()["Arial"]->regular(), {
+	/*MultilineTextSystem::setup(*scene, textEntity, U"lorem\nipsum\ndupa", *font::FontDB::get()["Arial"]->regular(), {
 		"shaders/text/fragment_atlas.glsl",
 		"shaders/text/fragment_atlas_yellow.glsl",
 		"shaders/text/fragment_atlas_blue.glsl"
-		});
+		});*/
 
 	// init SoundManager
 	scene->domain().global<SoundManager>().init({explosionSoundPath});
@@ -76,6 +76,8 @@ void VulkanVs::init() {
 
 	DemonManager::setup(*scene);
 
+	demon::OfferSystem::setup(*scene);
+
 	SwitchSystem::addEffect<PositiveSwitch>(*scene, 1);
 	scene->domain().global<SlotGlitchChance>().value = 0.5;
 
@@ -83,7 +85,6 @@ void VulkanVs::init() {
 
 	LifeManagerSystem::setup(*scene);
 
-	demon::OfferSystem::setup(*scene);
 	SlotMachineSystem::onDrawn(*scene, PointsCounter::count);
 
 	settingsScene = createRef<Scene>();

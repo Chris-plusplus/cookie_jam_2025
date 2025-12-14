@@ -4,13 +4,12 @@
 #include <Config.h>
 #include <Defaults.h>
 #include <lifes/LifeManager.h>
+#include "demon/deals.h"
 
 int PointsCounter::score = 0;
 
 int PointsCounter::count(Scene& scene, const std::vector<int>& wyniki) {
 	int sum = 0;
-	auto&& cpool = scene.domain().components<LifeManager>().base();
-	auto cnt = cpool.count();
 	auto&& manager = scene.domain().view<LifeManager>().front();
 	auto&& lifeManager = scene.domain().getComponent<LifeManager>(manager);
 	//Zliczanie wyników losowania
@@ -60,7 +59,7 @@ void PointsCounter::update(Scene& scene) {
 	auto buffer = defaultUniformBuffer();
 	auto points = scene.entitiesWith<ScoreTextFlag>().front();
 	points.removeComponent<text::TextComponent>();
-	points.addComponent(
+	auto&& text_comp= points.addComponent(
 		text::TextComponent(
 			text::convertTo<char32_t>(std::string_view(std::format("{}", score))),
 			{buffer},

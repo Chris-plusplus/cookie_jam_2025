@@ -105,7 +105,7 @@ void SlotMachineSystem::setup(Scene& scene) {
 		auto backgroundTexture = makeTexture("textures/background.png");
 		auto&& transform = background.addComponent(
 			scene::components::TransformComponent{
-				.position = {windowWidth / 2, windowHeight / 2, -0.45},
+				.position = {windowWidth / 2, windowHeight / 2, -0.3},
 				.rotation = {0, 0, 0, 1},
 				.scale = float3{backgroundTexture->getWidth(), backgroundTexture->getHeight(), 0} *0.9f
 			}
@@ -251,15 +251,18 @@ void SlotMachineSystem::update(Scene& scene) {
 	auto&& slotMachine = scene.domain().components<SlotMachine>().front();
 	auto&& manager = scene.domain().view<LifeManager>().front();
 	auto&& lifeManager = scene.domain().getComponent<LifeManager>(manager);
-	if ((input::Keyboard::space.pressed() || glitched) && !slotMachine.slotAnimation && lifeManager.currentLifes > 0) {
+	if ((input::Keyboard::space.pressed() || glitched)
+		&& !slotMachine.slotAnimation &&
+		(lifeManager.currentLifes > 0 || glitched)
+		&& DemonManager::active_demon == demon::DemonType::_none) {
 		if (!glitched) {
 			lifeManager.updateLifes(-1);
 			slotMachine.leverAnimationSpeed = 10;
 			slotMachine.pawAnimationSpeed = 10;
 		}
-
 		slotMachine.slotAnimation = true;
 		slotMachine.drawn.clear();
+		DemonManager::isBlocked = true;
 
 		for (auto&& [slotObject] : scene.domain().view<SlotObject>().components()) {
 			if (slotObject.jolt == 0) {
@@ -431,6 +434,7 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 				slotMachine.onDrawn(scene, slotMachine.drawn);
 			}
 			DemonManager::addroll();
+			DemonManager::isBlocked = false;
 			Logger::debug("reward = {}", slots::rewardAsString(SlotMachineSystem::reward(scene)));
 		}
 	}
