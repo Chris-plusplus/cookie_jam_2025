@@ -4,6 +4,14 @@
 #include <MakeMesh.h>
 #include <Defaults.h>
 #include <Config.h>
+#include <systems/SettingsFlag.h>
+#include <systems/Button.h>
+#include <button/Button.h>
+
+int Settings::Music=50;
+int Settings::SFX=50;
+scene::components::TransformComponent* Music_poz;
+scene::components::TransformComponent* SFX_poz;
 
 void Settings::setup(Scene& scene) {
 	if (scene.domain().components<Settings>().base().count() != 0) {
@@ -34,170 +42,205 @@ void Settings::setup(Scene& scene) {
 				.pipeline = pipeline,
 			}
 		);
+		auto&& flag = Settings.addComponent(SettingsFlag{});
 	}
 	{
 		auto PlusMusic = scene.newEntity();
-		auto&& PlusMusicTexture = makeTexture(std::string_view("textures/Asset_final/Dzwiek/Dzwiek_Plus.png"));
-		auto plusMesh = makeMesh(defaultCenterVertices(), defaultIndices());
+		auto&& texture = makeTexture(std::string_view("textures/Asset_final/Dzwiek/Dzwiek_Plus.png"));
+		auto mesh = makeMesh(defaultCenterVertices(), defaultIndices());
 		auto pipeline = gfx::Renderer::getCurrent()->getPipelineManager()->create(
 			gfx::pipeline::Pipeline::Desc{
 				.vertexShaderPath = "shaders/vertex_default.glsl",
 				.fragmentShaderPath = "shaders/fragment_default.glsl",
-				.textures = {PlusMusicTexture},
+				.textures = {texture},
 				.buffers = {defaultUniformBuffer()},
 			}
 			);
-		PlusMusic.addComponent(
+		auto&& t = PlusMusic.addComponent(
 			scene::components::TransformComponent{
 				.position = {windowWidth * 0.59, windowHeight * 0.62, -0.9},
 				.rotation = {0, 0, 0, 1},
-				.scale = {PlusMusicTexture->getWidth(), PlusMusicTexture->getHeight(), 0}
+				.scale = {texture->getWidth(), texture->getHeight(), 0}
 			}
 		);
 		PlusMusic.addComponent(
 			scene::components::MeshComponent{
-				.mesh = plusMesh,
+				.mesh = mesh,
 				.pipeline = pipeline,
 			}
 		);
+		PlusMusic.addComponent(
+				Button{
+					.topLeft = float2{-t.scale.x, t.scale.y} / 2.f,
+					.bottomRight = float2{t.scale.x, -t.scale.y} / 2.f,
+					.callback = [&](...) { Music=std::clamp(Music+10, 0, 100); }
+				});
+		auto&& flag = PlusMusic.addComponent(SettingsFlag{});
 	}
 	{
 		auto PlusSFX = scene.newEntity();
-		auto&& PlusSFXTexture = makeTexture(std::string_view("textures/Asset_final/Dzwiek/Dzwiek_Plus.png"));
-		auto plusSMesh = makeMesh(defaultCenterVertices(), defaultIndices());
+		auto&& texture = makeTexture(std::string_view("textures/Asset_final/Dzwiek/Dzwiek_Plus.png"));
+		auto mesh = makeMesh(defaultCenterVertices(), defaultIndices());
 		auto pipeline = gfx::Renderer::getCurrent()->getPipelineManager()->create(
 			gfx::pipeline::Pipeline::Desc{
 				.vertexShaderPath = "shaders/vertex_default.glsl",
 				.fragmentShaderPath = "shaders/fragment_default.glsl",
-				.textures = {PlusSFXTexture},
+				.textures = {texture},
 				.buffers = {defaultUniformBuffer()},
 			}
 			);
-		PlusSFX.addComponent(
+		auto&& t = PlusSFX.addComponent(
 			scene::components::TransformComponent{
 				.position = {windowWidth * 0.59, windowHeight * 0.29, -0.9},
 				.rotation = {0, 0, 0, 1},
-				.scale = {PlusSFXTexture->getWidth(), PlusSFXTexture->getHeight(), 0}
+				.scale = {texture->getWidth(), texture->getHeight(), 0}
 			}
 		);
 		PlusSFX.addComponent(
 			scene::components::MeshComponent{
-				.mesh = plusSMesh,
+				.mesh = mesh,
 				.pipeline = pipeline,
 			}
 		);
+		PlusSFX.addComponent(
+			Button{
+				.topLeft = float2{-t.scale.x, t.scale.y} / 2.f,
+				.bottomRight = float2{t.scale.x, -t.scale.y} / 2.f,
+				.callback = [&](...) { SFX=std::clamp(SFX+10, 0, 100); }
+			});
+		auto&& flag = PlusSFX.addComponent(SettingsFlag{});
 	}
 	{
 		auto MinusMusic = scene.newEntity();
-		auto&& MinusMusicTexture = makeTexture(std::string_view("textures/Asset_final/Dzwiek/Dzwiek_Minus.png"));
-		auto minusMesh = makeMesh(defaultCenterVertices(), defaultIndices());
+		auto&& texture = makeTexture(std::string_view("textures/Asset_final/Dzwiek/Dzwiek_Minus.png"));
+		auto mesh = makeMesh(defaultCenterVertices(), defaultIndices());
 		auto pipeline = gfx::Renderer::getCurrent()->getPipelineManager()->create(
 			gfx::pipeline::Pipeline::Desc{
 				.vertexShaderPath = "shaders/vertex_default.glsl",
 				.fragmentShaderPath = "shaders/fragment_default.glsl",
-				.textures = {MinusMusicTexture},
+				.textures = {texture},
 				.buffers = {defaultUniformBuffer()},
 			}
 			);
-		MinusMusic.addComponent(
+		auto&& t = MinusMusic.addComponent(
 			scene::components::TransformComponent{
 				.position = {windowWidth * 0.41, windowHeight * 0.62, -0.9},
 				.rotation = {0, 0, 0, 1},
-				.scale = {MinusMusicTexture->getWidth(), MinusMusicTexture->getHeight(), 0}
+				.scale = {texture->getWidth(), texture->getHeight(), 0}
 			}
 		);
 		MinusMusic.addComponent(
 			scene::components::MeshComponent{
-				.mesh = minusMesh,
+				.mesh = mesh,
 				.pipeline = pipeline,
 			}
 		);
+		MinusMusic.addComponent(
+				Button{
+					.topLeft = float2{-t.scale.x, t.scale.y} / 2.f,
+					.bottomRight = float2{t.scale.x, -t.scale.y} / 2.f,
+					.callback = [&](...) { Music=std::clamp(Music-10, 0, 100); }
+				});
+		auto&& flag = MinusMusic.addComponent(SettingsFlag{});
 	}
 	{
 		auto MinusSFX = scene.newEntity();
-		auto&& MinusSFXTexture = makeTexture(std::string_view("textures/Asset_final/Dzwiek/Dzwiek_Minus.png"));
-		auto minusSMesh = makeMesh(defaultCenterVertices(), defaultIndices());
+		auto&& texture = makeTexture(std::string_view("textures/Asset_final/Dzwiek/Dzwiek_Minus.png"));
+		auto mesh = makeMesh(defaultCenterVertices(), defaultIndices());
 		auto pipeline = gfx::Renderer::getCurrent()->getPipelineManager()->create(
 			gfx::pipeline::Pipeline::Desc{
 				.vertexShaderPath = "shaders/vertex_default.glsl",
 				.fragmentShaderPath = "shaders/fragment_default.glsl",
-				.textures = {MinusSFXTexture},
+				.textures = {texture},
 				.buffers = {defaultUniformBuffer()},
 			}
 			);
-		MinusSFX.addComponent(
+		auto&& t = MinusSFX.addComponent(
 			scene::components::TransformComponent{
 				.position = {windowWidth * 0.41, windowHeight * 0.29, -0.9},
 				.rotation = {0, 0, 0, 1},
-				.scale = {MinusSFXTexture->getWidth(), MinusSFXTexture->getHeight(), 0}
+				.scale = {texture->getWidth(), texture->getHeight(), 0}
 			}
 		);
 		MinusSFX.addComponent(
 			scene::components::MeshComponent{
-				.mesh = minusSMesh,
+				.mesh = mesh,
 				.pipeline = pipeline,
 			}
 		);
+		MinusSFX.addComponent(
+			Button{
+				.topLeft = float2{-t.scale.x, t.scale.y} / 2.f,
+				.bottomRight = float2{t.scale.x, -t.scale.y} / 2.f,
+				.callback = [&](...) { SFX=std::clamp(SFX-10, 0, 100); }
+			});
+		auto&& flag = MinusSFX.addComponent(SettingsFlag{});
 	}
 	{
 		auto MarkerM = scene.newEntity();
-		auto&& MarkerMTexture = makeTexture(std::string_view("textures/Asset_final/Dzwiek/Dzwiek_znacznik.png"));
+		auto&& texture = makeTexture(std::string_view("textures/Asset_final/Dzwiek/Dzwiek_znacznik.png"));
 		auto MarkerMMesh = makeMesh(defaultCenterVertices(), defaultIndices());
 		auto pipeline = gfx::Renderer::getCurrent()->getPipelineManager()->create(
 			gfx::pipeline::Pipeline::Desc{
 				.vertexShaderPath = "shaders/vertex_default.glsl",
 				.fragmentShaderPath = "shaders/fragment_default.glsl",
-				.textures = {MarkerMTexture},
+				.textures = {texture},
 				.buffers = {defaultUniformBuffer()},
 			}
 			);
-		MarkerM.addComponent(
-			scene::components::TransformComponent{
+		Music_poz = &MarkerM.addComponent(scene::components::TransformComponent{
 				.position = {windowWidth * 0.5, windowHeight * 0.61, -0.9},
 				.rotation = {0, 0, 0, 1},
-				.scale = {MarkerMTexture->getWidth(), MarkerMTexture->getHeight(), 0}
-			}
-		);
+				.scale = {texture->getWidth(), texture->getHeight(), 0}
+			});
 		MarkerM.addComponent(
 			scene::components::MeshComponent{
 				.mesh = MarkerMMesh,
 				.pipeline = pipeline,
 			}
 		);
+		auto&& flag = MarkerM.addComponent(SettingsFlag{});
 	}
 	{
 		auto MarkerS = scene.newEntity();
-		auto&& MarkerSTexture = makeTexture(std::string_view("textures/Asset_final/Dzwiek/Dzwiek_znacznik.png"));
+		auto&& texture = makeTexture(std::string_view("textures/Asset_final/Dzwiek/Dzwiek_znacznik.png"));
 		auto MarkerSMesh = makeMesh(defaultCenterVertices(), defaultIndices());
 		auto pipeline = gfx::Renderer::getCurrent()->getPipelineManager()->create(
 			gfx::pipeline::Pipeline::Desc{
 				.vertexShaderPath = "shaders/vertex_default.glsl",
 				.fragmentShaderPath = "shaders/fragment_default.glsl",
-				.textures = {MarkerSTexture},
+				.textures = {texture},
 				.buffers = {defaultUniformBuffer()},
 			}
 			);
-		MarkerS.addComponent(
-			scene::components::TransformComponent{
+		SFX_poz = &MarkerS.addComponent(scene::components::TransformComponent{
 				.position = {windowWidth * 0.5, windowHeight * 0.28, -0.9},
 				.rotation = {0, 0, 0, 1},
-				.scale = {MarkerSTexture->getWidth(), MarkerSTexture->getHeight(), 0}
-			}
-		);
+				.scale = {texture->getWidth(), texture->getHeight(), 0}
+			});
 		MarkerS.addComponent(
 			scene::components::MeshComponent{
 				.mesh = MarkerSMesh,
 				.pipeline = pipeline,
 			}
 		);
+		auto&& flag = MarkerS.addComponent(SettingsFlag{});
 	}
 }
 
 void Settings::update(Scene& scene) {
-
+	if (scene.domain().view<SettingsFlag>()) {
+		SFX_poz->position.x=windowWidth * (0.45+0.001*SFX);
+		Music_poz->position.x=windowWidth * (0.45+0.001*Music);
+	}
 }
 
 void Settings::exit(Scene& scene) {
-	auto temp = scene.domain().view<Settings>().front();
-	scene.domain().kill(temp);
+	std::vector<ecs::Entity> toKill;
+	for (auto&& entity : scene.domain().view<SettingsFlag>()) {
+		toKill.push_back(entity);
+	}
+	for (auto&& entity : toKill) {
+		scene.domain().kill(entity);
+	}
 }

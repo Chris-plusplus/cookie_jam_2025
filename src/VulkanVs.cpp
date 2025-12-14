@@ -397,8 +397,10 @@ void VulkanVs::update() {
 		EndingSystem::end("textures/Asset_final/Bad_ending.png");
 	}*/
 	if (input::Keyboard::enter.pressed()) {
-		Autors::exit(*mainScene);
+		Autors::exit(*menuScene);
+		Settings::exit(*menuScene);
 	}
+	Settings::update(*menuScene);
 
 	Ref<Scene> scene = scene::SceneManager::get()->currentScene();
 	ButtonSystem::update(*scene);
