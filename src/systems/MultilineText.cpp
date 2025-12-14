@@ -35,7 +35,8 @@ void MultilineTextSystem::setup(Scene& scene, ecs::Entity _parent, const std::u3
 void MultilineTextSystem::remove(Scene& scene, ecs::Entity _parent) {
 	auto parent = Entity(scene, _parent);
 	std::vector<ecs::Entity> toRemove;
-	toRemove.reserve(parent.childrenCount());
+	auto ccount = parent.childrenCount();
+	toRemove.reserve(ccount);
 
 	if (parent.childrenCount() != 0) {
 		for (auto&& child : parent.children()) {
