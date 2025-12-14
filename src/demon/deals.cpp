@@ -44,7 +44,7 @@ void Deal::nolife(Scene& scene) {
 }
 void Deal::set_glitch(Scene& scene) {
 	Deals::glitch = true;
-	scene.domain().global<SlotGlitchChance>().value = 0.1;
+	scene.domain().global<SlotGlitchChance>().value = 0.25;
 }
 void Deal::set_negative_change(Scene& scene) {
 	Deals::negative_change = true;

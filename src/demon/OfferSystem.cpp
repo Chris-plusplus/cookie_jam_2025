@@ -228,6 +228,9 @@ void OfferSystem::clearOfferDialogue(Scene& scene) {
 }
 
 void OfferSystem::spawnOfferDialogue(Scene& scene, std::string_view offerText, OfferType new_offer) {
+	if (DemonManager::isBlocked) {
+		return;
+	}
 	offer = new_offer;
 	auto&& container = scene.domain().view<ContainerFlag>().front();
 	auto&& containerT = scene.domain().getComponent<scene::components::TransformComponent>(container);

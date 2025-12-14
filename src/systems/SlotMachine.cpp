@@ -264,7 +264,7 @@ void SlotMachineSystem::update(Scene& scene) {
 			lifeManager.updateLifes(-1);
 			slotMachine.leverAnimationSpeed = 10;
 			slotMachine.pawAnimationSpeed = 10;
-			SFX::playSFX( "wajcha.ogg");
+			SFX::playSFX("wajcha.ogg");
 		}
 		slotMachine.slotAnimation = true;
 		slotMachine.drawn.clear();
@@ -441,7 +441,7 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 		} else {
 			if (count == slotMachine.drawn.size() && what == (int)slots::RewardType::cucumber) {
 				isEnd = true;
-				EndingSystem::end(scene, "textures/Asset_final/Ogor_ending.png", "bad_ending_theme.ogg");
+				EndingSystem::end(scene, "textures/Asset_final/Ogor_ending.png", "silly_theme.ogg");
 			} else {
 				if (slotMachine.onDrawn) {
 					slotMachine.onDrawn(scene, slotMachine.drawn);
@@ -452,6 +452,8 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 
 
 				if (scene.domain().components<LifeManager>().front().currentLifes == 0) {
+
+					DemonManager::isBlocked = true;
 					EndingSystem::end(scene, "textures/Asset_final/Bad_ending.png", "bad_ending_theme.ogg");
 					isEnd = true;
 				}

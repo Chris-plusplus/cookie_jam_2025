@@ -35,7 +35,7 @@ void demon2::setup(Scene& scene) {
 void demon2::show(Scene& scene) {
 	auto head = scene.entitiesWith<Demon2Flag>().front();
 	auto&& transform = head.getComponent<scene::components::TransformComponent>();
-	transform.position.z = -0.499;
+	transform.position.z = -0.501;
 
 }
 void demon2::hide(Scene& scene) {
