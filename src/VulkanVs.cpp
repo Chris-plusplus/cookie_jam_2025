@@ -137,7 +137,7 @@ void VulkanVs::update() {
 		if (input::Keyboard::Q.pressed()) {
 			PledgeSystem::setup(*scene);
 			PledgeSystem::setCallback(*scene, [&] {
-				Logger::debug("anim end");
+				DemonManager::hide(*scene);
 			});
 		}
 

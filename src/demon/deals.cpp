@@ -2,7 +2,7 @@
 #include <lifes/LifeManager.h>
 #include <archimedes/scene/Scene.h>
 
-namespace deals {
+namespace Deals {
     int sachet=1;
     bool positive_change=false;
     bool negative_change=false;

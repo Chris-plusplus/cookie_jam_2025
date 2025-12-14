@@ -17,6 +17,7 @@
 
 #include "demon/DemonManager.h"
 #include "demon/OfferTextFlag.h"
+#include "systems/PledgeSystem.h"
 
 namespace demon {
 void OfferSystem::setup(Scene& scene) {
@@ -89,7 +90,10 @@ void OfferSystem::setup(Scene& scene) {
 		}
 	);
 	ButtonSystem::setup(scene, accept.handle(), float2{-acceptT.scale.x, acceptT.scale.y} / 2.f, float2{acceptT.scale.x, -acceptT.scale.y} / 2.f, [&](...) {
-		DemonManager::hide(scene);
+		PledgeSystem::setup(scene);
+		PledgeSystem::setCallback(scene, [&] {
+			DemonManager::hide(scene);
+		});
 	});
 	accept.addComponent(AcceptButtonFlag{});
 
