@@ -41,6 +41,7 @@ Ref<Scene> settingsScene{};
 Ref<Scene> endingScene{};
 Ref<Scene> menuScene{};
 Ref<Scene> cutsceneScene{};
+Ref<Scene> tutorialScene{};
 
 VulkanVs::~VulkanVs() {
 	mainScene = nullptr;
@@ -48,6 +49,7 @@ VulkanVs::~VulkanVs() {
 	endingScene = nullptr;
 	menuScene = nullptr;
 	cutsceneScene = nullptr;
+	tutorialScene = nullptr;
 }
 
 void VulkanVs::init() {
@@ -374,6 +376,275 @@ void VulkanVs::init() {
 			);
 		}
 	}
+	{ // tutorial scene
+		tutorialScene = createRef<Scene>();
+		scene = tutorialScene;
+
+		{ // panel
+			auto entity = scene->newEntity();
+
+			auto&& texVec = scene->domain().global<std::vector<Ref<gfx::pipeline::Pipeline>>>();
+
+			auto makePipeline = [&](Ref<gfx::Texture> tex) {
+				return gfx::Renderer::getCurrent()->getPipelineManager()->create(
+					gfx::pipeline::Pipeline::Desc{
+						.vertexShaderPath = "shaders/vertex_default.glsl",
+						.fragmentShaderPath = "shaders/fragment_default.glsl",
+						.textures = {tex},
+						.buffers = {defaultUniformBuffer()},
+					}
+					);
+			};
+
+			auto celTex = makeTexture("textures/Asset_final/Tutorial/Tutorial_celgry.png");
+			texVec.push_back(makePipeline(celTex));
+			texVec.push_back(makePipeline(makeTexture("textures/Asset_final/Tutorial/Tutorial_sterowanie.png")));
+			texVec.push_back(makePipeline(makeTexture("textures/Asset_final/Tutorial/Tutorial_mechanizm.png")));
+			texVec.push_back(makePipeline(makeTexture("textures/Asset_final/Tutorial/Tutorial_nagrody.png")));
+			texVec.push_back(makePipeline(makeTexture("textures/Asset_final/Tutorial/Tutorial_demony.png")));
+			texVec.push_back(makePipeline(makeTexture("textures/Asset_final/Tutorial/Tutorial_życie.png")));
+
+			entity.addComponent(
+				scene::components::TransformComponent{
+					.position = {windowWidth / 2, windowHeight / 2.f, -0.4},
+					.rotation = {0, 0, 0, 1},
+					.scale = float3{celTex->getWidth(), celTex->getHeight(), 0} / 1.5f
+				}
+			);
+			auto&& meshC = entity.addComponent(
+				scene::components::MeshComponent{
+					.mesh = mesh,
+					.pipeline = texVec[0]
+				}
+			);
+
+			Color transparent{};
+			auto transparentPip = makePipeline(gfx::Renderer::getCurrent()->getTextureManager()->createTexture2D(1, 1, &transparent));
+			auto hoverTex = makeTexture("textures/Asset_final/Tutorial/Tutorial_button_hover.png");
+			auto hoverPip = makePipeline(hoverTex);
+
+			auto file = std::ifstream("tutorialButtons.txt");
+			float buttonScale{};
+			float2 buttonSize = {225.f, 70.f};
+			file >> buttonScale;
+			{ // button1
+				auto button = scene->newEntity();
+				auto&& buttonT = button.addComponent(
+					scene::components::TransformComponent{
+						.position = {0, 0, -0.3},
+						.rotation = {0, 0, 0, 1},
+						.scale = float3{hoverTex->getWidth(), hoverTex->getHeight(), 0} *buttonScale
+					}
+				);
+				file >> buttonT.position.x >> buttonT.position.y;
+				button.addComponent(
+					scene::components::MeshComponent{
+						.mesh = mesh,
+						.pipeline = transparentPip
+					}
+				);
+				button.addComponent(
+					Button{
+						.topLeft = {-buttonSize.x / 2.f, buttonSize.y / 2.f},
+						.bottomRight = {buttonSize.x / 2.f, -buttonSize.y / 2.f},
+						.onNotHover = transparentPip,
+						.onHover = hoverPip,
+						.callback = [&, meshCPtr = &meshC, texVecPtr = &texVec](...) { meshCPtr->pipeline = texVecPtr->at(0);  }
+					}
+				);
+			}
+			{ // button2
+				auto button = scene->newEntity();
+				auto&& buttonT = button.addComponent(
+					scene::components::TransformComponent{
+						.position = {0, 0, -0.3},
+						.rotation = {0, 0, 0, 1},
+						.scale = float3{hoverTex->getWidth(), hoverTex->getHeight(), 0}*buttonScale
+					}
+				);
+				file >> buttonT.position.x >> buttonT.position.y;
+				button.addComponent(
+					scene::components::MeshComponent{
+						.mesh = mesh,
+						.pipeline = transparentPip
+					}
+				);
+				button.addComponent(
+					Button{
+						.topLeft = {-buttonSize.x / 2.f, buttonSize.y / 2.f},
+						.bottomRight = {buttonSize.x / 2.f, -buttonSize.y / 2.f},
+						.onNotHover = transparentPip,
+						.onHover = hoverPip,
+						.callback = [&, meshCPtr = &meshC, texVecPtr = &texVec](...) { meshCPtr->pipeline = texVecPtr->at(1);  }
+					}
+				);
+			}
+			{ // button3
+				auto button = scene->newEntity();
+				auto&& buttonT = button.addComponent(
+					scene::components::TransformComponent{
+						.position = {0, 0, -0.3},
+						.rotation = {0, 0, 0, 1},
+						.scale = float3{hoverTex->getWidth(), hoverTex->getHeight(), 0}*buttonScale
+					}
+				);
+				file >> buttonT.position.x >> buttonT.position.y;
+				button.addComponent(
+					scene::components::MeshComponent{
+						.mesh = mesh,
+						.pipeline = transparentPip
+					}
+				);
+				button.addComponent(
+					Button{
+						.topLeft = {-buttonSize.x / 2.f, buttonSize.y / 2.f},
+						.bottomRight = {buttonSize.x / 2.f, -buttonSize.y / 2.f},
+						.onNotHover = transparentPip,
+						.onHover = hoverPip,
+						.callback = [&, meshCPtr = &meshC, texVecPtr = &texVec](...) { meshCPtr->pipeline = texVecPtr->at(2);  }
+					}
+				);
+			}
+			{ // button4
+				auto button = scene->newEntity();
+				auto&& buttonT = button.addComponent(
+					scene::components::TransformComponent{
+						.position = {0, 0, -0.3},
+						.rotation = {0, 0, 0, 1},
+						.scale = float3{hoverTex->getWidth(), hoverTex->getHeight(), 0}*buttonScale
+					}
+				);
+				file >> buttonT.position.x >> buttonT.position.y;
+				button.addComponent(
+					scene::components::MeshComponent{
+						.mesh = mesh,
+						.pipeline = transparentPip
+					}
+				);
+				button.addComponent(
+					Button{
+						.topLeft = {-buttonSize.x / 2.f, buttonSize.y / 2.f},
+						.bottomRight = {buttonSize.x / 2.f, -buttonSize.y / 2.f},
+						.onNotHover = transparentPip,
+						.onHover = hoverPip,
+						.callback = [&, meshCPtr = &meshC, texVecPtr = &texVec](...) { meshCPtr->pipeline = texVecPtr->at(3);  }
+					}
+				);
+			}
+			{ // button5
+				auto button = scene->newEntity();
+				auto&& buttonT = button.addComponent(
+					scene::components::TransformComponent{
+						.position = {0, 0, -0.3},
+						.rotation = {0, 0, 0, 1},
+						.scale = float3{hoverTex->getWidth(), hoverTex->getHeight(), 0}*buttonScale
+					}
+				);
+				file >> buttonT.position.x >> buttonT.position.y;
+				button.addComponent(
+					scene::components::MeshComponent{
+						.mesh = mesh,
+						.pipeline = transparentPip
+					}
+				);
+				button.addComponent(
+					Button{
+						.topLeft = {-buttonSize.x / 2.f, buttonSize.y / 2.f},
+						.bottomRight = {buttonSize.x / 2.f, -buttonSize.y / 2.f},
+						.onNotHover = transparentPip,
+						.onHover = hoverPip,
+						.callback = [&, meshCPtr = &meshC, texVecPtr = &texVec](...) { meshCPtr->pipeline = texVecPtr->at(4);  }
+					}
+				);
+			}
+			{ // button6
+				auto button = scene->newEntity();
+				auto&& buttonT = button.addComponent(
+					scene::components::TransformComponent{
+						.position = {0, 0, -0.3},
+						.rotation = {0, 0, 0, 1},
+						.scale = float3{hoverTex->getWidth(), hoverTex->getHeight(), 0}*buttonScale
+					}
+				);
+				file >> buttonT.position.x >> buttonT.position.y;
+				button.addComponent(
+					scene::components::MeshComponent{
+						.mesh = mesh,
+						.pipeline = transparentPip
+					}
+				);
+				button.addComponent(
+					Button{
+						.topLeft = {-buttonSize.x / 2.f, buttonSize.y / 2.f},
+						.bottomRight = {buttonSize.x / 2.f, -buttonSize.y / 2.f},
+						.onNotHover = transparentPip,
+						.onHover = hoverPip,
+						.callback = [&, meshCPtr = &meshC, texVecPtr = &texVec](...) { meshCPtr->pipeline = texVecPtr->at(5);  }
+					}
+				);
+			}
+
+			{ // mainScene button
+				auto button = scene->newEntity();
+				auto buttonTex = makeTexture("textures/Asset_final/Zamyknie_asset.png");
+				auto&& buttonT = button.addComponent(
+					scene::components::TransformComponent{
+						.position = {0, 0, -0.3},
+						.rotation = {0, 0, 0, 1},
+						.scale = float3{buttonTex->getWidth(), buttonTex->getHeight(), 0}
+					}
+				);
+				file >> buttonT.position.x >> buttonT.position.y;
+				auto pipeline = makePipeline(buttonTex);
+				button.addComponent(
+					scene::components::MeshComponent{
+						.mesh = mesh,
+						.pipeline = pipeline
+					}
+				);
+				button.addComponent(
+					Button{
+						.topLeft = {-buttonT.scale.x / 2.f, buttonT.scale.y / 2.f},
+						.bottomRight = {buttonT.scale.x / 2.f, -buttonT.scale.y / 2.f},
+						.onNotHover = pipeline,
+						.onHover = pipeline,
+						.callback = [&, meshCPtr = &meshC, texVecPtr = &texVec](...) { scene::SceneManager::get()->changeScene(mainScene); std::ofstream("watchedTutorial") << ""; }
+					}
+				);
+			}
+
+			{ // mainScene -> tutorial button
+				auto button = mainScene->newEntity();
+				auto buttonTex = makeTexture("textures/Asset_final/Button_tutorial.png");
+				auto buttonHoverTex = makeTexture("textures/Asset_final/Button_tutorial_hover.png");
+				auto&& buttonT = button.addComponent(
+					scene::components::TransformComponent{
+						.position = {0, 0, -0.475},
+						.rotation = {0, 0, 0, 1},
+						.scale = float3{buttonTex->getWidth(), buttonTex->getHeight(), 0}
+					}
+				);
+				file >> buttonT.position.x >> buttonT.position.y;
+				auto pipeline = makePipeline(buttonTex);
+				auto pipelineHover = makePipeline(buttonHoverTex);
+				button.addComponent(
+					scene::components::MeshComponent{
+						.mesh = mesh,
+						.pipeline = pipeline
+					}
+				);
+				button.addComponent(
+					Button{
+						.topLeft = {-buttonT.scale.x / 2.f, buttonT.scale.y / 2.f},
+						.bottomRight = {buttonT.scale.x / 2.f, -buttonT.scale.y / 2.f},
+						.onNotHover = pipeline,
+						.onHover = pipelineHover,
+						.callback = [&, meshCPtr = &meshC, texVecPtr = &texVec](...) { scene::SceneManager::get()->changeScene(tutorialScene); }
+					}
+				);
+			}
+		}
+	}
 }
 
 using namespace std::chrono_literals;
@@ -407,11 +678,11 @@ void VulkanVs::update() {
 		static auto startTime = std::chrono::high_resolution_clock::now();
 		auto currTime = std::chrono::high_resolution_clock::now();
 
-		if (currTime - startTime >= std::chrono::milliseconds(5)) {
+		if (currTime - startTime >= std::chrono::milliseconds(5000)) {
 			startTime = currTime;
 			scene->domain().kill(scene->domain().view<scene::components::TransformComponent>().back());
 			if (scene->domain().components<scene::components::TransformComponent>().base().count() == 0) {
-				scene::SceneManager::get()->changeScene(mainScene);
+				scene::SceneManager::get()->changeScene(std::filesystem::exists("watchedTutorial") ? mainScene : tutorialScene);
 				Ambient::setAmbient("main_theme.ogg");
 
 			}
