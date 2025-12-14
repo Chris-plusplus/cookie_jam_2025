@@ -16,5 +16,9 @@ struct SoundManager {
 	~SoundManager();
 
 	void init();
+
+	void start();
+
+	void kill();
 };
 

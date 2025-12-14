@@ -6,30 +6,26 @@
 #include <SoundManager.h>
 
 #include "sound/CurrentAmbientFlag.h"
+#include "sound/AudioDomain.h"
 
-void Ambient::setAmbient(Scene& scene, const std::string& path) {
-    auto&& soundManager = scene::SceneManager::get()->currentScene()->domain().global<SoundManager>();
-    auto&& ambient = scene.newEntity();
-    auto&& ost = ambient.addComponent<audio::AudioSourceComponent>();
-    ambient.addComponent<CurrentAmbientFlag>();
+void Ambient::setAmbient(const std::string& path) {
+    auto&& soundManager = audioDomain.global<SoundManager>();
+    auto&& ambient = audioDomain.newEntity();
+    auto&& ost = audioDomain.addComponent<audio::AudioSourceComponent>(ambient);
+    audioDomain.addComponent<CurrentAmbientFlag>(ambient);
     // audio settings
     ost.path = path;
     ost.isLooped = true;
 
     soundManager.audioManager->assignSource(ost);
     soundManager.audioManager->playSource(ost);
+    Logger::debug("Ambient set {}", path);
 }
 
-void Ambient::stopAmbient(Scene &scene) {
-    auto&& soundManager = scene::SceneManager::get()->currentScene()->domain().global<SoundManager>();
-    auto&& oldAmbient = scene.domain().view<CurrentAmbientFlag>().front();
-    auto&& oldOst = scene.domain().getComponent<audio::AudioSourceComponent>(oldAmbient);
+void Ambient::stopAmbient() {
+    auto&& soundManager = audioDomain.global<SoundManager>();
+    auto&& oldAmbient = audioDomain.view<CurrentAmbientFlag>().front();
+    auto&& oldOst = audioDomain.getComponent<audio::AudioSourceComponent>(oldAmbient);
     soundManager.audioManager->stopSource(oldOst);
-    scene.domain().kill(oldAmbient);
-}
-
-void Ambient::update(Scene& scene) {}
-
-void Ambient::setup(Scene& scene) {
-    setAmbient(scene, "main_theme.ogg");
+    audioDomain.kill(oldAmbient);
 }

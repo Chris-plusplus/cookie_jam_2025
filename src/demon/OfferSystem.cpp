@@ -219,11 +219,11 @@ void OfferSystem::clearOfferDialogue(Scene& scene) {
 	MultilineTextSystem::remove(scene, multiline);
 	scene.domain().kill(multiline);
 
-	Ambient::stopAmbient(scene);
-	Ambient::setAmbient(scene, "main_theme.ogg");
+	Ambient::stopAmbient();
+	Ambient::setAmbient("main_theme.ogg");
 
 	if (scene.domain().components<LifeManager>().front().currentLifes == 0) {
-		EndingSystem::end("textures/Asset_final/Bad_ending.png");
+		EndingSystem::end(scene, "textures/Asset_final/Bad_ending.png", "bad_ending_theme.ogg");
 	}
 }
 
@@ -285,8 +285,8 @@ void OfferSystem::spawnOfferDialogue(Scene& scene, std::string_view offerText, O
 		MultilineTextSystem::setup(scene, textParent, offerText, *font::FontDB::get()["Arial"]->regular(),
 			{"shaders/text/fragment_atlas_black.glsl", });
 
-		Ambient::stopAmbient(scene);
-		Ambient::setAmbient(scene, "demon_theme.ogg");
+		Ambient::stopAmbient();
+		Ambient::setAmbient("demon_theme.ogg");
 	}
 }
 

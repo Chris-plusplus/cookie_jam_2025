@@ -16,12 +16,21 @@ void SoundManager::init() {
 		soundFiles.emplace_back(entryPath.filename().string());
 		Logger::debug("{}", entryPath.filename().string());
 	}
-
-	audioManager = createUnique<audio::AudioManager>(&soundBank);
-	audioThread = createUnique<std::jthread>(&audio::AudioManager::play, audioManager.get());
 	for (auto&& soundFile : soundFiles) {
 		soundBank.addClip(soundFile);
 	}
 	soundBank.loadInitialGroups();
+	start();
+}
+
+void SoundManager::start() {
+	audioManager = createUnique<audio::AudioManager>(&soundBank);
+	audioThread = createUnique<std::jthread>(&audio::AudioManager::play, audioManager.get());
+}
+
+void SoundManager::kill() {
+	audioManager->stop();
+	audioThread->request_stop();
+	audioThread->join();
 }
 

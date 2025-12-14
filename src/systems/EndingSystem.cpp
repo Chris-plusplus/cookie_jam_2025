@@ -6,13 +6,19 @@
 #include <Config.h>
 #include <Scenes.h>
 
+#include "SoundManager.h"
+#include "sound/Ambient.h"
+#include "sound/AudioDomain.h"
+
 using namespace arch;
 
-void EndingSystem::end(std::string_view texturePath) {
-	endingScene = createRef<Scene>();
-	scene::SceneManager::get()->changeScene(endingScene);
+void EndingSystem::end(Scene& scene, std::string_view texturePath, std::string_view endingTheme) {
+	Ambient::stopAmbient();
+	Ambient::setAmbient(endingTheme.data());
+	// endingScene = createRef<Scene>();
+	// scene::SceneManager::get()->changeScene(endingScene);
 
-	auto ending = endingScene->newEntity();
+	auto ending = scene.newEntity();
 	auto endingTex = makeTexture(texturePath);
 	auto mesh = makeMesh(defaultCenterVertices(), defaultIndices());
 	auto pipeline = gfx::Renderer::getCurrent()->getPipelineManager()->create(
@@ -25,7 +31,7 @@ void EndingSystem::end(std::string_view texturePath) {
 		);
 	ending.addComponent(
 		scene::components::TransformComponent{
-			.position = {windowWidth / 2, windowHeight / 2, -0.1},
+			.position = {windowWidth / 2, windowHeight / 2, -1.0},
 			.rotation = {0, 0, 0, 1},
 			.scale = {endingTex->getWidth(), endingTex->getHeight(), 0}
 		}

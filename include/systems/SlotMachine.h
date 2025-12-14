@@ -8,6 +8,8 @@ using namespace arch;
 struct SlotMachineSystem {
 	static void setup(Scene& scene);
 
+	static bool isEnd;
+
 	static void updateAnimation(Scene& scene);
 	static void update(Scene& scene);
 

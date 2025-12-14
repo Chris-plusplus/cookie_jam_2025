@@ -40,6 +40,8 @@ auto rng = std::mt19937(std::random_device{}());
 }
 bool glitched = false;
 
+bool SlotMachineSystem::isEnd = false;
+
 void SlotMachineSystem::setup(Scene& scene) {
 	auto machine = scene.newEntity();
 	auto mesh = makeMesh(defaultCenterVertices(), defaultIndices());
@@ -262,7 +264,7 @@ void SlotMachineSystem::update(Scene& scene) {
 			lifeManager.updateLifes(-1);
 			slotMachine.leverAnimationSpeed = 10;
 			slotMachine.pawAnimationSpeed = 10;
-			SFX::playSFX(scene, "wajcha.ogg");
+			SFX::playSFX( "wajcha.ogg");
 		}
 		slotMachine.slotAnimation = true;
 		slotMachine.drawn.clear();
@@ -282,6 +284,9 @@ struct SlotStride {
 };
 
 void SlotMachineSystem::updateAnimation(Scene& scene) {
+	if (isEnd) {
+		return;
+	}
 	static auto prevTime = std::chrono::high_resolution_clock::now();
 	const auto now = std::chrono::high_resolution_clock::now();
 	auto deltaTime = (float)std::chrono::duration_cast<decltype(0.0s)>(now - prevTime).count();
@@ -442,7 +447,8 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 			Logger::debug("reward = {}", slots::rewardAsString(SlotMachineSystem::reward(scene)));
 
 			if (scene.domain().components<LifeManager>().front().currentLifes == 0) {
-				EndingSystem::end("textures/Asset_final/Bad_ending.png");
+				EndingSystem::end(scene, "textures/Asset_final/Bad_ending.png", "bad_ending_theme.ogg");
+				isEnd = true;
 			}
 		}
 	}

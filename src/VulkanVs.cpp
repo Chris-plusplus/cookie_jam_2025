@@ -30,6 +30,7 @@
 #include <button/Button.h>
 
 #include "sound/Ambient.h"
+#include "sound/AudioDomain.h"
 
 ecs::Entity textEntity = ecs::nullEntity;
 decltype(std::chrono::high_resolution_clock::now()) now{};
@@ -74,11 +75,9 @@ void VulkanVs::init() {
 		});*/
 
 
-	scene->domain().global<SoundManager>().init();
+	audioDomain.global<SoundManager>().init();
 
 	//now = std::chrono::high_resolution_clock::now();
-
-	Ambient::setup(*scene);
 
 	PointsCounter::setup(*scene);
 
@@ -399,7 +398,7 @@ void VulkanVs::update() {
 		DemonManager::update(*scene);
 
 	// synchronize audio
-		scene->domain().global<SoundManager>().audioManager->synchronize(scene->domain());
+		audioDomain.global<SoundManager>().audioManager->synchronize(scene->domain());
 
 		/*if (std::chrono::high_resolution_clock::now() - now > std::chrono::seconds(3)) {
 			MultilineTextSystem::remove(*scene, textEntity);
@@ -408,11 +407,13 @@ void VulkanVs::update() {
 		static auto startTime = std::chrono::high_resolution_clock::now();
 		auto currTime = std::chrono::high_resolution_clock::now();
 
-		if (currTime - startTime >= std::chrono::seconds(5)) {
+		if (currTime - startTime >= std::chrono::milliseconds(5)) {
 			startTime = currTime;
 			scene->domain().kill(scene->domain().view<scene::components::TransformComponent>().back());
 			if (scene->domain().components<scene::components::TransformComponent>().base().count() == 0) {
 				scene::SceneManager::get()->changeScene(mainScene);
+				Ambient::setAmbient("main_theme.ogg");
+
 			}
 		}
 	}

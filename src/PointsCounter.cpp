@@ -21,11 +21,11 @@ int PointsCounter::count(Scene& scene, const std::vector<int>& wyniki) {
 	}
 	//Wylosowano ogórki
 	if (ct[0] > 2) {
-		EndingSystem::end("textures/Asset_final/Ogor_ending.png");
+		EndingSystem::end(scene, "textures/Asset_final/Ogor_ending.png", "bad_ending_theme.ogg");
 		return 0;
 	}
 	if (ct[0] > 0 and !Deals::no_gurken) {
-		SFX::playSFX(scene, "nieudane_rozdanie.ogg");
+		SFX::playSFX("nieudane_rozdanie.ogg");
 		return 0;
 	}
 	//Wylosowano piórko + przemiana
@@ -42,7 +42,7 @@ int PointsCounter::count(Scene& scene, const std::vector<int>& wyniki) {
 	if (ct[6] > 2) { lifeManager.updateLifes(6); }
 	for (auto num : ct) {
 		if (num == 3) {
-			SFX::playSFX(scene, "jackpot.ogg");
+			SFX::playSFX("jackpot.ogg");
 		}
 	}
 	score += sum;

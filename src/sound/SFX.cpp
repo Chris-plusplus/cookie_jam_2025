@@ -5,20 +5,17 @@
 #include <Config.h>
 #include <SoundManager.h>
 
+#include "sound/AudioDomain.h"
 
-void SFX::playSFX(Scene& scene, const std::string& path) {
-    auto&& ambient = scene.newEntity();
-    auto&& ost = ambient.addComponent<audio::AudioSourceComponent>();
+
+void SFX::playSFX(const std::string& path) {
+    auto&& ambient = audioDomain.newEntity();
+    auto&& ost = audioDomain.addComponent<audio::AudioSourceComponent>(ambient);
     // audio settings
     ost.path = path;
     ost.isLooped = false;
 
-    auto&& soundManager = scene::SceneManager::get()->currentScene()->domain().global<SoundManager>();
+    auto&& soundManager = audioDomain.global<SoundManager>();
     soundManager.audioManager->assignSource(ost);
     soundManager.audioManager->playSource(ost);
-}
-
-void SFX::update(Scene& scene) {}
-
-void SFX::setup(Scene& scene) {
 }
