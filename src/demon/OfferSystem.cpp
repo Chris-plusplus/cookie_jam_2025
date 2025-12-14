@@ -15,11 +15,15 @@
 #include <archimedes/Text.h>
 #include <systems/Button.h>
 
+#include "demon/deals.h"
 #include "demon/DemonManager.h"
 #include "demon/OfferTextFlag.h"
 #include "systems/PledgeSystem.h"
 
 namespace demon {
+
+OfferType OfferSystem::offer=OfferType::_none;
+
 void OfferSystem::setup(Scene& scene) {
 	auto&& manager = scene.newEntity();
 	auto&& dial = manager.addComponent<OfferDialogue>();
@@ -94,6 +98,41 @@ void OfferSystem::setup(Scene& scene) {
 		PledgeSystem::setCallback(scene, [&] {
 			DemonManager::hide(scene);
 		});
+		switch (offer) {
+			case OfferType::d11:
+				Deal::big_sachet(scene);
+				Deal::nolife(scene);
+				break;
+			case OfferType::d12:
+				Deal::big_sachet(scene);
+				Deal::luck_down(scene);
+				break;
+			case OfferType::d13:
+				Deal::set_positive_change();
+				Deal::luck_down(scene);
+				break;
+			case OfferType::d14:
+				Deal::set_positive_change();
+				Deal::nolife(scene);
+				break;
+			case OfferType::d21:
+				Deal::quality();
+				Deal::robber();
+				break;
+			case OfferType::d22:
+				Deal::quality();
+				Deal::set_negative_change();
+				break;
+			case OfferType::d31:
+				Deal::set_glitch();
+				break;
+			case OfferType::d32:
+				Deal::set_no_gurken();
+				Deal::short_on_life(scene);
+				break;
+			default:
+				Logger::debug("Błąd oferty demona");
+		}
 	});
 	accept.addComponent(AcceptButtonFlag{});
 
@@ -158,7 +197,8 @@ void OfferSystem::clearOfferDialogue(Scene& scene) {
 	scene.domain().kill(multiline);
 }
 
-void OfferSystem::spawnOfferDialogue(Scene& scene, std::string_view offerText) {
+void OfferSystem::spawnOfferDialogue(Scene& scene, std::string_view offerText,OfferType new_offer) {
+	offer=new_offer;
 	auto&& container = scene.domain().view<ContainerFlag>().front();
 	auto&& containerT = scene.domain().getComponent<scene::components::TransformComponent>(container);
 	containerT.position.z = -0.65;
