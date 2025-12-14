@@ -28,6 +28,9 @@
 #include "Scenes.h"
 #include <systems/EndingSystem.h>
 #include <button/Button.h>
+#include <systems/Settings.h>
+
+#include "systems/Autors.h"
 
 #include "sound/Ambient.h"
 #include "sound/AudioDomain.h"
@@ -186,6 +189,7 @@ void VulkanVs::init() {
 					.callback = [&](...) { scene::SceneManager::get()->changeScene(cutsceneScene); }
 				}
 			);
+			// auto del = entity.addComponent(Button::InactiveFlag{});
 		}
 		{ // opcje
 			auto entity = scene->newEntity();
@@ -198,7 +202,7 @@ void VulkanVs::init() {
 					.buffers = {defaultUniformBuffer()},
 				}
 				);
-			entity.addComponent(
+			auto&& t = entity.addComponent(
 				scene::components::TransformComponent{
 					.position = {windowWidth * 2 / 5, windowHeight * 2.f / 6.f, -0.1},
 					.rotation = {0, 0, 0, 1},
@@ -209,6 +213,13 @@ void VulkanVs::init() {
 				scene::components::MeshComponent{
 					.mesh = mesh,
 					.pipeline = pipeline
+				}
+			);
+			entity.addComponent(
+				Button{
+					.topLeft = float2{-t.scale.x, t.scale.y} / 2.f,
+					.bottomRight = float2{t.scale.x, -t.scale.y} / 2.f,
+					.callback = [&](...) { Settings::setup(*menuScene); }
 				}
 			);
 		}
@@ -223,7 +234,7 @@ void VulkanVs::init() {
 					.buffers = {defaultUniformBuffer()},
 				}
 				);
-			entity.addComponent(
+			auto&& t = entity.addComponent(
 				scene::components::TransformComponent{
 					.position = {windowWidth * 3 / 5, windowHeight * 2.f / 6.f, -0.1},
 					.rotation = {0, 0, 0, 1},
@@ -234,6 +245,13 @@ void VulkanVs::init() {
 				scene::components::MeshComponent{
 					.mesh = mesh,
 					.pipeline = pipeline
+				}
+			);
+			entity.addComponent(
+				Button{
+					.topLeft = float2{-t.scale.x, t.scale.y} / 2.f,
+					.bottomRight = float2{t.scale.x, -t.scale.y} / 2.f,
+					.callback = [&](...) { Autors::setup(*menuScene); }
 				}
 			);
 		}
@@ -653,6 +671,7 @@ void VulkanVs::update() {
 	/*if (input::Keyboard::enter.pressed()) {
 		EndingSystem::end("textures/Asset_final/Bad_ending.png");
 	}*/
+	Settings::update(*menuScene);
 
 	Ref<Scene> scene = scene::SceneManager::get()->currentScene();
 	ButtonSystem::update(*scene);
