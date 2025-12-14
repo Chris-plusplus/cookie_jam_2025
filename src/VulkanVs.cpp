@@ -27,6 +27,7 @@
 #include "slots/SlotGlitchChance.h"
 #include "Scenes.h"
 #include <systems/EndingSystem.h>
+#include <button/Button.h>
 
 ecs::Entity textEntity = ecs::nullEntity;
 decltype(std::chrono::high_resolution_clock::now()) now{};
@@ -35,11 +36,13 @@ Unique<ecs::Domain> globalDomain;
 Ref<Scene> mainScene{};
 Ref<Scene> settingsScene{};
 Ref<Scene> endingScene{};
+Ref<Scene> menuScene{};
 
 VulkanVs::~VulkanVs() {
 	mainScene = nullptr;
 	settingsScene = nullptr;
 	endingScene = nullptr;
+	menuScene = nullptr;
 }
 
 void VulkanVs::init() {
@@ -50,9 +53,8 @@ void VulkanVs::init() {
 	// make scene
 	Ref<Scene> scene = createRef<Scene>();
 	mainScene = scene;
-	scene::SceneManager::get()->changeScene(scene);
 
-	auto textEnt = scene->newEntity();
+	/*auto textEnt = scene->newEntity();
 	textEntity = textEnt.handle();
 	textEnt.addComponent(
 		scene::components::TransformComponent{
@@ -60,7 +62,7 @@ void VulkanVs::init() {
 			.rotation = {0, 0, 0, 1},
 			.scale = {100, 100, 0}
 		}
-	);
+	);*/
 	/*MultilineTextSystem::setup(*scene, textEntity, U"lorem\nipsum\ndupa", *font::FontDB::get()["Arial"]->regular(), {
 		"shaders/text/fragment_atlas.glsl",
 		"shaders/text/fragment_atlas_yellow.glsl",
@@ -70,7 +72,7 @@ void VulkanVs::init() {
 	// init SoundManager
 	scene->domain().global<SoundManager>().init({explosionSoundPath});
 
-	now = std::chrono::high_resolution_clock::now();
+	//now = std::chrono::high_resolution_clock::now();
 
 	PointsCounter::setup(*scene);
 
@@ -114,6 +116,153 @@ void VulkanVs::init() {
 				)
 		}
 	);
+
+	scene = createRef<Scene>();
+	menuScene = scene;
+	scene::SceneManager::get()->changeScene(scene);
+
+	auto mesh = makeMesh(defaultCenterVertices(), defaultIndices());
+	{ // menu scene
+		{ // logo
+			auto entity = scene->newEntity();
+			auto tex = makeTexture("textures/Asset_final/Tytul_on_fin.png");
+			auto pipeline = gfx::Renderer::getCurrent()->getPipelineManager()->create(
+				gfx::pipeline::Pipeline::Desc{
+					.vertexShaderPath = "shaders/vertex_default.glsl",
+					.fragmentShaderPath = "shaders/fragment_default.glsl",
+					.textures = {tex},
+					.buffers = {defaultUniformBuffer()},
+				}
+				);
+			entity.addComponent(
+				scene::components::TransformComponent{
+					.position = {windowWidth / 2, windowHeight * 5.f / 6.f, -0.1},
+					.rotation = {0, 0, 0, 1},
+					.scale = float3{tex->getWidth(), tex->getHeight(), 0} / 1.5f
+				}
+			);
+			entity.addComponent(
+				scene::components::MeshComponent{
+					.mesh = mesh,
+					.pipeline = pipeline
+				}
+			);
+		}
+		{ // start
+			auto entity = scene->newEntity();
+			auto tex = makeTexture("textures/Asset_final/Start_fin.png");
+			auto pipeline = gfx::Renderer::getCurrent()->getPipelineManager()->create(
+				gfx::pipeline::Pipeline::Desc{
+					.vertexShaderPath = "shaders/vertex_default.glsl",
+					.fragmentShaderPath = "shaders/fragment_default.glsl",
+					.textures = {tex},
+					.buffers = {defaultUniformBuffer()},
+				}
+				);
+			auto&& t = entity.addComponent(
+				scene::components::TransformComponent{
+					.position = {windowWidth * 1 / 5, windowHeight * 2.f / 6.f, -0.1},
+					.rotation = {0, 0, 0, 1},
+					.scale = float3{tex->getWidth(), tex->getHeight(), 0} / 1.5f
+				}
+			);
+			entity.addComponent(
+				scene::components::MeshComponent{
+					.mesh = mesh,
+					.pipeline = pipeline
+				}
+			);
+			entity.addComponent(
+				Button{
+					.topLeft = float2{-t.scale.x, t.scale.y} / 2.f,
+					.bottomRight = float2{t.scale.x, -t.scale.y} / 2.f,
+					.callback = [&](...) { scene::SceneManager::get()->changeScene(mainScene); }
+				}
+			);
+		}
+		{ // opcje
+			auto entity = scene->newEntity();
+			auto tex = makeTexture("textures/Asset_final/Opcje_fin.png");
+			auto pipeline = gfx::Renderer::getCurrent()->getPipelineManager()->create(
+				gfx::pipeline::Pipeline::Desc{
+					.vertexShaderPath = "shaders/vertex_default.glsl",
+					.fragmentShaderPath = "shaders/fragment_default.glsl",
+					.textures = {tex},
+					.buffers = {defaultUniformBuffer()},
+				}
+				);
+			entity.addComponent(
+				scene::components::TransformComponent{
+					.position = {windowWidth * 2 / 5, windowHeight * 2.f / 6.f, -0.1},
+					.rotation = {0, 0, 0, 1},
+					.scale = float3{tex->getWidth(), tex->getHeight(), 0} / 1.5f
+				}
+			);
+			entity.addComponent(
+				scene::components::MeshComponent{
+					.mesh = mesh,
+					.pipeline = pipeline
+				}
+			);
+		}
+		{ // tworcy
+			auto entity = scene->newEntity();
+			auto tex = makeTexture("textures/Asset_final/Tworcy_fin.png");
+			auto pipeline = gfx::Renderer::getCurrent()->getPipelineManager()->create(
+				gfx::pipeline::Pipeline::Desc{
+					.vertexShaderPath = "shaders/vertex_default.glsl",
+					.fragmentShaderPath = "shaders/fragment_default.glsl",
+					.textures = {tex},
+					.buffers = {defaultUniformBuffer()},
+				}
+				);
+			entity.addComponent(
+				scene::components::TransformComponent{
+					.position = {windowWidth * 3 / 5, windowHeight * 2.f / 6.f, -0.1},
+					.rotation = {0, 0, 0, 1},
+					.scale = float3{tex->getWidth(), tex->getHeight(), 0} / 1.5f
+				}
+			);
+			entity.addComponent(
+				scene::components::MeshComponent{
+					.mesh = mesh,
+					.pipeline = pipeline
+				}
+			);
+		}
+		{ // wyjdz
+			auto entity = scene->newEntity();
+			auto tex = makeTexture("textures/Asset_final/Wyjdz_fin.png");
+			auto pipeline = gfx::Renderer::getCurrent()->getPipelineManager()->create(
+				gfx::pipeline::Pipeline::Desc{
+					.vertexShaderPath = "shaders/vertex_default.glsl",
+					.fragmentShaderPath = "shaders/fragment_default.glsl",
+					.textures = {tex},
+					.buffers = {defaultUniformBuffer()},
+				}
+				);
+			auto&& t = entity.addComponent(
+				scene::components::TransformComponent{
+					.position = {windowWidth * 4 / 5, windowHeight * 2.f / 6.f, -0.1},
+					.rotation = {0, 0, 0, 1},
+					.scale = float3{tex->getWidth(), tex->getHeight(), 0} / 1.5f
+				}
+			);
+			entity.addComponent(
+				scene::components::MeshComponent{
+					.mesh = mesh,
+					.pipeline = pipeline
+				}
+			);
+			entity.addComponent(
+				Button{
+					.topLeft = float2{-t.scale.x, t.scale.y} / 2.f,
+					.bottomRight = float2{t.scale.x, -t.scale.y} / 2.f,
+					.callback = [&](...) { std::exit(0); }
+				}
+			);
+		}
+	}
 }
 
 using namespace std::chrono_literals;
@@ -124,10 +273,10 @@ void VulkanVs::update() {
 	}*/
 
 	Ref<Scene> scene = scene::SceneManager::get()->currentScene();
+	ButtonSystem::update(*scene);
+
 	if (scene == mainScene) {
 		//static auto prevTime = std::chrono::high_resolution_clock::now();
-
-		ButtonSystem::update(*scene);
 
 		PointsCounter::update(*scene);
 
@@ -144,5 +293,6 @@ void VulkanVs::update() {
 			MultilineTextSystem::remove(*scene, textEntity);
 		}*/
 	}
+
 }
 
