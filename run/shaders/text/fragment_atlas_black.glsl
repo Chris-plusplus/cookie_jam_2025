@@ -23,6 +23,5 @@ void main() {
     float pxDist = screenPxRange() * (distance - 0.5f);
     float alpha = clamp(pxDist + 0.5f, 0.0f, 1.0f);
 
-    //outColor = vec4(vec3(0), alpha);
-    outColor = vec4(1, 1, 0, alpha);
+    outColor = vec4(vec3(0), alpha);
 }
