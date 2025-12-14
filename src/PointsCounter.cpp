@@ -52,7 +52,6 @@ int PointsCounter::count(Scene& scene, const std::vector<int>& wyniki) {
 			case slots::RewardType::sardines:
 				sum-=400*ct[5];
 				break;
-			case default:
 		}
 	}
 	lifeManager.updateLifes(ct[6]);
