@@ -11,6 +11,7 @@
 #include "systems/SlotMachine.h"
 
 int PointsCounter::score = 0;
+int PointsCounter::threshold = 2000;
 
 int PointsCounter::count(Scene& scene, const std::vector<int>& wyniki) {
 	int sum = 0;
@@ -49,6 +50,10 @@ int PointsCounter::count(Scene& scene, const std::vector<int>& wyniki) {
 		}
 	}
 	score += sum;
+	if (score >= threshold) {
+		EndingSystem::end(scene, "textures/Asset_final/Good_Ending.png", "happy_ending_theme.ogg");
+		SlotMachineSystem::isEnd = true;
+	}
 	return sum;
 };
 
