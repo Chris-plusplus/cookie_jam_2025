@@ -691,17 +691,17 @@ void VulkanVs::update() {
 
 	audioDomain.global<SoundManager>().audioManager->synchronize(scene->domain());
 
-	if (scene == mainScene) {
+	if (scene == mainScene || scene == tutorialScene) {
 		//static auto prevTime = std::chrono::high_resolution_clock::now();
 
 
-		SlotMachineSystem::update(*scene);
-		LifeManagerSystem::update(*scene);
-		PointsCounter::update(*scene);
+		SlotMachineSystem::update(*mainScene);
+		LifeManagerSystem::update(*mainScene);
+		PointsCounter::update(*mainScene);
 
-		PledgeSystem::update(*scene);
+		PledgeSystem::update(*mainScene);
 		//if (scene == mainScene) {
-		DemonManager::update(*scene);
+		DemonManager::update(*mainScene);
 	//}
 
 	// synchronize audio
