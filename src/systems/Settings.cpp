@@ -8,6 +8,7 @@
 #include <systems/Button.h>
 #include <button/Button.h>
 
+#include "sound/Ambient.h"
 #include "sound/SFX.h"
 
 int Settings::Music=50;
@@ -269,6 +270,8 @@ void Settings::update(Scene& scene) {
 		Music_poz->position.x=windowWidth * (0.45+0.001*Music);
 	}
 	SFX::gain = (float) SFX / 100.0;
+	Ambient::gain = (float) Music / 100.0;
+	Ambient::updateGain();
 }
 
 void Settings::exit(Scene& scene) {
