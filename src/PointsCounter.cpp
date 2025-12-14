@@ -22,7 +22,7 @@ int PointsCounter::count(Scene& scene, const std::vector<int>& wyniki) {
 		//TODO GAME OVER
 		return 0;
 	}
-	if (ct[0] > 0) {
+	if (ct[0] > 0 and !Deals::no_gurken) {
 		return 0;
 	}
 	//Wylosowano piórko + przemiana
@@ -30,7 +30,7 @@ int PointsCounter::count(Scene& scene, const std::vector<int>& wyniki) {
 		if (ct[2] > ct[3] and ct[2] > ct[4] and ct[2] > ct[5] and ct[2] > ct[6]) { ct[2] += ct[1]; } else if (ct[3] > ct[4] and ct[3] > ct[5] and ct[3] > ct[6]) { ct[3] += ct[1]; } else if (ct[4] > ct[5] and ct[4] > ct[6]) { ct[4] += ct[1]; } else if (ct[5] > ct[6]) { ct[5] += ct[1]; } else if (ct[6] > 1) { ct[6] += ct[1]; } else sum += 200 * ct[1]; //same piórka
 	}
 	//Sumowanie punktów
-	sum += 20 * ct[2] + 50 * ct[3] + 120 * ct[4] + 200 * ct[5];
+	sum += 20 * ct[2] + 30 * ct[2] * Deals::better_food + 50 * ct[3] + 120 * ct[4] + 200 * ct[5];
 	lifeManager.updateLifes(ct[6]);
 	if (ct[2] > 2) { sum += 60; }
 	if (ct[3] > 2) { sum += 150; }

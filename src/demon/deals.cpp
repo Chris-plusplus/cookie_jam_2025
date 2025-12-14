@@ -24,7 +24,7 @@ void Deal::big_sachet(Scene& scene) {
 void Deal::robber() {
     int temp = std::uniform_int_distribution<int>{2, 5}(rng);
     Deals::negative_points=(slots::RewardType)temp;
-
+    //TODO
 }
 void Deal::quality() {
     Deals::better_food=true;
@@ -41,12 +41,15 @@ void Deal::nolife(Scene& scene) {
 }
 void Deal::set_glitch() {
     Deals::glitch=true;
+    //TODO
 }
 void Deal::set_negative_change() {
     Deals::negative_change=true;
+    //TODO
 }
 void Deal::set_positive_change() {
     Deals::positive_change=true;
+    //TODO
 }
 void Deal::set_no_gurken() {
     Deals::no_gurken=true;
