@@ -605,7 +605,7 @@ void VulkanVs::init() {
 						.bottomRight = {buttonT.scale.x / 2.f, -buttonT.scale.y / 2.f},
 						.onNotHover = pipeline,
 						.onHover = pipeline,
-						.callback = [&, meshCPtr = &meshC, texVecPtr = &texVec](...) { scene::SceneManager::get()->changeScene(mainScene);  }
+						.callback = [&, meshCPtr = &meshC, texVecPtr = &texVec](...) { scene::SceneManager::get()->changeScene(mainScene); std::ofstream("watchedTutorial") << ""; }
 					}
 				);
 			}
@@ -648,7 +648,7 @@ void VulkanVs::update() {
 			startTime = currTime;
 			scene->domain().kill(scene->domain().view<scene::components::TransformComponent>().back());
 			if (scene->domain().components<scene::components::TransformComponent>().base().count() == 0) {
-				scene::SceneManager::get()->changeScene(tutorialScene);
+				scene::SceneManager::get()->changeScene(std::filesystem::exists("watchedTutorial") ? mainScene : tutorialScene);
 			}
 		}
 	}
