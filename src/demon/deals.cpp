@@ -48,11 +48,11 @@ void Deal::set_glitch(Scene& scene) {
 }
 void Deal::set_negative_change(Scene& scene) {
 	Deals::negative_change = true;
-	SwitchSystem::addEffect<NegativeSwitch>(scene, 0.35);
+	SwitchSystem::addEffect<NegativeSwitch>(scene, 1.0);
 }
 void Deal::set_positive_change(Scene& scene) {
 	Deals::positive_change = true;
-	SwitchSystem::addEffect<PositiveSwitch>(scene, 0.4);
+	SwitchSystem::addEffect<PositiveSwitch>(scene, 1.0);
 }
 void Deal::set_no_gurken() {
 	Deals::no_gurken = true;
