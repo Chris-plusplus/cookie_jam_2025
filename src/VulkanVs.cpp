@@ -26,6 +26,8 @@
 #include "demon/PositiveSwitch.h"
 #include "slots/SlotGlitchChance.h"
 
+#include "sound/Ambient.h"
+
 ecs::Entity textEntity = ecs::nullEntity;
 decltype(std::chrono::high_resolution_clock::now()) now{};
 
@@ -64,9 +66,17 @@ void VulkanVs::init() {
 		});*/
 
 	// init SoundManager
-	scene->domain().global<SoundManager>().init({explosionSoundPath});
+	std::vector<std::string> samples = {
+		"main_theme.ogg",
+		"wajcha.ogg",
+		"jackpot.ogg",
+		"nieudane_rozdanie.ogg"
+	};
+	scene->domain().global<SoundManager>().init(samples);
 
 	now = std::chrono::high_resolution_clock::now();
+
+	Ambient::setup(*scene);
 
 	PointsCounter::setup(*scene);
 
@@ -79,7 +89,7 @@ void VulkanVs::init() {
 	demon::OfferSystem::setup(*scene);
 
 	SwitchSystem::addEffect<PositiveSwitch>(*scene, 1);
-	scene->domain().global<SlotGlitchChance>().value = 0.5;
+	scene->domain().global<SlotGlitchChance>().value = 0.1;
 
 	SlotMachineSystem::setup(*scene);
 

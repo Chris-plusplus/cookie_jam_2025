@@ -18,6 +18,8 @@
 #include <demon/SwitchSystem.h>
 #include <slots/SlotGlitchChance.h>
 
+#include "sound/SFX.h"
+
 using namespace std::chrono_literals;
 
 struct LeverFlag {
@@ -259,6 +261,7 @@ void SlotMachineSystem::update(Scene& scene) {
 			lifeManager.updateLifes(-1);
 			slotMachine.leverAnimationSpeed = 10;
 			slotMachine.pawAnimationSpeed = 10;
+			SFX::playSFX(scene, "wajcha.ogg");
 		}
 		slotMachine.slotAnimation = true;
 		slotMachine.drawn.clear();

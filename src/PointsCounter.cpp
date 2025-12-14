@@ -5,6 +5,7 @@
 #include <Defaults.h>
 #include <lifes/LifeManager.h>
 #include "demon/deals.h"
+#include "sound/SFX.h"
 
 int PointsCounter::score = 0;
 
@@ -23,6 +24,7 @@ int PointsCounter::count(Scene& scene, const std::vector<int>& wyniki) {
 		return 0;
 	}
 	if (ct[0] > 0 and !Deals::no_gurken) {
+		SFX::playSFX(scene, "nieudane_rozdanie.ogg");
 		return 0;
 	}
 	//Wylosowano piórko + przemiana
@@ -37,6 +39,11 @@ int PointsCounter::count(Scene& scene, const std::vector<int>& wyniki) {
 	if (ct[4] > 2) { sum += 360; }
 	if (ct[5] > 2) { sum += 600; }
 	if (ct[6] > 2) { lifeManager.updateLifes(6); }
+	for (auto num : ct) {
+		if (num == 3) {
+			SFX::playSFX(scene, "jackpot.ogg");
+		}
+	}
 	score += sum;
 	return sum;
 };
