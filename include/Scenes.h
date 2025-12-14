@@ -7,3 +7,4 @@ using namespace arch;
 extern Ref<Scene> mainScene;
 extern Ref<Scene> settingsScene;
 extern Ref<Scene> endingScene;
+extern Ref<Scene> tutorialScene;
