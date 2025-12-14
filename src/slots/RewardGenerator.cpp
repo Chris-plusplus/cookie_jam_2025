@@ -47,12 +47,10 @@ void RewardGenerator::multiplyProbability(RewardType type, float probability) {
 	for (int i = 0; i < _weights.size(); i++) {
 		sum += _weights[i];
 	}
-	float difference = sum - 1.0;
-	for (int i = 0; i < _weights.size(); i++) {
-		if (i != index) {
-			_weights[i] -= difference / _weights.size();
-		}
+	for (auto&& x : _weights) {
+		x /= sum;
 	}
+
 	_generateDistribution();
 }
 }
