@@ -12,4 +12,5 @@ struct SlotObject {
 	float maxSpeed = -5000;
 	slots::RewardType type;
 	float stride = 0;
+	bool glitched = false;
 };
