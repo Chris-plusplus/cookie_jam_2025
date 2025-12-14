@@ -14,6 +14,8 @@
 #include <archimedes/Font.h>
 #include <archimedes/Text.h>
 #include <systems/Button.h>
+
+#include "demon/DemonManager.h"
 #include "demon/OfferTextFlag.h"
 
 namespace demon {
@@ -87,7 +89,7 @@ void OfferSystem::setup(Scene& scene) {
 		}
 	);
 	ButtonSystem::setup(scene, accept.handle(), float2{-acceptT.scale.x, acceptT.scale.y} / 2.f, float2{acceptT.scale.x, -acceptT.scale.y} / 2.f, [&](...) {
-		clearOfferDialogue(scene);
+		DemonManager::hide(scene);
 	});
 	accept.addComponent(AcceptButtonFlag{});
 
@@ -111,7 +113,7 @@ void OfferSystem::setup(Scene& scene) {
 		}
 	);
 	ButtonSystem::setup(scene, dismiss.handle(), float2{-dismissT.scale.x, dismissT.scale.y} / 2.f, float2{dismissT.scale.x, -dismissT.scale.y} / 2.f, [&](...) {
-		clearOfferDialogue(scene);
+		DemonManager::hide(scene);
 	});
 	dismiss.addComponent(DismissButtonFlag{});
 
@@ -146,6 +148,10 @@ void OfferSystem::clearOfferDialogue(Scene& scene) {
 	auto&& dismiss = scene.domain().view<DismissButtonFlag>().front();
 	auto&& transform3 = scene.domain().getComponent<scene::components::TransformComponent>(dismiss);
 	transform3.position.z = 1.0;
+
+	auto&& multiline = scene.domain().view<OfferTextFlag>().front();
+	MultilineTextSystem::remove(scene, multiline);
+
 }
 
 void OfferSystem::spawnOfferDialogue(Scene& scene, std::string_view offerText) {
@@ -177,14 +183,6 @@ void OfferSystem::spawnOfferDialogue(Scene& scene, std::string_view offerText) {
 		auto&& dial = scene.domain().view<OfferDialogue>().front();
 		auto&& container = scene.domain().getComponent<OfferDialogue>(dial);
 
-		////////////////////
-		////////////////////
-		////////////////////
-		////////////////////
-		////////////////////
-		////////////////////
-		////////////////////
-
 		auto&& textParentT = textParent.addComponent(
 			scene::components::TransformComponent{
 				.position = float3(container.containerX, container.containerY, -0.8) + float3{-container.containerScaleX, container.containerScaleY, 0.0} / 2.f + textDeltaPos,
@@ -193,6 +191,7 @@ void OfferSystem::spawnOfferDialogue(Scene& scene, std::string_view offerText) {
 			}
 		);
 		textParentT.position.z = -0.8;
+		textParent.addComponent(OfferTextFlag{});
 
 		std::u32string offerText;
 		{

@@ -230,12 +230,13 @@ void SlotMachineSystem::update(Scene& scene) {
 	auto&& slotMachine = scene.domain().components<SlotMachine>().front();
 	auto&& manager = scene.domain().view<LifeManager>().front();
 	auto&& lifeManager = scene.domain().getComponent<LifeManager>(manager);
-	if (input::Keyboard::space.pressed() && !slotMachine.slotAnimation && lifeManager.currentLifes > 0) {
+	if (input::Keyboard::space.pressed() && !slotMachine.slotAnimation && lifeManager.currentLifes > 0 && DemonManager::active_demon == demon::DemonType::_none) {
 		lifeManager.updateLifes(-1);
 		slotMachine.slotAnimation = true;
 		slotMachine.leverAnimationSpeed = 10;
 		slotMachine.pawAnimationSpeed = 10;
 		slotMachine.drawn.clear();
+		DemonManager::isBlocked = true;
 
 		for (auto&& [slotObject] : scene.domain().view<SlotObject>().components()) {
 			if (slotObject.jolt == 0) {
@@ -348,6 +349,7 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 			slotMachine.onDrawn(scene, slotMachine.drawn);
 		}
 		DemonManager::addroll();
+		DemonManager::isBlocked = false;
 		Logger::debug("reward = {}", slots::rewardAsString(SlotMachineSystem::reward(scene)));
 	}
 

@@ -6,7 +6,7 @@ using namespace arch;
 
 namespace demon {
     enum class DemonType {
-        happy, distorted, evil
+        demon1, demon2, demon3, _none
     };
 
     struct OfferSystem {
