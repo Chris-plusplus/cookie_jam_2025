@@ -82,6 +82,8 @@ void VulkanVs::init() {
 
 	audioDomain.global<SoundManager>().init();
 
+	Ambient::setAmbient("menu_theme.ogg");
+
 	//now = std::chrono::high_resolution_clock::now();
 
 	PointsCounter::setup(*scene);
@@ -687,6 +689,8 @@ void VulkanVs::update() {
 	Ref<Scene> scene = scene::SceneManager::get()->currentScene();
 	ButtonSystem::update(*scene);
 
+	audioDomain.global<SoundManager>().audioManager->synchronize(scene->domain());
+
 	if (scene == mainScene) {
 		//static auto prevTime = std::chrono::high_resolution_clock::now();
 
@@ -700,8 +704,7 @@ void VulkanVs::update() {
 		DemonManager::update(*scene);
 	//}
 
-// synchronize audio
-		audioDomain.global<SoundManager>().audioManager->synchronize(scene->domain());
+	// synchronize audio
 
 		/*if (std::chrono::high_resolution_clock::now() - now > std::chrono::seconds(3)) {
 			MultilineTextSystem::remove(*scene, textEntity);
@@ -715,6 +718,7 @@ void VulkanVs::update() {
 			scene->domain().kill(scene->domain().view<scene::components::TransformComponent>().back());
 			if (scene->domain().components<scene::components::TransformComponent>().base().count() == 0) {
 				scene::SceneManager::get()->changeScene(std::filesystem::exists("watchedTutorial") ? mainScene : tutorialScene);
+				Ambient::stopAmbient();
 				Ambient::setAmbient("main_theme.ogg");
 
 			}
