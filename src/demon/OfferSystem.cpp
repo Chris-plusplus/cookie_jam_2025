@@ -62,6 +62,16 @@ void OfferSystem::setup(Scene& scene) {
 		}
 		);
 
+	auto&& acceptHoverTexture = makeTexture(std::string_view("textures/Asset_final/Akceptacja_button_hover.png"));
+	dial.acceptButtonHoverPipeline = renderer.getPipelineManager()->create(
+		gfx::pipeline::Pipeline::Desc{
+			.vertexShaderPath = "shaders/vertex_default.glsl",
+			.fragmentShaderPath = "shaders/fragment_default.glsl",
+			.textures = {std::move(acceptHoverTexture)},
+			.buffers = {defaultUniformBuffer()},
+		}
+		);
+
 	// prepare dismiss button texture and params
 	auto&& dismissTexture = makeTexture(std::string_view("textures/Asset_final/Odrzucenie_button.png"));
 	dial.dismissButtonPipeline = renderer.getPipelineManager()->create(
@@ -69,6 +79,16 @@ void OfferSystem::setup(Scene& scene) {
 			.vertexShaderPath = "shaders/vertex_default.glsl",
 			.fragmentShaderPath = "shaders/fragment_default.glsl",
 			.textures = {std::move(dismissTexture)},
+			.buffers = {defaultUniformBuffer()},
+		}
+		);
+
+	auto&& dismissHoverTexture = makeTexture(std::string_view("textures/Asset_final/Odrzucenie_button_hover.png"));
+	dial.dismissButtonHoverPipeline = renderer.getPipelineManager()->create(
+		gfx::pipeline::Pipeline::Desc{
+			.vertexShaderPath = "shaders/vertex_default.glsl",
+			.fragmentShaderPath = "shaders/fragment_default.glsl",
+			.textures = {std::move(dismissHoverTexture)},
 			.buffers = {defaultUniformBuffer()},
 		}
 		);
@@ -95,7 +115,7 @@ void OfferSystem::setup(Scene& scene) {
 			.pipeline = dial.acceptButtonPipeline
 		}
 	);
-	ButtonSystem::setup(scene, accept.handle(), float2{-acceptT.scale.x, acceptT.scale.y} / 2.f, float2{acceptT.scale.x, -acceptT.scale.y} / 2.f, [&](...) {
+	ButtonSystem::setup(scene, accept.handle(), float2{-acceptT.scale.x, acceptT.scale.y} / 2.f, float2{acceptT.scale.x, -acceptT.scale.y} / 2.f, dial.acceptButtonPipeline, dial.acceptButtonHoverPipeline, [&](...) {
 		PledgeSystem::setup(scene);
 		PledgeSystem::setCallback(scene, [&] {
 			DemonManager::hide(scene);
@@ -157,7 +177,7 @@ void OfferSystem::setup(Scene& scene) {
 			.pipeline = dial.dismissButtonPipeline
 		}
 	);
-	ButtonSystem::setup(scene, dismiss.handle(), float2{-dismissT.scale.x, dismissT.scale.y} / 2.f, float2{dismissT.scale.x, -dismissT.scale.y} / 2.f, [&](...) {
+	ButtonSystem::setup(scene, dismiss.handle(), float2{-dismissT.scale.x, dismissT.scale.y} / 2.f, float2{dismissT.scale.x, -dismissT.scale.y} / 2.f, dial.dismissButtonPipeline, dial.dismissButtonHoverPipeline, [&](...) {
 		DemonManager::hide(scene);
 	});
 	dismiss.addComponent(DismissButtonFlag{});

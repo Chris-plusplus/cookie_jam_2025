@@ -13,6 +13,8 @@ struct Button {
 
 	float2 topLeft;
 	float2 bottomRight;
+	Ref<gfx::pipeline::Pipeline> onNotHover;
+	Ref<gfx::pipeline::Pipeline> onHover;
 
 	std::function<void(Scene&, ecs::Entity)> callback;
 };
