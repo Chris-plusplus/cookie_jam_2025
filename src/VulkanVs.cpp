@@ -134,13 +134,6 @@ void VulkanVs::update() {
 		SlotMachineSystem::update(*scene);
 		LifeManagerSystem::update(*scene);
 
-		if (input::Keyboard::Q.pressed()) {
-			PledgeSystem::setup(*scene);
-			PledgeSystem::setCallback(*scene, [&] {
-				DemonManager::hide(*scene);
-			});
-		}
-
 		PledgeSystem::update(*scene);
 		DemonManager::update(*scene);
 
