@@ -441,7 +441,7 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 		} else {
 			if (count == slotMachine.drawn.size() && what == (int)slots::RewardType::cucumber) {
 				isEnd = true;
-				EndingSystem::end(scene, "textures/Asset_final/Ogor_ending.png", "bad_ending_theme.ogg");
+				EndingSystem::end(scene, "textures/Asset_final/Ogor_ending.png", "silly_theme.ogg");
 			} else {
 				if (slotMachine.onDrawn) {
 					slotMachine.onDrawn(scene, slotMachine.drawn);
