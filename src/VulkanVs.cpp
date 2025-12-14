@@ -184,6 +184,7 @@ void VulkanVs::init() {
 					.callback = [&](...) { scene::SceneManager::get()->changeScene(cutsceneScene); }
 				}
 			);
+			// auto del = entity.addComponent(Button::InactiveFlag{});
 		}
 		{ // opcje
 			auto entity = scene->newEntity();
@@ -396,10 +397,6 @@ void VulkanVs::update() {
 	/*if (input::Keyboard::enter.pressed()) {
 		EndingSystem::end("textures/Asset_final/Bad_ending.png");
 	}*/
-	if (input::Keyboard::enter.pressed()) {
-		Autors::exit(*menuScene);
-		Settings::exit(*menuScene);
-	}
 	Settings::update(*menuScene);
 
 	Ref<Scene> scene = scene::SceneManager::get()->currentScene();

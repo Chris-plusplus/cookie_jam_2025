@@ -226,6 +226,39 @@ void Settings::setup(Scene& scene) {
 		);
 		auto&& flag = MarkerS.addComponent(SettingsFlag{});
 	}
+	{
+		auto Exit = scene.newEntity();
+		auto&& texture = makeTexture(std::string_view("textures/Asset_final/Zamyknie_asset.png"));
+		auto mesh = makeMesh(defaultCenterVertices(), defaultIndices());
+		auto pipeline = gfx::Renderer::getCurrent()->getPipelineManager()->create(
+			gfx::pipeline::Pipeline::Desc{
+				.vertexShaderPath = "shaders/vertex_default.glsl",
+				.fragmentShaderPath = "shaders/fragment_default.glsl",
+				.textures = {texture},
+				.buffers = {defaultUniformBuffer()},
+			}
+			);
+		auto&& t = Exit.addComponent(
+			scene::components::TransformComponent{
+				.position = {windowWidth * 0.6, windowHeight * 0.85, -0.9},
+				.rotation = {0, 0, 0, 1},
+				.scale = {texture->getWidth(), texture->getHeight(), 0}
+			}
+		);
+		Exit.addComponent(
+			scene::components::MeshComponent{
+				.mesh = mesh,
+				.pipeline = pipeline,
+			}
+		);
+		Exit.addComponent(
+			Button{
+				.topLeft = float2{-t.scale.x, t.scale.y} / 2.f,
+				.bottomRight = float2{t.scale.x, -t.scale.y} / 2.f,
+				.callback = [&](...) { exit(scene); }
+			});
+		auto&& flag = Exit.addComponent(SettingsFlag{});
+	}
 }
 
 void Settings::update(Scene& scene) {
