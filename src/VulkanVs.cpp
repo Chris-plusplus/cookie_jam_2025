@@ -65,14 +65,8 @@ void VulkanVs::init() {
 		"shaders/text/fragment_atlas_blue.glsl"
 		});*/
 
-	// init SoundManager
-	std::vector<std::string> samples = {
-		"main_theme.ogg",
-		"wajcha.ogg",
-		"jackpot.ogg",
-		"nieudane_rozdanie.ogg"
-	};
-	scene->domain().global<SoundManager>().init(samples);
+
+	scene->domain().global<SoundManager>().init();
 
 	now = std::chrono::high_resolution_clock::now();
 

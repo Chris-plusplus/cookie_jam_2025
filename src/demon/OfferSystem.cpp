@@ -17,6 +17,7 @@
 
 #include "demon/DemonManager.h"
 #include "demon/OfferTextFlag.h"
+#include "sound/Ambient.h"
 #include "systems/PledgeSystem.h"
 
 namespace demon {
@@ -156,6 +157,9 @@ void OfferSystem::clearOfferDialogue(Scene& scene) {
 	auto&& multiline = scene.domain().view<OfferTextFlag>().front();
 	MultilineTextSystem::remove(scene, multiline);
 	scene.domain().kill(multiline);
+
+	Ambient::stopAmbient(scene);
+	Ambient::setAmbient(scene, "main_theme.ogg");
 }
 
 void OfferSystem::spawnOfferDialogue(Scene& scene, std::string_view offerText) {
@@ -214,6 +218,9 @@ void OfferSystem::spawnOfferDialogue(Scene& scene, std::string_view offerText) {
 
 		MultilineTextSystem::setup(scene, textParent, offerText, *font::FontDB::get()["Arial"]->regular(),
 			{"shaders/text/fragment_atlas_black.glsl", });
+
+		Ambient::stopAmbient(scene);
+		Ambient::setAmbient(scene, "demon_theme.ogg");
 	}
 }
 

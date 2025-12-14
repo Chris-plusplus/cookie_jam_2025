@@ -1,5 +1,7 @@
 #include <SoundManager.h>
+#include <filesystem>
 
+namespace fs = std::filesystem;
 
 SoundManager::~SoundManager() {
 	audioManager->stop();
@@ -7,7 +9,14 @@ SoundManager::~SoundManager() {
 	audioThread->join();
 }
 
-void SoundManager::init(const std::vector<std::string>& soundFiles) {
+void SoundManager::init() {
+	std::vector<std::string> soundFiles;
+	for (const auto& entry : fs::directory_iterator("sounds")) {
+		fs::path entryPath = entry.path();
+		soundFiles.emplace_back(entryPath.filename().string());
+		Logger::debug("{}", entryPath.filename().string());
+	}
+
 	audioManager = createUnique<audio::AudioManager>(&soundBank);
 	audioThread = createUnique<std::jthread>(&audio::AudioManager::play, audioManager.get());
 	for (auto&& soundFile : soundFiles) {

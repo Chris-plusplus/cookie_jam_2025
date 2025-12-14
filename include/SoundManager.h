@@ -15,6 +15,6 @@ struct SoundManager {
 
 	~SoundManager();
 
-	void init(const std::vector<std::string>& soundFiles);
+	void init();
 };
 
