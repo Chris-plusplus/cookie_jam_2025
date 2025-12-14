@@ -402,7 +402,7 @@ void VulkanVs::init() {
 			texVec.push_back(makePipeline(makeTexture("textures/Asset_final/Tutorial/Tutorial_mechanizm.png")));
 			texVec.push_back(makePipeline(makeTexture("textures/Asset_final/Tutorial/Tutorial_nagrody.png")));
 			texVec.push_back(makePipeline(makeTexture("textures/Asset_final/Tutorial/Tutorial_demony.png")));
-			texVec.push_back(makePipeline(makeTexture("textures/Asset_final/Tutorial/Tutorial_życie.png")));
+			texVec.push_back(makePipeline(makeTexture("textures/Asset_final/Tutorial/Tutorial_zycie.png")));
 
 			entity.addComponent(
 				scene::components::TransformComponent{
