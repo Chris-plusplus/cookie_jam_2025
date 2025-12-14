@@ -5,6 +5,8 @@
 #include <Defaults.h>
 #include <Config.h>
 
+#include "sound/SFX.h"
+
 auto prevTime = std::chrono::high_resolution_clock::now();
 
 void PledgeSystem::setup(Scene& scene) {
@@ -169,6 +171,7 @@ void PledgeSystem::update(Scene& scene) {
 			pawT.position.y += adjSpeed;
 
 			if (pawT.position.y >= anim.endPos) {
+				SFX::playSFX("miau.ogg");
 				pawT.position.y = anim.endPos;
 				anim.animSpeed = -anim.animSpeed;
 				scene.domain().getComponent<scene::components::MeshComponent>(

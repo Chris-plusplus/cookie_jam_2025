@@ -433,6 +433,7 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 		// glitch
 		auto glitchChance = scene.domain().global<SlotGlitchChance>().value;
 		if (!glitched && std::uniform_real_distribution(0.f, 1.f)(rng) <= glitchChance) {
+			SFX::playSFX("glitch.ogg");
 			glitched = true;
 			for (auto&& [slotObj, mesh] : scene.domain().view<SlotObject, scene::components::MeshComponent>().components()) {
 				slotObj.glitched = true;
