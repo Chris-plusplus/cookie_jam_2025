@@ -5,6 +5,7 @@
 #include <Defaults.h>
 #include <lifes/LifeManager.h>
 #include "demon/deals.h"
+#include <systems/EndingSystem.h>
 
 int PointsCounter::score = 0;
 
@@ -19,7 +20,7 @@ int PointsCounter::count(Scene& scene, const std::vector<int>& wyniki) {
 	}
 	//Wylosowano ogórki
 	if (ct[0] > 2) {
-		//TODO GAME OVER
+		EndingSystem::end("textures/Asset_final/Ogor_ending.png");
 		return 0;
 	}
 	if (ct[0] > 0 and !Deals::no_gurken) {

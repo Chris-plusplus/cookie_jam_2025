@@ -17,6 +17,7 @@
 #include <demon/NegativeSwitch.h>
 #include <demon/SwitchSystem.h>
 #include <slots/SlotGlitchChance.h>
+#include <systems/EndingSystem.h>
 
 using namespace std::chrono_literals;
 
@@ -436,6 +437,10 @@ void SlotMachineSystem::updateAnimation(Scene& scene) {
 			DemonManager::addroll();
 			DemonManager::isBlocked = false;
 			Logger::debug("reward = {}", slots::rewardAsString(SlotMachineSystem::reward(scene)));
+
+			if (scene.domain().components<LifeManager>().front().currentLifes == 0) {
+				EndingSystem::end("textures/Asset_final/Bad_ending.png");
+			}
 		}
 	}
 

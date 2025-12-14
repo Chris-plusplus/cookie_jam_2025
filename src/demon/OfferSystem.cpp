@@ -19,6 +19,8 @@
 #include "demon/DemonManager.h"
 #include "demon/OfferTextFlag.h"
 #include "systems/PledgeSystem.h"
+#include "lifes/LifeManager.h"
+#include "systems/EndingSystem.h"
 
 namespace demon {
 
@@ -196,7 +198,9 @@ void OfferSystem::clearOfferDialogue(Scene& scene) {
 	MultilineTextSystem::remove(scene, multiline);
 	scene.domain().kill(multiline);
 
-
+	if (scene.domain().components<LifeManager>().front().currentLifes == 0) {
+		EndingSystem::end("textures/Asset_final/Bad_ending.png");
+	}
 }
 
 void OfferSystem::spawnOfferDialogue(Scene& scene, std::string_view offerText, OfferType new_offer) {

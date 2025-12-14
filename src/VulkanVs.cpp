@@ -25,17 +25,21 @@
 #include "demon/NegativeSwitch.h"
 #include "demon/PositiveSwitch.h"
 #include "slots/SlotGlitchChance.h"
+#include "Scenes.h"
+#include <systems/EndingSystem.h>
 
 ecs::Entity textEntity = ecs::nullEntity;
 decltype(std::chrono::high_resolution_clock::now()) now{};
 
 Unique<ecs::Domain> globalDomain;
-Ref<Scene> mainScene;
-Ref<Scene> settingsScene;
+Ref<Scene> mainScene{};
+Ref<Scene> settingsScene{};
+Ref<Scene> endingScene{};
 
 VulkanVs::~VulkanVs() {
 	mainScene = nullptr;
 	settingsScene = nullptr;
+	endingScene = nullptr;
 }
 
 void VulkanVs::init() {
@@ -115,13 +119,9 @@ void VulkanVs::init() {
 using namespace std::chrono_literals;
 
 void VulkanVs::update() {
-	if (input::Keyboard::enter.pressed()) {
-		if (scene::SceneManager::get()->currentScene() == mainScene) {
-			scene::SceneManager::get()->changeScene(settingsScene);
-		} else {
-			scene::SceneManager::get()->changeScene(mainScene);
-		}
-	}
+	/*if (input::Keyboard::enter.pressed()) {
+		EndingSystem::end("textures/Asset_final/Bad_ending.png");
+	}*/
 
 	Ref<Scene> scene = scene::SceneManager::get()->currentScene();
 	if (scene == mainScene) {
