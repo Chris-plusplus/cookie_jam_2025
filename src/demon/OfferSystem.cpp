@@ -263,7 +263,7 @@ void OfferSystem::spawnOfferDialogue(Scene& scene, std::string_view offerText, O
 		auto&& textParentT = textParent.addComponent(
 			scene::components::TransformComponent{
 				.position = float3(cnt.containerX - cnt.containerWidth / 2 * cnt.containerScaleX,
-					cnt.containerY + cnt.containerHeight / 2 * cnt.buttonScaleY,
+					cnt.containerY + cnt.containerHeight / 1.75 * cnt.buttonScaleY,
 					-0.8) + float3{-cnt.containerScaleX, cnt.containerScaleY, 0.0} / 2.f + textDeltaPos,
 					.rotation = {0, 0, 0, 1},
 					.scale = {fontSize, fontSize, 0}
