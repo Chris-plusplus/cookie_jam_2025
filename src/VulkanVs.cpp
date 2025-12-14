@@ -220,12 +220,12 @@ void VulkanVs::init() {
 					.topLeft = float2{-t.scale.x, t.scale.y} / 2.f,
 					.bottomRight = float2{t.scale.x, -t.scale.y} / 2.f,
 					.callback = [&](Scene& scene, ecs::Entity entity) mutable {
-						for (auto&& button : scene.domain().view<Button>()) {
-							scene.domain().addComponent<Button::InactiveFlag>(button);
-						}
-						Settings::setup(scene);
-						// Entity(scene, entity).addComponent<Button::InactiveFlag>();
-					}
+				for (auto&& button : scene.domain().view<Button>()) {
+					scene.domain().addComponent<Button::InactiveFlag>(button);
+				}
+				Settings::setup(scene);
+				// Entity(scene, entity).addComponent<Button::InactiveFlag>();
+			}
 				}
 			);
 		}
@@ -258,11 +258,11 @@ void VulkanVs::init() {
 					.topLeft = float2{-t.scale.x, t.scale.y} / 2.f,
 					.bottomRight = float2{t.scale.x, -t.scale.y} / 2.f,
 					.callback = [&](Scene& scene, ecs::Entity entity) mutable {
-						for (auto&& button : scene.domain().view<Button>()) {
-							scene.domain().addComponent<Button::InactiveFlag>(button);
-						}
-						Autors::setup(*menuScene);
-					}
+				for (auto&& button : scene.domain().view<Button>()) {
+					scene.domain().addComponent<Button::InactiveFlag>(button);
+				}
+				Autors::setup(*menuScene);
+			}
 				}
 			);
 		}
@@ -690,15 +690,17 @@ void VulkanVs::update() {
 	if (scene == mainScene) {
 		//static auto prevTime = std::chrono::high_resolution_clock::now();
 
-		PointsCounter::update(*scene);
 
 		SlotMachineSystem::update(*scene);
 		LifeManagerSystem::update(*scene);
+		PointsCounter::update(*scene);
 
 		PledgeSystem::update(*scene);
+		//if (scene == mainScene) {
 		DemonManager::update(*scene);
+	//}
 
-	// synchronize audio
+// synchronize audio
 		audioDomain.global<SoundManager>().audioManager->synchronize(scene->domain());
 
 		/*if (std::chrono::high_resolution_clock::now() - now > std::chrono::seconds(3)) {

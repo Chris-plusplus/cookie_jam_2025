@@ -7,6 +7,7 @@
 #include "demon/deals.h"
 #include "sound/SFX.h"
 #include <systems/EndingSystem.h>
+#include <demon/DemonManager.h>
 
 #include "systems/SlotMachine.h"
 
@@ -51,8 +52,9 @@ int PointsCounter::count(Scene& scene, const std::vector<int>& wyniki) {
 	}
 	score += sum;
 	if (score >= threshold) {
-		EndingSystem::end(scene, "textures/Asset_final/Good_Ending.png", "happy_ending_theme.ogg");
 		SlotMachineSystem::isEnd = true;
+		DemonManager::isBlocked = true;
+		EndingSystem::end(scene, "textures/Asset_final/Good_Ending.png", "happy_ending_theme.ogg");
 	}
 	return sum;
 };
