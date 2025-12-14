@@ -28,7 +28,6 @@ void Deal::big_sachet(Scene& scene) {
 void Deal::robber() {
 	int temp = std::uniform_int_distribution<int>{2, 5}(rng);
 	Deals::negative_points = (slots::RewardType)temp;
-	//TODO
 }
 void Deal::quality() {
 	Deals::better_food = true;
