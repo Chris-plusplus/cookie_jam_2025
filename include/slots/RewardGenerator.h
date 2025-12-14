@@ -23,11 +23,11 @@ class RewardGenerator {
 	std::vector<float> _weights{
 		.1, //cucumber
 		.1, //catnip
-		.3, //dry
+		.25, //dry
 		.15, //sachet
 		.1, //feather
 		.05, //sardines
-		.2, //coin
+		.25, //coin
 	};
 	// std::vector<float> _weights{
 	// 	.1, //cucumber

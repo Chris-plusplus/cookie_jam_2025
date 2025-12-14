@@ -44,15 +44,15 @@ void Deal::nolife(Scene& scene) {
 }
 void Deal::set_glitch(Scene& scene) {
 	Deals::glitch = true;
-	scene.domain().global<SlotGlitchChance>().value = 0.25;
+	scene.domain().global<SlotGlitchChance>().value = 0.20;
 }
 void Deal::set_negative_change(Scene& scene) {
 	Deals::negative_change = true;
-	SwitchSystem::addEffect<NegativeSwitch>(scene, 0.2);
+	SwitchSystem::addEffect<NegativeSwitch>(scene, 0.35);
 }
 void Deal::set_positive_change(Scene& scene) {
 	Deals::positive_change = true;
-	SwitchSystem::addEffect<PositiveSwitch>(scene, 0.2);
+	SwitchSystem::addEffect<PositiveSwitch>(scene, 0.4);
 }
 void Deal::set_no_gurken() {
 	Deals::no_gurken = true;
